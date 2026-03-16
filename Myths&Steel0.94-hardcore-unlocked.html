@@ -7370,7 +7370,7 @@ function updateLasers() {
                 
                 // Specific logic: If XP Range is selectedRarity, and stack count >= 15, skip it
                 if (player.xpCollectionRangeStacks >= 15 && selectedRarity === 'rare') {
-                    availableUpgrades = availableUpgrades.filter(u => u.name !== 'XP Collection Range Increase');
+            availableUpgrades = availableUpgrades.filter(u => u.name !== 'XP Collection Range Increase' && u.name !== 'Add Accelerator');
                 }
 
                 if (availableUpgrades.length > 0) {
