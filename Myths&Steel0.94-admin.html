@@ -581,6 +581,147 @@
             border-color: #66ccff;
         }
 
+        .announcement-banner {
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 280px;
+            max-width: min(86vw, 620px);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: linear-gradient(135deg, rgba(14, 10, 28, 0.92), rgba(48, 18, 74, 0.92));
+            color: #f7f2ff;
+            box-shadow: 0 0 22px rgba(166, 72, 255, 0.18);
+            z-index: 16;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        .announcement-banner:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 0 28px rgba(212, 175, 55, 0.22);
+            filter: brightness(1.05);
+        }
+
+        .announcement-banner[hidden] {
+            display: none !important;
+        }
+
+        .announcement-badge {
+            flex: 0 0 auto;
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            font-weight: 900;
+            color: #17090d;
+            background: linear-gradient(135deg, #ffd36b, #ff8a5b);
+            box-shadow: 0 0 14px rgba(255, 180, 90, 0.32);
+        }
+
+        .announcement-text {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: left;
+        }
+
+        .announcement-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff7dc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .announcement-subtitle {
+            font-size: 10px;
+            color: #d9cfff;
+            opacity: 0.92;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .announcement-modal-content {
+            max-width: 620px;
+        }
+
+        .announcement-status {
+            margin-top: 10px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #cfc8ea;
+            text-align: center;
+        }
+
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .announcement-entry {
+            text-align: left;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.38);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .announcement-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .announcement-entry-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff1c4;
+        }
+
+        .announcement-entry-priority {
+            font-size: 10px;
+            color: #1a0d08;
+            background: linear-gradient(135deg, #ffd36b, #ff9e68);
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .announcement-entry-body {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #efecff;
+            white-space: pre-wrap;
+        }
+
+        .announcement-entry-meta {
+            margin-top: 8px;
+            font-size: 10px;
+            color: #b7afcf;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         #modeSelectModal {
             min-width: 520px;
             max-width: 560px;
@@ -1916,6 +2057,13 @@
         <div id="achievementToastTitle" class="achievement-toast-title"></div>
         <div id="achievementToastDesc" class="achievement-toast-desc"></div>
     </div>
+    <button id="announcementBanner" class="announcement-banner" type="button" hidden>
+        <span class="announcement-badge">LIVE</span>
+        <span class="announcement-text">
+            <span id="announcementBannerTitle" class="announcement-title">Announcements Online</span>
+            <span id="announcementBannerSubtitle" class="announcement-subtitle">Checking for live updates...</span>
+        </span>
+    </button>
     
     <!-- AUDIO ELEMENTS -->
     <audio id="fireworkSound" src="https://github.com/PixelSurvivorsDatabase/PixelSurvivorSFXandMusicDatabase/raw/refs/heads/main/Loud%20Fireworks%20(Bass%20Boosted).mp3" preload="auto"></audio>
@@ -1943,6 +2091,7 @@
             <div class="mobile-ability-cluster">
                 <button id="mobileBlackHoleBtn" class="mobile-ability-btn" type="button">2<small>VOID</small></button>
                 <button id="mobileFugaBtn" class="mobile-ability-btn" type="button">3<small>FUGA</small></button>
+                <button id="mobileAcceleratorBtn" class="mobile-ability-btn" type="button">4<small>ACCEL</small></button>
             </div>
         </div>
         
@@ -2039,6 +2188,7 @@
                         <p>Bosses spawn every 2 minutes</p>
                         <p>Press 2 for Black Hole (if unlocked)</p>
                         <p>Press 3 for Fuga (if unlocked)</p>
+                        <p>Hold 4 for Accelerator (if unlocked)</p>
                     </div>
                     
                     <div class="menu-buttons-row">
@@ -2113,6 +2263,14 @@
             </div>
 
             <button id="closePersistentStatsBtn" class="btn-primary">CLOSE</button>
+        </div>
+        <div id="announcementModal" class="modal">
+            <div class="announcement-modal-content">
+                <h2>LIVE ANNOUNCEMENTS</h2>
+                <div id="announcementStatus" class="announcement-status">Checking for live updates...</div>
+                <div id="announcementList" class="announcement-list"></div>
+                <button id="closeAnnouncementBtn" class="btn-primary">CLOSE</button>
+            </div>
         </div>
 
                 <!-- Options Modal -->
@@ -2954,6 +3112,7 @@
             mobileInput.aimActive = false;
             mobileInput.moveX = 0;
             mobileInput.moveY = 0;
+            mobileInput.acceleratorHeld = false;
             mobileInput.aimX = mobileInput.lastAimX || 1;
             mobileInput.aimY = mobileInput.lastAimY || 0;
             resetMobileStick('mobileMoveKnob');
@@ -2963,6 +3122,7 @@
         function updateMobileAbilityButtons() {
             const blackHoleBtn = document.getElementById('mobileBlackHoleBtn');
             const fugaBtn = document.getElementById('mobileFugaBtn');
+            const acceleratorBtn = document.getElementById('mobileAcceleratorBtn');
             if (blackHoleBtn) {
                 const ready = !!player.blackHole && blackHoleCooldown <= 0 && gameRunning && !gamePaused;
                 blackHoleBtn.disabled = !ready;
@@ -2972,6 +3132,12 @@
                 const ready = !!player.fuga && fugaCooldown <= 0 && gameRunning && !gamePaused;
                 fugaBtn.disabled = !ready;
                 fugaBtn.classList.toggle('ready', ready);
+            }
+            if (acceleratorBtn) {
+                const ready = !!player.weapons['Accelerator'] && gameRunning && !gamePaused;
+                acceleratorBtn.disabled = !ready;
+                acceleratorBtn.classList.toggle('ready', ready);
+                acceleratorBtn.classList.toggle('active', !!mobileInput.acceleratorHeld && ready);
             }
         }
 
@@ -3501,6 +3667,7 @@
             aimActive: false,
             moveX: 0,
             moveY: 0,
+            acceleratorHeld: false,
             aimX: 1,
             aimY: 0,
             lastAimX: 1,
@@ -3579,6 +3746,7 @@
         let currentWorldCameraX = 0;
         const CELESTIAL_PHASE_TWO_TRIGGER_HEALTH = 1000;
         let nextBossEntityId = 1;
+        let nextDynamicEntityId = 1;
 
         // Initialize snowflakes
         for (let i = 0; i < 50; i++) {
@@ -3694,6 +3862,7 @@
             machineGun: { name: 'Machine Gun', damage: 5, fireRate: 150, projectileSpeed: 12, color: '#ffff66', size: 2, type: 'projectile' },
             sniper: { name: 'Sniper', damage: 30, fireRate: 1500, projectileSpeed: 20, color: '#cc66ff', size: 5, type: 'projectile' },
             laser: { name: 'Laser Beam', damage: 2, fireRate: 50, projectileSpeed: 30, color: '#66ccff', width: 3, length: 300, type: 'laser' },
+            accelerator: { name: 'Accelerator', damage: 1, fireRate: 180, projectileSpeed: 0, color: '#ffffff', width: 10, length: 420, duration: 16, maxTargets: 2, rampStepSeconds: 0.45, rampCap: 26, tickRate: 140, type: 'acceleratorBeam' },
             grenade: { name: 'Grenade Launcher', damage: 20, fireRate: 2000, projectileSpeed: 6, color: '#ff9966', size: 6, explosionRadius: 60, type: 'grenade' },
             freeze: { name: 'Freeze Ray', damage: 1, fireRate: 260, projectileSpeed: 15, color: '#b8ecff', size: 4, width: 12, length: 340, duration: 8, slowEffect: 0.38, slowDuration: 1200, type: 'freezeBeam' },
             lightning: { name: 'Lightning Chain', damage: 20, fireRate: 1000, color: '#ffffcc', chainCount: 2, chainRange: 100, chainDamageRetained: 0.5, stunDuration: 450, type: 'lightning' },
@@ -3734,7 +3903,7 @@
 
         const weaponNameMap = {
             'Pistol': 'pistol', 'Shotgun': 'shotgun', 'Machine Gun': 'machineGun',
-            'Sniper': 'sniper', 'Laser Beam': 'laser', 'Grenade Launcher': 'grenade',
+            'Sniper': 'sniper', 'Laser Beam': 'laser', 'Accelerator': 'accelerator', 'Grenade Launcher': 'grenade',
             'Freeze Ray': 'freeze', 'Lightning Chain': 'lightning', 'Homing Missiles': 'homing',
             'Poison Darts': 'poison', 'Plague Cloud': 'plague', 'Plasma Cannon': 'plasma',
             'Shuriken': 'shuriken', 'Fuga': 'fuga', 'Firework Blaster': 'fireworkBlaster',
@@ -4920,6 +5089,7 @@
             { name: 'Add Sniper', rarity: 'epic', description: 'Add a sniper rifle. Mastery: +2% Global Damage per stack.', effect: () => { player.weapons['Sniper'] = (player.weapons['Sniper'] || 0) + 1; if (!player.lastShot['Sniper']) player.lastShot['Sniper'] = 0; }, stats: 'Weapon' },
             { name: 'Add Grenade Launcher', rarity: 'epic', description: 'Add a grenade launcher. Mastery: +5% Explosion Radius & Damage per stack.', effect: () => { player.weapons['Grenade Launcher'] = (player.weapons['Grenade Launcher'] || 0) + 1; if (!player.lastShot['Grenade Launcher']) player.lastShot['Grenade Launcher'] = 0; }, stats: 'Weapon' },
             { name: 'Add Freeze Ray', rarity: 'epic', description: 'Add a continuous freeze beam. Low damage, strong chill. Mastery: longer chill and wider beam.', effect: () => { player.weapons['Freeze Ray'] = (player.weapons['Freeze Ray'] || 0) + 1; if (!player.lastShot['Freeze Ray']) player.lastShot['Freeze Ray'] = 0; }, stats: 'Weapon' },
+            { name: 'Add Accelerator', rarity: 'legendary', description: 'Add a white target-lock beam array. Hold 4 to channel it. Starts at 2 targets and gains +1 target per stack. Damage ramps the longer a target stays locked.', effect: () => { player.weapons['Accelerator'] = (player.weapons['Accelerator'] || 0) + 1; if (!player.lastShot['Accelerator']) player.lastShot['Accelerator'] = 0; }, stats: 'Locking Weapon' },
             { name: 'Add Lightning Chain', rarity: 'epic', description: 'Add lightning chain. Mastery: +1 jump, +10% damage, and -5% chain falloff per stack.', effect: () => { player.weapons['Lightning Chain'] = (player.weapons['Lightning Chain'] || 0) + 1; if (!player.lastShot['Lightning Chain']) player.lastShot['Lightning Chain'] = 0; }, stats: 'Weapon' },
             { name: 'Add Homing Missiles', rarity: 'epic', description: 'Add homing missiles. Mastery: +10% Homing Speed per stack.', effect: () => { player.weapons['Homing Missiles'] = Math.min((player.weapons['Homing Missiles'] || 0) + 1, MAX_HOMING_STACKS); if (!player.lastShot['Homing Missiles']) player.lastShot['Homing Missiles'] = 0; }, stats: 'Weapon' },
             { name: 'Add Poison Darts', rarity: 'rare', description: 'Add poison darts. Mastery: +1 Poison DoT per stack.', effect: () => { player.weapons['Poison Darts'] = (player.weapons['Poison Darts'] || 0) + 1; if (!player.lastShot['Poison Darts']) player.lastShot['Poison Darts'] = 0; }, stats: 'Weapon' },
@@ -5029,6 +5199,7 @@
         const aimZone = document.getElementById('mobileAimZone');
         const mobileBlackHoleBtn = document.getElementById('mobileBlackHoleBtn');
         const mobileFugaBtn = document.getElementById('mobileFugaBtn');
+        const mobileAcceleratorBtn = document.getElementById('mobileAcceleratorBtn');
         const deviceModeSelect = document.getElementById('deviceModeSelect');
 
         if (moveZone) {
@@ -5108,6 +5279,26 @@
             };
             mobileFugaBtn.addEventListener('click', triggerFuga);
             mobileFugaBtn.addEventListener('touchstart', triggerFuga, { passive: false });
+        }
+
+        if (mobileAcceleratorBtn) {
+            const startAccelerator = (e) => {
+                if (e) e.preventDefault();
+                if (!player.weapons['Accelerator']) return;
+                mobileInput.acceleratorHeld = true;
+                updateMobileAbilityButtons();
+            };
+            const stopAccelerator = (e) => {
+                if (e) e.preventDefault();
+                mobileInput.acceleratorHeld = false;
+                updateMobileAbilityButtons();
+            };
+            mobileAcceleratorBtn.addEventListener('mousedown', startAccelerator);
+            mobileAcceleratorBtn.addEventListener('mouseup', stopAccelerator);
+            mobileAcceleratorBtn.addEventListener('mouseleave', stopAccelerator);
+            mobileAcceleratorBtn.addEventListener('touchstart', startAccelerator, { passive: false });
+            mobileAcceleratorBtn.addEventListener('touchend', stopAccelerator, { passive: false });
+            mobileAcceleratorBtn.addEventListener('touchcancel', stopAccelerator, { passive: false });
         }
 
         if (deviceModeSelect) {
@@ -6026,6 +6217,29 @@
             return !!(target && (target.fireImmune || target.bossType === 'dragon' || target.type === 'dragonling'));
         }
 
+        function ensureTrackableEntityId(target) {
+            if (!target) return null;
+            if (target.entityId === undefined || target.entityId === null) {
+                target.entityId = `dyn-${nextDynamicEntityId++}`;
+            }
+            return target.entityId;
+        }
+
+        function getAcceleratorLockMap() {
+            if (!player.weaponState) player.weaponState = {};
+            if (!(player.weaponState.acceleratorLocks instanceof Map)) {
+                player.weaponState.acceleratorLocks = new Map();
+            }
+            return player.weaponState.acceleratorLocks;
+        }
+
+        function getAcceleratorTargets(maxTargets, maxRange) {
+            return [...bosses, ...enemies]
+                .filter(target => target && target.health > 0 && Math.hypot(target.x - player.x, target.y - player.y) <= maxRange + (target.radius || 0))
+                .sort((a, b) => Math.hypot(a.x - player.x, a.y - player.y) - Math.hypot(b.x - player.x, b.y - player.y))
+                .slice(0, maxTargets);
+        }
+
         function igniteTarget(target) {
             if (!target || isFireImmuneTarget(target) || isStatusImmuneTarget(target)) return false;
             target.isBurning = true;
@@ -6106,11 +6320,20 @@
             if (isMobileControlMode) updateMobileAimTarget();
 
             Object.keys(player.weapons).forEach(weaponName => {
+                if (weaponName === 'Accelerator' && !(keys['4'] || mobileInput.acceleratorHeld)) {
+                    getAcceleratorLockMap().clear();
+                    lasers = lasers.filter(existingLaser => !existingLaser.isAccelerator);
+                    return;
+                }
                 const weaponKey = weaponNameMap[weaponName]; const weapon = weaponTypes[weaponKey] ? { ...weaponTypes[weaponKey] } : null;
                 if (!weapon) return;
                 if (!player.lastShot[weaponName]) player.lastShot[weaponName] = now;
                 if (now - player.lastShot[weaponName] > weapon.fireRate / player.fireRate) {
-                    const shotCount = weaponName === 'Homing Missiles' ? Math.min(player.weapons[weaponName], MAX_HOMING_STACKS) : player.weapons[weaponName];
+                    const shotCount = weaponName === 'Homing Missiles'
+                        ? Math.min(player.weapons[weaponName], MAX_HOMING_STACKS)
+                        : weaponName === 'Accelerator'
+                            ? 1
+                            : player.weapons[weaponName];
                     for (let i = 0; i < shotCount; i++) shoot(weapon, i);
                     player.lastShot[weaponName] = now;
                 }
@@ -6172,6 +6395,7 @@
 
         function shoot(weapon, instanceIndex = 0) {
             const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+            const shotTime = Date.now();
             let angleVariation = 0;
             
             // FIX: Explicitly handle Homing Missiles in the first switch to ensure no collision with other logic
@@ -6195,6 +6419,15 @@
                     weapon.duration = 8;
                     weapon.slowDuration = 1200 + freezeStacks * 220;
                     weapon.slowEffect = Math.max(0.16, 0.38 - (freezeStacks - 1) * 0.03);
+                    break;
+                case 'Accelerator':
+                    const acceleratorStacks = Math.max(1, player.weapons[weapon.name] || 1);
+                    weapon.width = 10 + Math.min(6, acceleratorStacks - 1);
+                    weapon.length = 420;
+                    weapon.damage = 1;
+                    weapon.duration = 16;
+                    weapon.maxTargets = 2 + (acceleratorStacks - 1);
+                    weapon.tickRate = 140;
                     break;
                 case 'Homing Missiles': 
                     // FIX: Add spread if multiple missiles exist so they don't overlap perfectly
@@ -6309,6 +6542,47 @@
                     break;
                 case 'laser':
                     lasers.push({ x: player.x, y: player.y, angle: adjustedAngle, length: weapon.length, width: weapon.width, damage: Math.round(scalePlayerDamage(weapon.damage)), color: weapon.color, duration: weapon.duration });
+                    break;
+                case 'acceleratorBeam':
+                    const acceleratorLocks = getAcceleratorLockMap();
+                    lasers = lasers.filter(existingLaser => !existingLaser.isAccelerator);
+                    const acceleratorTargets = getAcceleratorTargets(weapon.maxTargets, weapon.length);
+                    if (acceleratorTargets.length === 0) {
+                        acceleratorLocks.clear();
+                        break;
+                    }
+                    const activeLockIds = new Set();
+                    acceleratorTargets.forEach(target => {
+                        const targetId = ensureTrackableEntityId(target);
+                        activeLockIds.add(targetId);
+                        const existingLock = acceleratorLocks.get(targetId);
+                        const lockedAt = existingLock && existingLock.target === target ? existingLock.lockedAt : shotTime;
+                        acceleratorLocks.set(targetId, { target, lockedAt, lastSeen: shotTime });
+                        const targetAngle = Math.atan2(target.y - player.y, target.x - player.x);
+                        const targetDistance = Math.hypot(target.x - player.x, target.y - player.y);
+                        lasers.push({
+                            x: player.x,
+                            y: player.y,
+                            angle: targetAngle,
+                            length: Math.min(weapon.length, targetDistance),
+                            width: weapon.width,
+                            damage: Math.max(1, Math.round(scalePlayerDamage(weapon.damage))),
+                            color: weapon.color,
+                            duration: weapon.duration,
+                            isAccelerator: true,
+                            target,
+                            targetId,
+                            maxLength: weapon.length,
+                            lockedAt,
+                            nextTickAt: shotTime,
+                            tickRate: weapon.tickRate,
+                            rampStepSeconds: weapon.rampStepSeconds,
+                            rampCap: weapon.rampCap
+                        });
+                    });
+                    Array.from(acceleratorLocks.keys()).forEach((lockId) => {
+                        if (!activeLockIds.has(lockId)) acceleratorLocks.delete(lockId);
+                    });
                     break;
                 case 'grenade':
                     projectiles.push({ x: player.x, y: player.y, vx: Math.cos(adjustedAngle) * weapon.projectileSpeed, vy: Math.sin(adjustedAngle) * weapon.projectileSpeed, damage: Math.round(scalePlayerDamage(weapon.damage)), radius: weapon.size, color: weapon.color, type: 'grenade', explosionRadius: weapon.explosionRadius });
@@ -8035,22 +8309,72 @@
             });
         }
 function updateLasers() {
-            lasers.forEach((laser, index) => {
+            for (let index = lasers.length - 1; index >= 0; index--) {
+                const laser = lasers[index];
                 laser.duration--;
-                if (laser.duration <= 0) { lasers.splice(index, 1); return; }
-                const endX = laser.x + Math.cos(laser.angle) * laser.length; const endY = laser.y + Math.sin(laser.angle) * laser.length;
+                if (laser.duration <= 0) { lasers.splice(index, 1); continue; }
+
+                const now = Date.now();
+
+                if (laser.isAccelerator) {
+                    const targetStillAlive = laser.target && laser.target.health > 0 && (enemies.includes(laser.target) || bosses.includes(laser.target));
+                    if (!targetStillAlive) {
+                        const acceleratorLocks = getAcceleratorLockMap();
+                        acceleratorLocks.delete(laser.targetId);
+                        lasers.splice(index, 1);
+                        continue;
+                    }
+
+                    laser.x = player.x;
+                    laser.y = player.y;
+                    const dx = laser.target.x - laser.x;
+                    const dy = laser.target.y - laser.y;
+                    const distanceToTarget = Math.hypot(dx, dy);
+                    laser.angle = Math.atan2(dy, dx);
+                    laser.length = Math.min(laser.maxLength || 0, distanceToTarget);
+
+                    const endX = laser.x + Math.cos(laser.angle) * laser.length;
+                    const endY = laser.y + Math.sin(laser.angle) * laser.length;
+                    const dist = pointToLineDistance(laser.target.x, laser.target.y, laser.x, laser.y, endX, endY);
+
+                    if (dist < laser.target.radius + laser.width / 2 && now >= (laser.nextTickAt || 0)) {
+                        const elapsedSeconds = Math.max(0, (now - (laser.lockedAt || now)) / 1000);
+                        const rampBonus = Math.min(laser.rampCap || 18, Math.floor(elapsedSeconds / (laser.rampStepSeconds || 0.45)));
+                        let damage = (laser.damage || 1) + rampBonus;
+                        if (Math.random() < player.critChance) {
+                            damage *= 2;
+                            showCritical(laser.target.x, laser.target.y);
+                        }
+                        if (laser.target.resistance) damage *= (1 - laser.target.resistance);
+                        damage = Math.max(1, Math.round(damage));
+                        applyLifesteal(damage);
+                        laser.target.health -= damage;
+                        laser.nextTickAt = now + (laser.tickRate || 140);
+                        createParticles(laser.target.x, laser.target.y, '#ffffff', 3);
+
+                        if (isBossDefeatThresholdReached(laser.target)) {
+                            const enemyIndex = enemies.indexOf(laser.target);
+                            if (enemyIndex > -1) handleEnemyDefeat(laser.target, enemyIndex);
+                            const bossIndex = bosses.indexOf(laser.target);
+                            if (bossIndex > -1) { defeatBoss(laser.target, 'accelerator'); }
+                        }
+                    }
+                    continue;
+                }
+
+                const endX = laser.x + Math.cos(laser.angle) * laser.length;
+                const endY = laser.y + Math.sin(laser.angle) * laser.length;
                 [...enemies, ...bosses].forEach(target => {
                     const dist = pointToLineDistance(target.x, target.y, laser.x, laser.y, endX, endY);
                     if (dist < target.radius + laser.width / 2) {
                         let damage = laser.damage; let isCritical = false;
                         if (Math.random() < player.critChance) { damage *= 2; isCritical = true; showCritical(target.x, target.y); }
                         
-                        // NEW: Fire Combo Logic (Steam Explosion Trigger)
-                        if (!isFireImmuneTarget(target) && !isStatusImmuneTarget(target) && target.dousedUntil > Date.now() && laser.isFire) {
+                        if (!isFireImmuneTarget(target) && !isStatusImmuneTarget(target) && target.dousedUntil > now && laser.isFire) {
                             createSteamExplosion(target.x, target.y);
                         }
                         if (laser.isFreeze && !isStatusImmuneTarget(target)) {
-                            target.slowUntil = Date.now() + laser.slowDuration;
+                            target.slowUntil = now + laser.slowDuration;
                             target.slowEffect = laser.slowEffect;
                             if (Math.random() < 0.28) createParticles(target.x, target.y, '#c8f3ff', 4);
                         }
@@ -8068,7 +8392,7 @@ function updateLasers() {
                         }
                     }
                 });
-            });
+            }
         }
 
         function updatePoisonClouds() {
@@ -8357,6 +8681,8 @@ function updateLasers() {
                     } else if (weaponName === 'Plasma Cannon' && count > 1) {
                         const scaledPierce = 5 + (count - 1) * 2; 
                         subStatsSpan.textContent = `(Pierce: ${scaledPierce})`;
+                    } else if (weaponName === 'Accelerator') {
+                        subStatsSpan.textContent = `(Targets: ${2 + Math.max(0, count - 1)})`;
                     } else if (weaponName === 'Shuriken' && count > 1) {
                         const actualCount = Math.min(count, weaponTypes.shuriken.maxCount); 
                         subStatsSpan.textContent = `(Active: ${actualCount}/${weaponTypes.shuriken.maxCount})`;
@@ -9591,7 +9917,37 @@ function updateLasers() {
 
             lasers.forEach(laser => {
                 const endX = laser.x + Math.cos(laser.angle) * laser.length; const endY = laser.y + Math.sin(laser.angle) * laser.length;
-                if (laser.isFreeze) {
+                if (laser.isAccelerator) {
+                    ctx.save();
+                    ctx.lineCap = 'round';
+                    ctx.shadowBlur = performanceSettings.glowEffects ? 26 : 0;
+                    ctx.shadowColor = 'rgba(255,255,255,0.95)';
+
+                    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+                    ctx.lineWidth = laser.width + 10;
+                    ctx.beginPath(); ctx.moveTo(laser.x, laser.y); ctx.lineTo(endX, endY); ctx.stroke();
+
+                    ctx.strokeStyle = 'rgba(232, 245, 255, 0.75)';
+                    ctx.lineWidth = laser.width;
+                    ctx.beginPath(); ctx.moveTo(laser.x, laser.y); ctx.lineTo(endX, endY); ctx.stroke();
+
+                    ctx.strokeStyle = 'rgba(255,255,255,0.98)';
+                    ctx.lineWidth = Math.max(2, laser.width * 0.34);
+                    ctx.beginPath(); ctx.moveTo(laser.x, laser.y); ctx.lineTo(endX, endY); ctx.stroke();
+                    ctx.restore();
+
+                    const flowTime = Date.now() * 0.0032;
+                    for (let i = 0; i < 7; i++) {
+                        const t = (flowTime + i / 7) % 1;
+                        const px = laser.x + (endX - laser.x) * t;
+                        const py = laser.y + (endY - laser.y) * t;
+                        const particleRadius = 1.4 + (1 - t) * 2.1;
+                        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.95)' : 'rgba(210,235,255,0.8)';
+                        ctx.beginPath();
+                        ctx.arc(px, py, particleRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                } else if (laser.isFreeze) {
                     ctx.save();
                     ctx.lineCap = 'round';
                     ctx.shadowBlur = performanceSettings.glowEffects ? 16 : 0;
@@ -10754,10 +11110,219 @@ function updateLasers() {
             draw(); drawUI(); requestAnimationFrame(gameLoop);
         }
 
+        const LIVE_ANNOUNCEMENT_REFRESH_MS = 15000;
+        const LIVE_ANNOUNCEMENT_STORAGE_KEY = 'mythsSteelLastAnnouncementSeen';
+        const LIVE_ANNOUNCEMENT_AUTHORITY = {
+            senderIds: new Set(['PixelSurvivorsDatabase', 'laval', 'system']),
+            roles: new Set(['owner', 'lead-dev', 'announcer'])
+        };
+        let liveAnnouncementState = {
+            active: [],
+            status: 'Checking for live updates...',
+            initialized: false,
+            refreshTimer: null,
+            lastSeenId: (() => {
+                try { return localStorage.getItem(LIVE_ANNOUNCEMENT_STORAGE_KEY) || ''; } catch (error) { return ''; }
+            })()
+        };
+
+        function getLiveAnnouncementFeedUrl() {
+            if (location.protocol === 'file:') return '';
+            return `./data/live-announcements.json?ts=${Date.now()}`;
+        }
+
+        function getAnnouncementPriorityRank(priority) {
+            switch ((priority || '').toLowerCase()) {
+                case 'critical': return 4;
+                case 'high': return 3;
+                case 'event': return 2;
+                case 'info':
+                default: return 1;
+            }
+        }
+
+        function normalizeLiveAnnouncementFeed(feed) {
+            const authorizedSenders = new Map();
+            (Array.isArray(feed && feed.authorizedSenders) ? feed.authorizedSenders : []).forEach((sender) => {
+                if (!sender || !sender.id) return;
+                authorizedSenders.set(String(sender.id), {
+                    id: String(sender.id),
+                    name: sender.name || String(sender.id),
+                    role: (sender.role || '').toLowerCase()
+                });
+            });
+
+            const announcements = (Array.isArray(feed && feed.announcements) ? feed.announcements : []).map((entry) => ({
+                id: String(entry.id || ''),
+                senderId: String(entry.senderId || ''),
+                title: String(entry.title || 'Untitled Announcement'),
+                body: String(entry.body || ''),
+                priority: String(entry.priority || 'info').toLowerCase(),
+                startsAt: entry.startsAt || '',
+                endsAt: entry.endsAt || '',
+                enabled: entry.enabled !== false
+            })).filter((entry) => entry.id && entry.senderId && entry.enabled);
+
+            return { authorizedSenders, announcements };
+        }
+
+        function isTrustedAnnouncementSender(senderId, authorizedSenders) {
+            const sender = authorizedSenders.get(senderId);
+            if (!sender) return false;
+            return LIVE_ANNOUNCEMENT_AUTHORITY.senderIds.has(senderId) || LIVE_ANNOUNCEMENT_AUTHORITY.roles.has(sender.role);
+        }
+
+        function isAnnouncementLive(entry, nowMs) {
+            const startsAt = entry.startsAt ? Date.parse(entry.startsAt) : NaN;
+            const endsAt = entry.endsAt ? Date.parse(entry.endsAt) : NaN;
+            if (Number.isFinite(startsAt) && nowMs < startsAt) return false;
+            if (Number.isFinite(endsAt) && nowMs > endsAt) return false;
+            return true;
+        }
+
+        function setLiveAnnouncementSeen(announcementId) {
+            liveAnnouncementState.lastSeenId = announcementId || '';
+            try {
+                if (announcementId) localStorage.setItem(LIVE_ANNOUNCEMENT_STORAGE_KEY, announcementId);
+            } catch (error) {}
+        }
+
+        function renderLiveAnnouncements() {
+            const banner = document.getElementById('announcementBanner');
+            const bannerTitle = document.getElementById('announcementBannerTitle');
+            const bannerSubtitle = document.getElementById('announcementBannerSubtitle');
+            const statusEl = document.getElementById('announcementStatus');
+            const listEl = document.getElementById('announcementList');
+            if (!banner || !bannerTitle || !bannerSubtitle || !statusEl || !listEl) return;
+
+            const active = liveAnnouncementState.active;
+            statusEl.textContent = liveAnnouncementState.status;
+            listEl.innerHTML = '';
+
+            if (active.length === 0) {
+                banner.hidden = true;
+                const empty = document.createElement('div');
+                empty.className = 'announcement-entry';
+                const body = document.createElement('div');
+                body.className = 'announcement-entry-body';
+                body.textContent = liveAnnouncementState.status || 'No live announcements right now.';
+                empty.appendChild(body);
+                listEl.appendChild(empty);
+                return;
+            }
+
+            const top = active[0];
+            banner.hidden = false;
+            bannerTitle.textContent = top.title;
+            bannerSubtitle.textContent = `${top.senderName} • ${top.body}`.trim();
+
+            active.forEach((entry) => {
+                const item = document.createElement('div');
+                item.className = 'announcement-entry';
+
+                const header = document.createElement('div');
+                header.className = 'announcement-entry-header';
+
+                const title = document.createElement('div');
+                title.className = 'announcement-entry-title';
+                title.textContent = entry.title;
+
+                const badge = document.createElement('div');
+                badge.className = 'announcement-entry-priority';
+                badge.textContent = entry.priority;
+
+                header.appendChild(title);
+                header.appendChild(badge);
+
+                const body = document.createElement('div');
+                body.className = 'announcement-entry-body';
+                body.textContent = entry.body;
+
+                const meta = document.createElement('div');
+                meta.className = 'announcement-entry-meta';
+
+                const senderMeta = document.createElement('span');
+                senderMeta.textContent = `From: ${entry.senderName}`;
+
+                const timeMeta = document.createElement('span');
+                timeMeta.textContent = entry.startsAt ? `Started: ${entry.startsAt.replace('T', ' ').replace('Z', ' UTC')}` : 'Live now';
+
+                meta.appendChild(senderMeta);
+                meta.appendChild(timeMeta);
+
+                item.appendChild(header);
+                item.appendChild(body);
+                item.appendChild(meta);
+                listEl.appendChild(item);
+            });
+        }
+
+        function openAnnouncementModal() {
+            const modal = document.getElementById('announcementModal');
+            if (!modal) return;
+            modal.style.display = 'block';
+            if (liveAnnouncementState.active[0]) setLiveAnnouncementSeen(liveAnnouncementState.active[0].id);
+            renderLiveAnnouncements();
+        }
+
+        function closeAnnouncementModal() {
+            const modal = document.getElementById('announcementModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+        }
+
+        async function fetchLiveAnnouncements() {
+            const feedUrl = getLiveAnnouncementFeedUrl();
+            if (!feedUrl) {
+                liveAnnouncementState.active = [];
+                liveAnnouncementState.status = 'Live announcements are available on the hosted web build.';
+                renderLiveAnnouncements();
+                return;
+            }
+
+            try {
+                const response = await fetch(feedUrl, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const feed = normalizeLiveAnnouncementFeed(await response.json());
+                const nowMs = Date.now();
+                liveAnnouncementState.active = feed.announcements
+                    .filter((entry) => isTrustedAnnouncementSender(entry.senderId, feed.authorizedSenders) && isAnnouncementLive(entry, nowMs))
+                    .map((entry) => ({
+                        ...entry,
+                        senderName: (feed.authorizedSenders.get(entry.senderId) || {}).name || entry.senderId
+                    }))
+                    .sort((a, b) => {
+                        const priorityDiff = getAnnouncementPriorityRank(b.priority) - getAnnouncementPriorityRank(a.priority);
+                        if (priorityDiff !== 0) return priorityDiff;
+                        return Date.parse(b.startsAt || 0) - Date.parse(a.startsAt || 0);
+                    });
+                liveAnnouncementState.status = liveAnnouncementState.active.length > 0
+                    ? `${liveAnnouncementState.active.length} live announcement${liveAnnouncementState.active.length === 1 ? '' : 's'} available.`
+                    : 'No live announcements right now.';
+                renderLiveAnnouncements();
+            } catch (error) {
+                liveAnnouncementState.active = [];
+                liveAnnouncementState.status = 'Live announcements are unavailable right now.';
+                renderLiveAnnouncements();
+            }
+        }
+
+        function initLiveAnnouncements() {
+            if (liveAnnouncementState.initialized) return;
+            liveAnnouncementState.initialized = true;
+            const banner = document.getElementById('announcementBanner');
+            const closeBtn = document.getElementById('closeAnnouncementBtn');
+            if (banner) banner.addEventListener('click', openAnnouncementModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeAnnouncementModal);
+            fetchLiveAnnouncements();
+            liveAnnouncementState.refreshTimer = setInterval(fetchLiveAnnouncements, LIVE_ANNOUNCEMENT_REFRESH_MS);
+        }
+
         // Initialize
         initDB().then(() => {
             loadUserStats().then(() => {
                 Promise.all([loadTheme(), loadAudioSettings(), loadPerformanceSettings(), loadDeviceModeSettings()]).then(() => {
+                    initLiveAnnouncements();
                     resizeGameViewport();
                     updateWeaponDisplay(); updateBuffsDisplay(); updateStatsDisplay(); draw();
                 });

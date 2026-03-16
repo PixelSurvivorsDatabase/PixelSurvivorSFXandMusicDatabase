@@ -1,0 +1,33 @@
+﻿{
+  "version": 1,
+  "updatedAt": "2026-03-15T00:00:00Z",
+  "authorizedSenders": [
+    {
+      "id": "PixelSurvivorsDatabase",
+      "name": "PixelSurvivorsDatabase",
+      "role": "owner"
+    },
+    {
+      "id": "laval",
+      "name": "Laval",
+      "role": "lead-dev"
+    },
+    {
+      "id": "system",
+      "name": "System",
+      "role": "announcer"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "live-announcements-online",
+      "senderId": "system",
+      "title": "Live Announcements Are Online",
+      "body": "The live announcement framework is active on the hosted build. Future events, notices, and limited-time messages can be posted here.",
+      "priority": "info",
+      "startsAt": "2026-03-15T00:00:00Z",
+      "endsAt": "2027-01-01T00:00:00Z",
+      "enabled": true
+    }
+  ]
+}
