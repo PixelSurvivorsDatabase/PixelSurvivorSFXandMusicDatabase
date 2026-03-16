@@ -1003,6 +1003,40 @@
         body.christmas-mode .achievement-progress {
             color: #66ccff;
         }
+        .codex-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .codex-item {
+            background: rgba(18, 10, 34, 0.92);
+            border: 1px solid rgba(122, 52, 173, 0.42);
+            border-radius: 12px;
+            padding: 12px 14px;
+            text-align: left;
+        }
+        .codex-item.seen {
+            border-color: rgba(255, 214, 120, 0.4);
+            box-shadow: 0 0 18px rgba(126, 70, 197, 0.16);
+        }
+        .codex-title {
+            font-size: 18px;
+            color: #f8f2ff;
+            margin-bottom: 4px;
+        }
+        .codex-meta {
+            font-size: 12px;
+            color: #d2c0f1;
+            margin-bottom: 6px;
+        }
+        .codex-desc {
+            font-size: 13px;
+            color: #c9d6ff;
+            line-height: 1.45;
+        }
         .achievement-toast {
             position: fixed;
             right: 20px;
@@ -2236,6 +2270,7 @@
             <div class="records-tabs" role="tablist" aria-label="Records Tabs">
                 <button type="button" class="records-tab active" data-tab="recordsPanelStats">RECORDS</button>
                 <button type="button" class="records-tab" data-tab="recordsPanelAchievements">ACHIEVEMENTS</button>
+                <button type="button" class="records-tab" data-tab="recordsPanelBosses">BOSS CODEX</button>
             </div>
 
             <div id="recordsPanelStats" class="records-panel active">
@@ -2260,6 +2295,10 @@
             <div id="recordsPanelAchievements" class="records-panel">
 <div id="achievementsSummary" style="text-align:center; font-size: 13px; color: #aaa; margin-bottom: 10px;">Unlocked 0/15</div>
                 <div id="achievementsList" class="achievements-list"></div>
+            </div>
+
+            <div id="recordsPanelBosses" class="records-panel">
+                <div id="bossCodexList" class="codex-list"></div>
             </div>
 
             <button id="closePersistentStatsBtn" class="btn-primary">CLOSE</button>
@@ -3222,6 +3261,16 @@
             { id: 'untouchable', name: 'Untouchable', desc: 'Defeat a boss without taking damage during the fight.', icon: 'NOHT' }
         ];
 
+        const bossCodexDefs = [
+            { id: 'dragon', name: 'Dragon', desc: 'A fire-forged tyrant that sweeps the arena with flame, meteors, and crushing momentum.' },
+            { id: 'demon', name: 'Demon', desc: 'An infernal warlord whose hellfire spreads fast and punishes anyone who lets it close in.' },
+            { id: 'lich', name: 'Lich', desc: 'A corpse-king of attrition that fills the field with necrotic pressure and summoned dead.' },
+            { id: 'soulReaver', name: 'Soul Reaver', desc: 'A spectral executioner that harvests the fallen and turns the arena into a ghost march.' },
+            { id: 'goldTitan', name: 'Gold Titan', desc: 'A colossal golden judge whose summons and traps try to lock the fight into its favor.' },
+            { id: 'amethystReaper', name: 'Amethyst Reaper', desc: 'A distant scythe wielder that bleeds the player from afar before going in for the finish.' },
+            { id: 'celestialGuardian', name: 'Celestial Guardian', desc: 'A white final sentinel waiting beyond the broken arena, where judgment stops feeling mortal.' }
+        ];
+
         function normalizeUserStats() {
             if (!userStats || typeof userStats !== 'object') userStats = {};
             if (typeof userStats.highestWave !== 'number') userStats.highestWave = 0;
@@ -3236,6 +3285,7 @@
             if (typeof userStats.goldenKills !== 'number') userStats.goldenKills = 0;
             if (typeof userStats.shinyEncounters !== 'number') userStats.shinyEncounters = 0;
             if (typeof userStats.shinyKills !== 'number') userStats.shinyKills = 0;
+            if (!userStats.bossCodex || typeof userStats.bossCodex !== 'object') userStats.bossCodex = {};
             if (!userStats.achievements || typeof userStats.achievements !== 'object') userStats.achievements = {};
 
             achievementDefs.forEach(def => {
@@ -3246,6 +3296,15 @@
                     if (typeof cur.unlocked !== 'boolean') cur.unlocked = false;
                     if (typeof cur.unlockedAt !== 'number') cur.unlockedAt = 0;
                 }
+            });
+            bossCodexDefs.forEach(def => {
+                const cur = userStats.bossCodex[def.id];
+                if (!cur || typeof cur !== 'object') {
+                    userStats.bossCodex[def.id] = { seen: false, kills: 0 };
+                    return;
+                }
+                if (typeof cur.seen !== 'boolean') cur.seen = false;
+                if (typeof cur.kills !== 'number') cur.kills = 0;
             });
         }
 
@@ -3421,6 +3480,36 @@
             updateModeSelectUI();
         }
 
+
+        function renderBossCodex() {
+            const listEl = document.getElementById('bossCodexList');
+            if (!listEl) return;
+            normalizeUserStats();
+            listEl.innerHTML = bossCodexDefs.map(def => {
+                const entry = userStats.bossCodex[def.id] || { seen: false, kills: 0 };
+                const title = entry.seen ? def.name : 'Unknown Boss';
+                const desc = entry.seen ? def.desc : 'Encounter this boss to reveal its codex entry.';
+                const seenText = entry.seen ? 'Seen' : 'Unseen';
+                return `
+                    <div class="codex-item ${entry.seen ? 'seen' : ''}">
+                        <div class="codex-title">${title}</div>
+                        <div class="codex-meta">${seenText} | Kills: ${entry.kills || 0}</div>
+                        <div class="codex-desc">${desc}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function recordBossSeen(bossType) {
+            if (!bossType) return;
+            normalizeUserStats();
+            if (!userStats.bossCodex[bossType]) userStats.bossCodex[bossType] = { seen: false, kills: 0 };
+            if (!userStats.bossCodex[bossType].seen) {
+                userStats.bossCodex[bossType].seen = true;
+                persistUserStatsNow();
+                renderBossCodex();
+            }
+        }
         function getUnlockedAchievementCount() {
             normalizeUserStats();
             return achievementDefs.filter(def => userStats.achievements[def.id] && userStats.achievements[def.id].unlocked).length;
@@ -3476,6 +3565,7 @@
                     const panel = document.getElementById(targetId);
                     if (panel) panel.classList.add('active');
                     if (targetId === 'recordsPanelAchievements') renderAchievements();
+                    if (targetId === 'recordsPanelBosses') renderBossCodex();
                 });
             });
         }
@@ -3496,6 +3586,7 @@
 
             updateRecordDisplay();
             renderAchievements();
+            renderBossCodex();
         }
 
         let lastAutoSaveTime = 0;
@@ -3870,7 +3961,7 @@
             poison: { name: 'Poison Darts', damage: 8, fireRate: 400, projectileSpeed: 10, color: '#99ff99', size: 3, poisonDamage: 2, poisonDuration: 3000, type: 'poison' },
             plague: { name: 'Plague Cloud', damage: 1, fireRate: 2000, projectileSpeed: 2, color: '#cc99ff', size: 20, aoeRadius: 100, type: 'aoe' },
             plasma: { name: 'Plasma Cannon', damage: 40, fireRate: 2000, projectileSpeed: 7, color: '#ffcc66', size: 6, type: 'plasma', pierce: true, maxPierce: 5 },
-            shuriken: { name: 'Shuriken', damage: 5, fireRate: 1000, color: '#ffcc00', size: 16, type: 'orbit', orbitRadius: 60, orbitSpeed: 0.05, maxCount: 4 },
+            shuriken: { name: 'Shuriken', damage: 5, fireRate: 1000, color: '#ffcc00', size: 32, type: 'orbit', orbitRadius: 76, orbitSpeed: 0.26, maxCount: 4 },
             fuga: { name: 'Fuga', damage: 125, fireRate: 20000, projectileSpeed: 15, color: '#ff3300', size: 8, explosionRadius: 240, type: 'fuga' },
             fireworkBlaster: { 
                 name: 'Firework Blaster', 
@@ -5088,21 +5179,21 @@
             { name: 'Add Machine Gun', rarity: 'rare', description: 'Add a machine gun. Mastery: +5% Global Fire Rate per stack.', effect: () => { player.weapons['Machine Gun'] = (player.weapons['Machine Gun'] || 0) + 1; if (!player.lastShot['Machine Gun']) player.lastShot['Machine Gun'] = 0; }, stats: 'Weapon' },
             { name: 'Add Sniper', rarity: 'epic', description: 'Add a sniper rifle. Mastery: +2% Global Damage per stack.', effect: () => { player.weapons['Sniper'] = (player.weapons['Sniper'] || 0) + 1; if (!player.lastShot['Sniper']) player.lastShot['Sniper'] = 0; }, stats: 'Weapon' },
             { name: 'Add Grenade Launcher', rarity: 'epic', description: 'Add a grenade launcher. Mastery: +5% Explosion Radius & Damage per stack.', effect: () => { player.weapons['Grenade Launcher'] = (player.weapons['Grenade Launcher'] || 0) + 1; if (!player.lastShot['Grenade Launcher']) player.lastShot['Grenade Launcher'] = 0; }, stats: 'Weapon' },
-            { name: 'Add Freeze Ray', rarity: 'epic', description: 'Add a continuous freeze beam. Low damage, strong chill, and Brittle. Brittle makes enemies take 1.5x damage from all sources.', effect: () => { player.weapons['Freeze Ray'] = (player.weapons['Freeze Ray'] || 0) + 1; if (!player.lastShot['Freeze Ray']) player.lastShot['Freeze Ray'] = 0; }, stats: 'Weapon' },
-            { name: 'Add Accelerator', rarity: 'legendary', description: 'Add a white target-lock beam array. Hold 4 to channel it. Starts at 2 targets and gains +1 target per stack. Damage ramps the longer a target stays locked.', effect: () => { player.weapons['Accelerator'] = (player.weapons['Accelerator'] || 0) + 1; if (!player.lastShot['Accelerator']) player.lastShot['Accelerator'] = 0; }, stats: 'Locking Weapon' },
+            { name: 'Add Freeze Ray', rarity: 'epic', description: 'Add a continuous freeze beam. Low damage, strong chill, and Brittle. At 5 stacks, brittle kills trigger a Shatter Burst.', effect: () => { player.weapons['Freeze Ray'] = (player.weapons['Freeze Ray'] || 0) + 1; if (!player.lastShot['Freeze Ray']) player.lastShot['Freeze Ray'] = 0; }, stats: 'Weapon' },
+            { name: 'Add Accelerator', rarity: 'legendary', description: 'Add a white target-lock beam array. Hold 4 to channel it. Starts at 2 targets and gains +1 target per stack. At 5 stacks, fully ramped locks release an Overheat Burst.', effect: () => { player.weapons['Accelerator'] = (player.weapons['Accelerator'] || 0) + 1; if (!player.lastShot['Accelerator']) player.lastShot['Accelerator'] = 0; }, stats: 'Locking Weapon' },
             { name: 'Add Lightning Chain', rarity: 'epic', description: 'Add lightning chain. Mastery: +1 jump, +10% damage, and -5% chain falloff per stack.', effect: () => { player.weapons['Lightning Chain'] = (player.weapons['Lightning Chain'] || 0) + 1; if (!player.lastShot['Lightning Chain']) player.lastShot['Lightning Chain'] = 0; }, stats: 'Weapon' },
-            { name: 'Add Homing Missiles', rarity: 'epic', description: 'Add homing missiles. Mastery: +10% Homing Speed per stack.', effect: () => { player.weapons['Homing Missiles'] = Math.min((player.weapons['Homing Missiles'] || 0) + 1, MAX_HOMING_STACKS); if (!player.lastShot['Homing Missiles']) player.lastShot['Homing Missiles'] = 0; }, stats: 'Weapon' },
+            { name: 'Add Homing Missiles', rarity: 'epic', description: 'Add homing missiles. Mastery: +10% Homing Speed per stack. At 5 stacks, impacts split into child detonations.', effect: () => { player.weapons['Homing Missiles'] = Math.min((player.weapons['Homing Missiles'] || 0) + 1, MAX_HOMING_STACKS); if (!player.lastShot['Homing Missiles']) player.lastShot['Homing Missiles'] = 0; }, stats: 'Weapon' },
             { name: 'Add Poison Darts', rarity: 'rare', description: 'Add poison darts. Mastery: +1 Poison DoT per stack.', effect: () => { player.weapons['Poison Darts'] = (player.weapons['Poison Darts'] || 0) + 1; if (!player.lastShot['Poison Darts']) player.lastShot['Poison Darts'] = 0; }, stats: 'Weapon' },
             { name: 'Add Plague Cloud', rarity: 'legendary', description: 'Add a plague cloud that grows in power with each copy. Scales AoE radius and damage!', effect: () => { player.weapons['Plague Cloud'] = (player.weapons['Plague Cloud'] || 0) + 1; if (!player.lastShot['Plague Cloud']) player.lastShot['Plague Cloud'] = 0; }, stats: 'Scaling Weapon' },
             { name: 'Add Plasma Cannon', rarity: 'legendary', description: 'Add a plasma cannon that fires piercing bolts that can hit multiple enemies.', effect: () => { player.weapons['Plasma Cannon'] = (player.weapons['Plasma Cannon'] || 0) + 1; if (!player.lastShot['Plasma Cannon']) player.lastShot['Plasma Cannon'] = 0; }, stats: 'Piercing Weapon' },
-            { name: 'Add Shuriken', rarity: 'legendary', description: 'Add an orbiting shuriken. Max 4. Each stack adds +35% damage and spin speed.', effect: () => { player.weapons['Shuriken'] = Math.min((player.weapons['Shuriken'] || 0) + 1, weaponTypes.shuriken.maxCount); if (!player.lastShot['Shuriken']) player.lastShot['Shuriken'] = 0; }, stats: 'Orbiting Weapon' },
+            { name: 'Add Shuriken', rarity: 'legendary', description: 'Add an orbiting shuriken. Max 4 active. Each stack adds +35% damage and +50% orbit speed. At 5 stacks, all shurikens are empowered and hits inflict bleed.', effect: () => { player.weapons['Shuriken'] = Math.min((player.weapons['Shuriken'] || 0) + 1, 5); if (!player.lastShot['Shuriken']) player.lastShot['Shuriken'] = 0; }, stats: 'Orbiting Weapon' },
             { name: 'Critical Chance', rarity: 'epic', description: 'Increase critical hit chance by 10%.', effect: () => { player.baseCritChance = Math.min(player.baseCritChance + 0.1, 0.75); updateSynergies(); }, stats: '+10% Crit' },
             { name: 'Vampirism', rarity: 'legendary', description: 'Heal for 1% of damage dealt to enemies.', effect: () => { player.vampirism = (player.vampirism || 0) + 0.01; }, stats: '+1% Lifesteal' },
             { name: 'Shield', rarity: 'legendary', description: 'Gain a shield that blocks one hit every 10 seconds. Each stack adds +1 shield and increases knockback power.', effect: () => { player.shield = (player.shield || 0) + 1; player.shieldRadius = 25 + (player.shield || 0) * 2; player.shieldKnockback = 5 + (player.shield || 0) * 1; }, stats: '+1 Shield + Knockback' },
             { name: 'Add Laser Beam', rarity: 'mythical', description: 'Add a devastating continuous laser beam that cuts through enemies. Multiple beams fire simultaneously!', effect: () => { player.weapons['Laser Beam'] = (player.weapons['Laser Beam'] || 0) + 1; if (!player.lastShot['Laser Beam']) player.lastShot['Laser Beam'] = 0; }, stats: 'Mythical Weapon' },
             { name: 'Blood Moon', rarity: 'mythical', description: 'Enter a blood moon state after 5 minutes, doubling all stats for 60 seconds.', effect: () => { player.bloodMoon = true; }, stats: 'Mythical Ability' },
             { name: 'Soul Harvest', rarity: 'mythical', description: 'Gain temporary invincibility for 8 seconds after every 25 kills. Each stack increases duration by 1s and boosts damage/speed by 1%.', effect: () => { player.soulHarvest = (player.soulHarvest || 0) + 1; }, stats: 'Mythical Ability' },
-            { name: 'Black Hole', rarity: 'mythical', description: 'Create a black hole that pulls in and destroys all enemies on screen. Press 2 to activate.', effect: () => { player.blackHole = (player.blackHole || 0) + 1; }, stats: 'Mythical Ability' },
+            { name: 'Black Hole', rarity: 'mythical', description: 'Create a black hole that pulls in and destroys all enemies on screen. Press 2 to activate. At 5 stacks, it ends with an implosion.', effect: () => { player.blackHole = (player.blackHole || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Fuga', rarity: 'mythical', description: 'Launch a devastating fire arrow that deals 125 damage, creates a massive explosion, and ignites enemies!', effect: () => { player.fuga = (player.fuga || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Add Firework Blaster', rarity: 'epic', description: 'Blasts 5 colorful explosives that deal 8 damage in a spread. Large AOE explosion ignites enemies!', effect: () => { player.weapons['Firework Blaster'] = (player.weapons['Firework Blaster'] || 0) + 1; if (!player.lastShot['Firework Blaster']) player.lastShot['Firework Blaster'] = 0; recordFireworkStacks(player.weapons['Firework Blaster'] || 0); }, stats: 'Firework Weapon' },
             { name: 'XP Collection Range Increase', rarity: 'rare', description: 'Increase the distance at which you collect XP Gems by 10%.', effect: () => { player.xpCollectionRangeStacks++; player.xpCollectionRange = Math.round(player.xpCollectionRange * 1.1); }, stats: '+10% XP Range' },
@@ -5926,6 +6017,7 @@
 
         function handleEnemyDefeat(enemy, enemyIndex = enemies.indexOf(enemy)) {
             if (!enemy) return;
+            if (Date.now() < (enemy.brittleUntil || 0)) triggerFreezeShatter(enemy.x, enemy.y, enemy);
             createParticles(enemy.x, enemy.y, enemy.color, 15);
             xpGems.push({ x: enemy.x, y: enemy.y, value: enemy.expValue, radius: 8 });
             if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
@@ -5957,6 +6049,7 @@
             if (boss.bossType === 'celestialGuardian') {
                 return startCelestialVictorySequence(boss, cause);
             }
+            if (Date.now() < (boss.brittleUntil || 0)) triggerFreezeShatter(boss.x, boss.y, boss);
             createParticles(boss.x, boss.y, boss.color, 20);
             xpGems.push({ x: boss.x, y: boss.y, value: boss.expValue, radius: 8 });
             onBossKilled(boss, cause);
@@ -6251,6 +6344,134 @@
             return player.weaponState.acceleratorLocks;
         }
 
+        function getWeaponStackCount(name) {
+            if (!player || !player.weapons) return 0;
+            return player.weapons[name] || 0;
+        }
+
+        function hasWeaponMastery(name, requiredStacks = 5) {
+            return getWeaponStackCount(name) >= requiredStacks;
+        }
+
+        function hasBlackHoleMastery() {
+            return (player.blackHole || 0) >= 5;
+        }
+
+        function applyBleedStatus(target, duration = 2800, damage = 6, tickInterval = 420) {
+            if (!target || isStatusImmuneTarget(target)) return false;
+            const now = Date.now();
+            target.bleedUntil = Math.max(target.bleedUntil || 0, now + duration);
+            target.bleedDamage = Math.max(target.bleedDamage || 0, damage);
+            target.bleedTickInterval = tickInterval;
+            if (!target.bleedTickAt || target.bleedTickAt < now) target.bleedTickAt = now + tickInterval;
+            return true;
+        }
+
+        function triggerFreezeShatter(x, y, sourceTarget = null) {
+            if (!hasWeaponMastery('Freeze Ray')) return;
+            const shatterRadius = 104;
+            particles.push({ x, y, radius: 18, maxRadius: shatterRadius, expandSpeed: 8, color: '#dff7ff', life: 18, maxLife: 18, lineWidth: 5, type: 'wave' });
+            createParticles(x, y, '#dff7ff', 26);
+            [...enemies, ...bosses].forEach(target => {
+                if (!target || target === sourceTarget) return;
+                const dist = Math.hypot(target.x - x, target.y - y);
+                if (dist > shatterRadius + (target.radius || 0)) return;
+                if (!isStatusImmuneTarget(target)) {
+                    target.slowUntil = Math.max(target.slowUntil || 0, Date.now() + 900);
+                    target.slowEffect = Math.min(target.slowEffect || 1, 0.45);
+                    applyBrittleStatus(target, 1200, 1.4);
+                }
+                const shatterDamage = applyTargetDamageModifiers(target, 20);
+                target.health -= shatterDamage;
+                createParticles(target.x, target.y, '#c8f3ff', 6);
+                if (isBossDefeatThresholdReached(target)) {
+                    const enemyIndex = enemies.indexOf(target);
+                    if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
+                    const bossIndex = bosses.indexOf(target);
+                    if (bossIndex > -1) defeatBoss(target, 'freezeShatter');
+                }
+            });
+        }
+
+        function triggerBlackHoleImplosion(hole) {
+            if (!hasBlackHoleMastery() || !hole) return;
+            const implosionRadius = Math.max(110, hole.radius * 1.18);
+            explosions.push({ x: hole.x, y: hole.y, radius: implosionRadius, damage: 0, maxRadius: implosionRadius, color: '#efe6ff' });
+            particles.push({ x: hole.x, y: hole.y, radius: 22, maxRadius: implosionRadius * 1.08, expandSpeed: 10, color: '#ffffff', life: 24, maxLife: 24, lineWidth: 7, type: 'wave' });
+            createParticles(hole.x, hole.y, '#efe6ff', 34);
+            screenShake(10, 150);
+            [...enemies, ...bosses].forEach(target => {
+                const dist = Math.hypot(target.x - hole.x, target.y - hole.y);
+                if (dist > implosionRadius + (target.radius || 0)) return;
+                const implosionDamage = applyTargetDamageModifiers(target, 48);
+                target.health -= implosionDamage;
+                if (!isStatusImmuneTarget(target)) {
+                    target.stunnedUntil = Math.max(target.stunnedUntil || 0, Date.now() + 650);
+                }
+                createParticles(target.x, target.y, '#d6c7ff', 7);
+                if (isBossDefeatThresholdReached(target)) {
+                    const enemyIndex = enemies.indexOf(target);
+                    if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
+                    const bossIndex = bosses.indexOf(target);
+                    if (bossIndex > -1) defeatBoss(target, 'blackHole');
+                }
+            });
+        }
+
+        function spawnHomingSplitDetonation(proj) {
+            if (!hasWeaponMastery('Homing Missiles') || !proj || (proj.splitGeneration || 0) >= 1) return;
+            const baseAngle = Math.atan2(proj.vy || 0, proj.vx || 1);
+            for (let side = -1; side <= 1; side += 2) {
+                const splitAngle = baseAngle + side * 0.42;
+                projectiles.push({
+                    x: proj.x,
+                    y: proj.y,
+                    vx: Math.cos(splitAngle) * 5.6,
+                    vy: Math.sin(splitAngle) * 5.6,
+                    damage: Math.max(10, Math.round((proj.damage || weaponTypes.homing.damage) * 0.42)),
+                    radius: Math.max(4, (proj.radius || weaponTypes.homing.size) * 0.76),
+                    color: '#ff7b7b',
+                    type: 'homing',
+                    explosionRadius: Math.max(40, Math.round((proj.explosionRadius || weaponTypes.homing.explosionRadius) * 0.6)),
+                    speed: 5.6,
+                    turnRate: 0.24,
+                    splitGeneration: (proj.splitGeneration || 0) + 1
+                });
+            }
+            createParticles(proj.x, proj.y, '#ff9d9d', 10);
+        }
+
+        function triggerAcceleratorOverheat(laser, acceleratorLocks, now) {
+            if (!laser || !laser.target || !hasWeaponMastery('Accelerator')) return;
+            const burstRadius = 88;
+            const burstDamage = 90;
+            particles.push({ x: laser.target.x, y: laser.target.y, radius: 16, maxRadius: burstRadius, expandSpeed: 9, color: '#ffffff', life: 18, maxLife: 18, lineWidth: 5, type: 'wave' });
+            createParticles(laser.target.x, laser.target.y, '#ffffff', 24);
+            screenShake(6, 90);
+            [...enemies, ...bosses].forEach(target => {
+                const dist = Math.hypot(target.x - laser.target.x, target.y - laser.target.y);
+                if (dist > burstRadius + (target.radius || 0)) return;
+                const damage = applyTargetDamageModifiers(target, target === laser.target ? burstDamage : Math.round(burstDamage * 0.55));
+                target.health -= damage;
+                createParticles(target.x, target.y, '#dff9ff', 5);
+                if (isBossDefeatThresholdReached(target)) {
+                    const enemyIndex = enemies.indexOf(target);
+                    if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
+                    const bossIndex = bosses.indexOf(target);
+                    if (bossIndex > -1) defeatBoss(target, 'accelerator');
+                }
+            });
+            laser.lockedAt = now;
+            laser.overheatReadyAt = now + 1400;
+            const lockState = acceleratorLocks.get(laser.targetId);
+            if (lockState) {
+                lockState.lockedAt = now;
+                lockState.overheatReadyAt = laser.overheatReadyAt;
+                lockState.lastSeen = now;
+                acceleratorLocks.set(laser.targetId, lockState);
+            }
+        }
+
         function getAcceleratorTargets(maxTargets, maxRange) {
             return [...bosses, ...enemies]
                 .filter(target => target && target.health > 0 && Math.hypot(target.x - player.x, target.y - player.y) <= maxRange + (target.radius || 0))
@@ -6372,11 +6593,12 @@
         }
 
         function updateShurikens() {
-            const shurikenCount = Math.min(player.weapons['Shuriken'] || 0, weaponTypes.shuriken.maxCount);
-            const stackBonus = Math.max(0, shurikenCount - 1);
-            const spinMultiplier = 1 + stackBonus * 0.35;
+            const shurikenStacks = player.weapons['Shuriken'] || 0;
+            const shurikenCount = Math.min(shurikenStacks, weaponTypes.shuriken.maxCount);
+            const stackBonus = Math.max(0, shurikenStacks - 1);
+            const orbitMultiplier = 1 + stackBonus * 0.5;
             const damageMultiplier = 1 + stackBonus * 0.35;
-            const anchorAngles = [-Math.PI / 2, 0, Math.PI / 2, Math.PI];
+            const anchorAngles = [-Math.PI / 2, 0, Math.PI / 2, Math.PI].slice(0, shurikenCount);
             const now = performance.now();
 
             while (shurikens.length < shurikenCount) {
@@ -6387,18 +6609,22 @@
                     damage: weaponTypes.shuriken.damage,
                     color: weaponTypes.shuriken.color,
                     rotation: 0,
+                    trail: [],
                     hitEnemies: new Map()
                 });
             }
             if (shurikens.length > shurikenCount) shurikens.splice(shurikenCount);
 
             shurikens.forEach((shuriken, index) => {
-                shuriken.angle = anchorAngles[index] + gameTime * weaponTypes.shuriken.orbitSpeed * spinMultiplier;
-                shuriken.rotation += 0.1 * spinMultiplier;
+                shuriken.angle = anchorAngles[index] + gameTime * weaponTypes.shuriken.orbitSpeed * orbitMultiplier;
+                shuriken.rotation += 0.22;
                 shuriken.radius = weaponTypes.shuriken.orbitRadius;
                 shuriken.damage = weaponTypes.shuriken.damage * damageMultiplier;
                 shuriken.x = player.x + Math.cos(shuriken.angle) * shuriken.radius;
                 shuriken.y = player.y + Math.sin(shuriken.angle) * shuriken.radius;
+                if (!Array.isArray(shuriken.trail)) shuriken.trail = [];
+                shuriken.trail.unshift({ x: shuriken.x, y: shuriken.y });
+                if (shuriken.trail.length > 8) shuriken.trail.length = 8;
 
                 [...enemies, ...bosses].forEach(enemy => {
                     const dist = Math.hypot(enemy.x - shuriken.x, enemy.y - shuriken.y);
@@ -6409,6 +6635,10 @@
                         damage = applyTargetDamageModifiers(enemy, damage);
                         applyLifesteal(damage);
                         enemy.health -= damage; createParticles(shuriken.x, shuriken.y, shuriken.color, 3);
+                        if (hasWeaponMastery('Shuriken')) {
+                            applyBleedStatus(enemy, 3000, Math.max(6, Math.round(shuriken.damage * 0.55)), 420);
+                            createParticles(enemy.x, enemy.y, '#ff8f9b', 2);
+                        }
                         shuriken.hitEnemies.set(enemy, now);
                         if (enemy.health <= 0) {
                             const enemyIndex = enemies.indexOf(enemy);
@@ -6587,7 +6817,8 @@
                         activeLockIds.add(targetId);
                         const existingLock = acceleratorLocks.get(targetId);
                         const lockedAt = existingLock && existingLock.target === target ? existingLock.lockedAt : shotTime;
-                        acceleratorLocks.set(targetId, { target, lockedAt, lastSeen: shotTime });
+                        const overheatReadyAt = existingLock && existingLock.target === target ? (existingLock.overheatReadyAt || shotTime + 1400) : (shotTime + 1400);
+                        acceleratorLocks.set(targetId, { target, lockedAt, lastSeen: shotTime, overheatReadyAt });
                         const targetAngle = Math.atan2(target.y - player.y, target.x - player.x);
                         const targetDistance = Math.hypot(target.x - player.x, target.y - player.y);
                         lasers.push({
@@ -6604,6 +6835,7 @@
                             targetId,
                             maxLength: weapon.length,
                             lockedAt,
+                            overheatReadyAt,
                             nextTickAt: shotTime,
                             tickRate: weapon.tickRate,
                             rampStepSeconds: weapon.rampStepSeconds,
@@ -6900,7 +7132,10 @@
                     });
                 }
                 hole.life--;
-                if (hole.life <= 0) blackHoles.splice(index, 1);
+                if (hole.life <= 0) {
+                    triggerBlackHoleImplosion(hole);
+                    blackHoles.splice(index, 1);
+                }
             });
         }
 
@@ -7163,6 +7398,7 @@
                     enemy.slowUntil = 0;
                     enemy.poisonUntil = 0;
                     enemy.dousedUntil = 0;
+                    enemy.bleedUntil = 0;
                 } else if (isFireImmuneTarget(enemy)) {
                     enemy.isBurning = false;
                 }
@@ -7287,6 +7523,15 @@
                         return;
                     }
                 }
+                if (now < (enemy.bleedUntil || 0) && !isStatusImmuneTarget(enemy) && now >= (enemy.bleedTickAt || 0)) {
+                    enemy.health -= applyTargetDamageModifiers(enemy, enemy.bleedDamage || 6);
+                    enemy.bleedTickAt = now + (enemy.bleedTickInterval || 420);
+                    createParticles(enemy.x, enemy.y, '#ff8f9b', 3);
+                    if (enemy.health <= 0) {
+                        handleEnemyDefeat(enemy, index);
+                        return;
+                    }
+                }
                 if (enemyStunned) {
                     createParticles(enemy.x, enemy.y, '#ffffcc', 1);
                 } else if (enemy.type !== 'angel' && enemy.type !== 'weepingCelestial') {
@@ -7340,6 +7585,7 @@
                     boss.slowUntil = 0;
                     boss.poisonUntil = 0;
                     boss.dousedUntil = 0;
+                    boss.bleedUntil = 0;
                 } else if (isFireImmuneTarget(boss)) { boss.isBurning = false; }
                 if (boss.phaseTransitioning) {
                     boss.introFacing = Math.PI * 1.5 + Math.sin(now / 160) * 0.08;
@@ -7409,6 +7655,19 @@
                 if (boss.bossType === 'celestialGuardian' && boss.phase === 1 && boss.health <= CELESTIAL_PHASE_TWO_TRIGGER_HEALTH) {
                     triggerCelestialPhaseTwo(boss);
                     return;
+                }
+                if (now < (boss.bleedUntil || 0) && !isStatusImmuneTarget(boss) && now >= (boss.bleedTickAt || 0)) {
+                    boss.health -= applyTargetDamageModifiers(boss, boss.bleedDamage || 6);
+                    boss.bleedTickAt = now + (boss.bleedTickInterval || 420);
+                    createParticles(boss.x, boss.y, '#ff8f9b', 4);
+                    if (boss.bossType === 'celestialGuardian' && boss.phase === 1 && boss.health <= CELESTIAL_PHASE_TWO_TRIGGER_HEALTH) {
+                        triggerCelestialPhaseTwo(boss);
+                        return;
+                    }
+                    if (isBossDefeatThresholdReached(boss)) {
+                        defeatBoss(boss, 'bleed');
+                        return;
+                    }
                 }
                 const healthPercent = boss.health / boss.maxHealth;
                 if (boss.bossType !== 'celestialGuardian' && healthPercent < 0.5 && boss.phase === 1) {
@@ -8316,6 +8575,7 @@
                         }
                         target.health -= damage;
                         createParticles(proj.x, proj.y, proj.color, 3);
+                        if (proj.type === 'homing') spawnHomingSplitDetonation(proj);
 
                         if (proj.type === 'plasma') {
                             proj.pierceCount++; if (proj.pierceCount >= proj.maxPierce) projectiles.splice(index, 1);
@@ -8373,6 +8633,9 @@ function updateLasers() {
                         laser.target.health -= damage;
                         laser.nextTickAt = now + (laser.tickRate || 140);
                         createParticles(laser.target.x, laser.target.y, '#ffffff', 3);
+                        if (rampBonus >= (laser.rampCap || 18) && now >= (laser.overheatReadyAt || 0)) {
+                            triggerAcceleratorOverheat(laser, acceleratorLocks, now);
+                        }
 
                         if (isBossDefeatThresholdReached(laser.target)) {
                             const enemyIndex = enemies.indexOf(laser.target);
@@ -8704,8 +8967,9 @@ function updateLasers() {
                     } else if (weaponName === 'Accelerator') {
                         subStatsSpan.textContent = `(Targets: ${2 + Math.max(0, count - 1)})`;
                     } else if (weaponName === 'Shuriken' && count > 1) {
-                        const actualCount = Math.min(count, weaponTypes.shuriken.maxCount); 
-                        subStatsSpan.textContent = `(Active: ${actualCount}/${weaponTypes.shuriken.maxCount})`;
+                        const activeCount = Math.min(count, weaponTypes.shuriken.maxCount);
+                        const masterySuffix = count >= 5 ? ' + Mastery' : '';
+                        subStatsSpan.textContent = `(Active: ${activeCount}/${weaponTypes.shuriken.maxCount}${masterySuffix})`;
                     } else if (weaponName === 'Firework Blaster' && count > 1) {
                          subStatsSpan.textContent = 'FW';
                     }
@@ -8757,6 +9021,21 @@ function updateLasers() {
             }
             if (player.xpCollectionRange > 100) {
                  synergyHtml += `<div>XP Range: ${Math.round(player.xpCollectionRange)}px</div>`;
+            }
+            if (hasWeaponMastery('Freeze Ray')) {
+                synergyHtml += `<div>Freeze Mastery: Shatter Burst</div>`;
+            }
+            if (hasBlackHoleMastery()) {
+                synergyHtml += `<div>Void Mastery: Implosion</div>`;
+            }
+            if (hasWeaponMastery('Shuriken')) {
+                synergyHtml += `<div>Shuriken Mastery: Bleed</div>`;
+            }
+            if (hasWeaponMastery('Homing Missiles')) {
+                synergyHtml += `<div>Missile Mastery: Split Detonation</div>`;
+            }
+            if (hasWeaponMastery('Accelerator')) {
+                synergyHtml += `<div>Accelerator Mastery: Overheat Burst</div>`;
             }
 
             synergyContainer.innerHTML = synergyHtml;
@@ -10717,16 +10996,67 @@ function updateLasers() {
             });
 
             shurikens.forEach(shuriken => {
-                ctx.save(); ctx.translate(shuriken.x, shuriken.y); ctx.rotate(shuriken.rotation);
-                ctx.fillStyle = shuriken.color; ctx.shadowBlur = performanceSettings.glowEffects ? 10 : 0; ctx.shadowColor = shuriken.color;
-                ctx.beginPath();
-                for (let i = 0; i < 8; i++) {
-                    const angle = (Math.PI * 2 / 8) * i; const radius = i % 2 === 0 ? shuriken.size : shuriken.size * 0.5;
-                    const x = Math.cos(angle) * radius; const y = Math.sin(angle) * radius;
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                if (Array.isArray(shuriken.trail) && shuriken.trail.length > 1) {
+                    ctx.save();
+                    ctx.lineCap = 'round';
+                    for (let i = 0; i < shuriken.trail.length - 1; i++) {
+                        const current = shuriken.trail[i];
+                        const next = shuriken.trail[i + 1];
+                        ctx.globalAlpha = Math.max(0.09, 0.42 - i * 0.05);
+                        ctx.strokeStyle = shuriken.color;
+                        ctx.lineWidth = Math.max(4, shuriken.size * (0.5 - i * 0.05));
+                        ctx.beginPath();
+                        ctx.moveTo(current.x, current.y);
+                        ctx.lineTo(next.x, next.y);
+                        ctx.stroke();
+                    }
+                    ctx.restore();
                 }
-                ctx.closePath(); ctx.fill();
-                ctx.beginPath(); ctx.arc(0, 0, shuriken.size * 0.3, 0, Math.PI * 2); ctx.fill();
+                ctx.save(); ctx.translate(shuriken.x, shuriken.y); ctx.rotate(shuriken.rotation);
+                ctx.shadowBlur = performanceSettings.glowEffects ? 18 : 0; ctx.shadowColor = shuriken.color;
+
+                const bladeLength = shuriken.size * 1.16;
+                const bladeWidth = shuriken.size * 0.34;
+                const innerLength = shuriken.size * 0.66;
+                const innerWidth = shuriken.size * 0.2;
+
+                ctx.fillStyle = 'rgba(255, 232, 120, 0.24)';
+                ctx.beginPath();
+                ctx.moveTo(-bladeLength * 0.92, 0);
+                ctx.lineTo(0, bladeWidth * 1.22);
+                ctx.lineTo(bladeLength * 0.92, 0);
+                ctx.lineTo(0, -bladeWidth * 1.22);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = shuriken.color;
+                ctx.beginPath();
+                ctx.moveTo(-bladeLength, 0);
+                ctx.lineTo(0, bladeWidth);
+                ctx.lineTo(bladeLength, 0);
+                ctx.lineTo(0, -bladeWidth);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#fff9de';
+                ctx.beginPath();
+                ctx.moveTo(-innerLength, 0);
+                ctx.lineTo(0, innerWidth);
+                ctx.lineTo(innerLength, 0);
+                ctx.lineTo(0, -innerWidth);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#7a5200';
+                ctx.beginPath();
+                ctx.arc(0, 0, shuriken.size * 0.16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 250, 210, 0.85)';
+                ctx.lineWidth = Math.max(1.5, shuriken.size * 0.06);
+                ctx.beginPath();
+                ctx.moveTo(-bladeLength * 0.78, 0);
+                ctx.lineTo(bladeLength * 0.78, 0);
+                ctx.stroke();
                 ctx.shadowBlur = 0; ctx.restore();
             });
 
@@ -11161,7 +11491,7 @@ function updateLasers() {
                     updateEnemies();
                     updateBosses();
                 }
-                updateProjectiles(); updateLasers(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
+                updateProjectiles(); updateLasers(); updateShurikens(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
                 
                 if (isChristmasEnabled) updateSnowflakes(); // Only update physics for snow if enabled
                 
@@ -11392,6 +11722,18 @@ function updateLasers() {
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
