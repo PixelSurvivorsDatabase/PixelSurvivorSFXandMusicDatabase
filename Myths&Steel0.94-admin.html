@@ -767,6 +767,31 @@
             text-shadow: 0 0 12px rgba(120, 210, 255, 0.42);
         }
 
+        .menu-version-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -4px;
+            margin-bottom: 10px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(212, 175, 55, 0.38);
+            background: rgba(255, 235, 140, 0.08);
+            color: #ffe89a;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+        }
+
+        body.christmas-mode .menu-version-tag {
+            border-color: rgba(102, 204, 255, 0.38);
+            background: rgba(120, 210, 255, 0.08);
+            color: #b9ecff;
+            box-shadow: 0 0 18px rgba(120, 210, 255, 0.12);
+        }
+
         @keyframes menuFunFactPulse {
             0%, 100% { transform: rotate(-6deg) scale(0.96); }
             50% { transform: rotate(-6deg) scale(1.06); }
@@ -2214,6 +2239,7 @@
                 </aside>
                 <div class="start-screen-main">
                     <h1 id="gameTitle">&#x2694;&#xFE0F; Myths &amp; Steel &#x1F6E1;&#xFE0F;</h1>
+                    <div id="menuVersionTag" class="menu-version-tag">v0.94.5</div>
                     <p id="gameSubtitle">Survive as long as you can.</p>
                     <p id="menuFunFact"></p>
                     <div class="controls">
@@ -2233,6 +2259,22 @@
                     <br>
                     <button id="optionsBtn">&#x2699;&#xFE0F; OPTIONS</button>
                 </div>
+            </div>
+        </div>
+
+        <div id="releaseNotesModal" class="modal">
+            <div class="release-notes-content">
+                <h2>WHAT'S NEW IN 0.94.5</h2>
+                <p class="release-notes-kicker">Release Notes</p>
+                <p class="release-notes-copy">This patch sharpens the game up for release with better weapon identity, stronger UI feedback, and new systems for replayability and live support.</p>
+                <ul class="release-notes-list">
+                    <li>Added the Boss Codex / Encounter Log.</li>
+                    <li>Added weapon masteries at 5 stacks.</li>
+                    <li>Reworked Freeze Ray, Black Hole, Laser Beam, and Shuriken visuals/behavior.</li>
+                    <li>Expanded boss presentation and encounter polish.</li>
+                    <li>Improved mobile behavior and hosted-build support.</li>
+                </ul>
+                <button id="closeReleaseNotesBtn" class="btn-primary">JUMP IN</button>
             </div>
         </div>
 
@@ -3961,7 +4003,7 @@
             poison: { name: 'Poison Darts', damage: 8, fireRate: 400, projectileSpeed: 10, color: '#99ff99', size: 3, poisonDamage: 2, poisonDuration: 3000, type: 'poison' },
             plague: { name: 'Plague Cloud', damage: 1, fireRate: 2000, projectileSpeed: 2, color: '#cc99ff', size: 20, aoeRadius: 100, type: 'aoe' },
             plasma: { name: 'Plasma Cannon', damage: 40, fireRate: 2000, projectileSpeed: 7, color: '#ffcc66', size: 6, type: 'plasma', pierce: true, maxPierce: 5 },
-            shuriken: { name: 'Shuriken', damage: 5, fireRate: 1000, color: '#ffcc00', size: 32, type: 'orbit', orbitRadius: 76, orbitSpeed: 0.26, maxCount: 4 },
+            shuriken: { name: 'Shuriken', damage: 5, fireRate: 1000, color: '#ffcc00', size: 32, type: 'orbit', orbitRadius: 76, orbitSpeed: 0.34, maxCount: 4 },
             fuga: { name: 'Fuga', damage: 125, fireRate: 20000, projectileSpeed: 15, color: '#ff3300', size: 8, explosionRadius: 240, type: 'fuga' },
             fireworkBlaster: { 
                 name: 'Firework Blaster', 
@@ -11013,49 +11055,66 @@ function updateLasers() {
                     ctx.restore();
                 }
                 ctx.save(); ctx.translate(shuriken.x, shuriken.y); ctx.rotate(shuriken.rotation);
-                ctx.shadowBlur = performanceSettings.glowEffects ? 18 : 0; ctx.shadowColor = shuriken.color;
+                ctx.shadowBlur = performanceSettings.glowEffects ? 16 : 0; ctx.shadowColor = shuriken.color;
 
-                const bladeLength = shuriken.size * 1.16;
-                const bladeWidth = shuriken.size * 0.34;
-                const innerLength = shuriken.size * 0.66;
-                const innerWidth = shuriken.size * 0.2;
+                const armLength = shuriken.size * 0.82;
+                const armWidth = shuriken.size * 0.34;
+                const innerCut = shuriken.size * 0.28;
+                const hubRadius = shuriken.size * 0.19;
 
-                ctx.fillStyle = 'rgba(255, 232, 120, 0.24)';
-                ctx.beginPath();
-                ctx.moveTo(-bladeLength * 0.92, 0);
-                ctx.lineTo(0, bladeWidth * 1.22);
-                ctx.lineTo(bladeLength * 0.92, 0);
-                ctx.lineTo(0, -bladeWidth * 1.22);
-                ctx.closePath();
-                ctx.fill();
+                ctx.fillStyle = 'rgba(255, 232, 120, 0.18)';
+                for (let arm = 0; arm < 4; arm++) {
+                    ctx.save();
+                    ctx.rotate((Math.PI / 2) * arm);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -innerCut);
+                    ctx.lineTo(armLength * 0.42, -armWidth * 0.7);
+                    ctx.lineTo(armLength, 0);
+                    ctx.lineTo(armLength * 0.42, armWidth * 0.7);
+                    ctx.lineTo(0, innerCut);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
 
                 ctx.fillStyle = shuriken.color;
-                ctx.beginPath();
-                ctx.moveTo(-bladeLength, 0);
-                ctx.lineTo(0, bladeWidth);
-                ctx.lineTo(bladeLength, 0);
-                ctx.lineTo(0, -bladeWidth);
-                ctx.closePath();
-                ctx.fill();
+                for (let arm = 0; arm < 4; arm++) {
+                    ctx.save();
+                    ctx.rotate((Math.PI / 2) * arm);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -innerCut * 0.9);
+                    ctx.lineTo(armLength * 0.4, -armWidth * 0.52);
+                    ctx.lineTo(armLength, 0);
+                    ctx.lineTo(armLength * 0.4, armWidth * 0.52);
+                    ctx.lineTo(0, innerCut * 0.9);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
 
                 ctx.fillStyle = '#fff9de';
-                ctx.beginPath();
-                ctx.moveTo(-innerLength, 0);
-                ctx.lineTo(0, innerWidth);
-                ctx.lineTo(innerLength, 0);
-                ctx.lineTo(0, -innerWidth);
-                ctx.closePath();
-                ctx.fill();
+                for (let arm = 0; arm < 4; arm++) {
+                    ctx.save();
+                    ctx.rotate((Math.PI / 2) * arm);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -innerCut * 0.45);
+                    ctx.lineTo(armLength * 0.45, -armWidth * 0.2);
+                    ctx.lineTo(armLength * 0.82, 0);
+                    ctx.lineTo(armLength * 0.45, armWidth * 0.2);
+                    ctx.lineTo(0, innerCut * 0.45);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
 
                 ctx.fillStyle = '#7a5200';
                 ctx.beginPath();
-                ctx.arc(0, 0, shuriken.size * 0.16, 0, Math.PI * 2);
+                ctx.arc(0, 0, hubRadius, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.strokeStyle = 'rgba(255, 250, 210, 0.85)';
-                ctx.lineWidth = Math.max(1.5, shuriken.size * 0.06);
+                ctx.strokeStyle = 'rgba(255, 250, 210, 0.75)';
+                ctx.lineWidth = Math.max(1.4, shuriken.size * 0.05);
                 ctx.beginPath();
-                ctx.moveTo(-bladeLength * 0.78, 0);
-                ctx.lineTo(bladeLength * 0.78, 0);
+                ctx.arc(0, 0, hubRadius * 1.36, 0, Math.PI * 2);
                 ctx.stroke();
                 ctx.shadowBlur = 0; ctx.restore();
             });
@@ -11500,6 +11559,44 @@ function updateLasers() {
             draw(); drawUI(); requestAnimationFrame(gameLoop);
         }
 
+        const RELEASE_VERSION = '0.94.5';
+        const RELEASE_NOTES_STORAGE_KEY = 'mythsSteelSeenReleaseNotes';
+
+        function shouldAutoShowReleaseNotes() {
+            if (location.protocol === 'file:') return false;
+            try {
+                return localStorage.getItem(RELEASE_NOTES_STORAGE_KEY) !== RELEASE_VERSION;
+            } catch (error) {
+                return true;
+            }
+        }
+
+        function markReleaseNotesSeen() {
+            try {
+                localStorage.setItem(RELEASE_NOTES_STORAGE_KEY, RELEASE_VERSION);
+            } catch (error) {}
+        }
+
+        function openReleaseNotesModal() {
+            const modal = document.getElementById('releaseNotesModal');
+            if (!modal) return;
+            modal.style.display = 'block';
+            markReleaseNotesSeen();
+        }
+
+        function closeReleaseNotesModal() {
+            const modal = document.getElementById('releaseNotesModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            markReleaseNotesSeen();
+        }
+
+        function initReleaseNotesModal() {
+            const closeBtn = document.getElementById('closeReleaseNotesBtn');
+            if (closeBtn) closeBtn.addEventListener('click', closeReleaseNotesModal);
+            if (shouldAutoShowReleaseNotes()) openReleaseNotesModal();
+        }
+
         const LIVE_ANNOUNCEMENT_REFRESH_MS = 15000;
         const LIVE_ANNOUNCEMENT_STORAGE_KEY = 'mythsSteelLastAnnouncementSeen';
         const LIVE_ANNOUNCEMENT_AUTHORITY = {
@@ -11722,6 +11819,10 @@ function updateLasers() {
     </script>
 </body>
 </html>
+
+
+
+
 
 
 
