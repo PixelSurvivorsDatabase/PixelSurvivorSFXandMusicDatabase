@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -3981,7 +3981,7 @@
             { name: 'Add Machine Gun', rarity: 'rare', description: 'Add a machine gun. Mastery: +5% Global Fire Rate per stack.', effect: () => { player.weapons['Machine Gun'] = (player.weapons['Machine Gun'] || 0) + 1; if (!player.lastShot['Machine Gun']) player.lastShot['Machine Gun'] = 0; }, stats: 'Weapon' },
             { name: 'Add Sniper', rarity: 'epic', description: 'Add a sniper rifle. Mastery: +2% Global Damage per stack.', effect: () => { player.weapons['Sniper'] = (player.weapons['Sniper'] || 0) + 1; if (!player.lastShot['Sniper']) player.lastShot['Sniper'] = 0; }, stats: 'Weapon' },
             { name: 'Add Grenade Launcher', rarity: 'epic', description: 'Add a grenade launcher. Mastery: +5% Explosion Radius & Damage per stack.', effect: () => { player.weapons['Grenade Launcher'] = (player.weapons['Grenade Launcher'] || 0) + 1; if (!player.lastShot['Grenade Launcher']) player.lastShot['Grenade Launcher'] = 0; }, stats: 'Weapon' },
-            { name: 'Add Freeze Ray', rarity: 'epic', description: 'Add a continuous freeze beam. Low damage, strong chill. Mastery: longer chill and wider beam.', effect: () => { player.weapons['Freeze Ray'] = (player.weapons['Freeze Ray'] || 0) + 1; if (!player.lastShot['Freeze Ray']) player.lastShot['Freeze Ray'] = 0; }, stats: 'Weapon' },
+            { name: 'Add Freeze Ray', rarity: 'epic', description: 'Add a continuous freeze beam. Low damage, strong chill, and Brittle. Brittle makes enemies take 1.5x damage from all sources.', effect: () => { player.weapons['Freeze Ray'] = (player.weapons['Freeze Ray'] || 0) + 1; if (!player.lastShot['Freeze Ray']) player.lastShot['Freeze Ray'] = 0; }, stats: 'Weapon' },
             { name: 'Add Accelerator', rarity: 'legendary', description: 'Add a white target-lock beam array. Hold 4 to channel it. Starts at 2 targets and gains +1 target per stack. Damage ramps the longer a target stays locked.', effect: () => { player.weapons['Accelerator'] = (player.weapons['Accelerator'] || 0) + 1; if (!player.lastShot['Accelerator']) player.lastShot['Accelerator'] = 0; }, stats: 'Locking Weapon' },
             { name: 'Add Lightning Chain', rarity: 'epic', description: 'Add lightning chain. Mastery: +1 jump, +10% damage, and -5% chain falloff per stack.', effect: () => { player.weapons['Lightning Chain'] = (player.weapons['Lightning Chain'] || 0) + 1; if (!player.lastShot['Lightning Chain']) player.lastShot['Lightning Chain'] = 0; }, stats: 'Weapon' },
             { name: 'Add Homing Missiles', rarity: 'epic', description: 'Add homing missiles. Mastery: +10% Homing Speed per stack.', effect: () => { player.weapons['Homing Missiles'] = Math.min((player.weapons['Homing Missiles'] || 0) + 1, MAX_HOMING_STACKS); if (!player.lastShot['Homing Missiles']) player.lastShot['Homing Missiles'] = 0; }, stats: 'Weapon' },
@@ -5001,6 +5001,24 @@
             return !!(target && (target.fireImmune || target.bossType === 'dragon' || target.type === 'dragonling'));
         }
 
+        function getBrittleMultiplier(target) {
+            if (!target || isStatusImmuneTarget(target)) return 1;
+            return Date.now() < (target.brittleUntil || 0) ? (target.brittleMultiplier || 1.5) : 1;
+        }
+
+        function applyTargetDamageModifiers(target, damage) {
+            let modifiedDamage = damage * getBrittleMultiplier(target);
+            if (target && target.resistance) modifiedDamage *= (1 - target.resistance);
+            return Math.max(0, Math.round(modifiedDamage));
+        }
+
+        function applyBrittleStatus(target, duration, multiplier = 1.5) {
+            if (!target || isStatusImmuneTarget(target)) return;
+            const now = Date.now();
+            target.brittleUntil = Math.max(target.brittleUntil || 0, now + duration);
+            target.brittleMultiplier = multiplier;
+        }
+
         function ensureTrackableEntityId(target) {
             if (!target) return null;
             if (target.entityId === undefined || target.entityId === null) {
@@ -5024,8 +5042,21 @@
                 .slice(0, maxTargets);
         }
 
+        function triggerSteamReaction(target) {
+            const now = Date.now();
+            if (!target || isFireImmuneTarget(target) || isStatusImmuneTarget(target)) return false;
+            if (now >= (target.dousedUntil || 0)) return false;
+            if (now < (target.steamReactionCooldown || 0)) return false;
+            createSteamExplosion(target.x, target.y);
+            createParticles(target.x, target.y, '#ffffff', 12);
+            target.dousedUntil = 0;
+            target.steamReactionCooldown = now + 250;
+            return true;
+        }
+
         function igniteTarget(target) {
             if (!target || isFireImmuneTarget(target) || isStatusImmuneTarget(target)) return false;
+            triggerSteamReaction(target);
             target.isBurning = true;
             target.burnTickTime = Date.now() + 1275;
             return true;
@@ -5158,8 +5189,7 @@
                     if (dist < enemy.radius + shuriken.size && now - lastHitAt >= 140) {
                         let damage = shuriken.damage; let isCritical = false;
                         if (Math.random() < player.critChance) { damage *= 2; isCritical = true; createParticles(shuriken.x, shuriken.y, '#ffff66',5); showDamageNumber(enemy.x, enemy.y, damage); showCritical(enemy.x, enemy.y); }
-                        if (enemy.resistance) damage *= (1 - enemy.resistance);
-                        damage = Math.round(damage);
+                        damage = applyTargetDamageModifiers(enemy, damage);
                         applyLifesteal(damage);
                         enemy.health -= damage; createParticles(shuriken.x, shuriken.y, shuriken.color, 3);
                         shuriken.hitEnemies.set(enemy, now);
@@ -5418,8 +5448,7 @@
             if (chainsLeft <= 0 || !target) return;
             visitedTargets.add(target);
             particles.push({ x: x, y: y, endX: target.x, endY: target.y, color: '#ffffcc', type: 'lightning', life: 10 });
-            let actualDamage = target.resistance ? damage * (1 - target.resistance) : damage;
-            actualDamage = Math.round(actualDamage);
+            let actualDamage = applyTargetDamageModifiers(target, damage);
             if (!isStatusImmuneTarget(target)) {
                 target.stunnedUntil = Math.max(target.stunnedUntil || 0, Date.now() + stunDuration);
             }
@@ -5526,8 +5555,7 @@
             [...enemies, ...bosses].forEach(target => {
                 const dist = Math.hypot(target.x - x, target.y - y);
                 if (dist < expansionRadius) {
-                    let steamDamage = 10; // Fixed small damage for mini-explosion
-                    if (target.resistance) steamDamage *= (1 - target.resistance);
+                    let steamDamage = applyTargetDamageModifiers(target, 10); // Fixed small damage for mini-explosion
                     target.health -= steamDamage;
                     applyLifesteal(steamDamage);
                     
@@ -5591,8 +5619,7 @@
                     // Damage
                     let finalDamage = damage;
                     if (isFireImmuneTarget(target)) finalDamage = 0;
-                    if (target.resistance) finalDamage *= (1 - target.resistance);
-                    finalDamage = Math.round(finalDamage);
+                    finalDamage = applyTargetDamageModifiers(target, finalDamage);
                     target.health -= finalDamage;
                     
                     // Ignite
@@ -5701,8 +5728,7 @@
                             if (Math.random() < player.critChance) {
                                 damage *= 2; isCritical = true; createParticles(enemy.x, enemy.y, '#ffff66',5); showDamageNumber(enemy.x, enemy.y, damage); showCritical(enemy.x, enemy.y);
                             }
-                            if (enemy.resistance) damage *= (1 - enemy.resistance);
-                            damage = Math.round(damage);
+                            damage = applyTargetDamageModifiers(enemy, damage);
                             applyLifesteal(damage);
                             enemy.health -= damage; createParticles(enemy.x, enemy.y, stream.color, 3);
                             
@@ -5922,7 +5948,7 @@
                     enemy.isBurning = false;
                 }
                 if (enemy.isBurning && now >= enemy.burnTickTime) {
-                    const burnDamage = enemy.baseMaxHealth * 0.05; enemy.health -= burnDamage; enemy.burnTickTime += 1275;
+                    const burnDamage = applyTargetDamageModifiers(enemy, enemy.baseMaxHealth * 0.05); enemy.health -= burnDamage; enemy.burnTickTime += 1275;
                     for (let i = 0; i < 2; i++) {
                         particles.push({ x: enemy.x + (Math.random() - 0.5) * enemy.radius, y: enemy.y + (Math.random() - 0.5) * enemy.radius, vx: (Math.random() - 0.5) * 1, vy: (Math.random() - 0.5) * 1, radius: Math.random() * 3 + 1, color: '#ff6600', life: 0.3, type: 'normal' });
                     }
@@ -6036,7 +6062,7 @@
                 if (now < enemy.slowUntil && !isStatusImmuneTarget(enemy)) speedMultiplier = enemy.slowEffect || 0.5;
                 if (enemyStunned) speedMultiplier = 0;
                 if (now < enemy.poisonUntil && !isStatusImmuneTarget(enemy) && now % 500 < 50) {
-                    enemy.health -= enemy.poisonDamage; createParticles(enemy.x, enemy.y, '#99ff99', 2);
+                    enemy.health -= applyTargetDamageModifiers(enemy, enemy.poisonDamage); createParticles(enemy.x, enemy.y, '#99ff99', 2);
                     if (enemy.health <= 0) {
                         handleEnemyDefeat(enemy, index);
                         return;
@@ -6104,7 +6130,7 @@
                     return;
                 }
                 if (boss.isBurning && now >= boss.burnTickTime) {
-                    const burnDamage = boss.baseMaxHealth * 0.05; boss.health -= burnDamage; boss.burnTickTime += 1275;
+                    const burnDamage = applyTargetDamageModifiers(boss, boss.baseMaxHealth * 0.05); boss.health -= burnDamage; boss.burnTickTime += 1275;
                     for (let i = 0; i < 3; i++) {
                         particles.push({ x: boss.x + (Math.random() - 0.5) * boss.radius, y: boss.y + (Math.random() - 0.5) * boss.radius, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, radius: Math.random() * 5 + 2, color: '#ff6600', life: 0.3, type: 'normal' });
                     }
@@ -7046,24 +7072,20 @@
                     if (dist < target.radius + proj.radius) {
                         let damage = proj.damage; let isCritical = false;
 
-                        if (!isFireImmuneTarget(target) && !isStatusImmuneTarget(target) && target.dousedUntil > Date.now() && proj.isFire) {
-                            createSteamExplosion(target.x, target.y);
-                            createParticles(target.x, target.y, '#ffffff', 10);
-                        }
+                        if (proj.isFire) triggerSteamReaction(target);
 
                         if (Math.random() < player.critChance) {
                             damage *= 2; isCritical = true; createParticles(proj.x, proj.y, '#ffff66',5); showDamageNumber(target.x, target.y, damage); showCritical(target.x, target.y);
                         }
                         if (proj.isFire && isFireImmuneTarget(target)) damage = 0;
-                        if (target.resistance) damage *= (1 - target.resistance);
-                        damage = Math.round(damage);
+                        damage = applyTargetDamageModifiers(target, damage);
                         applyLifesteal(damage);
 
                         if (proj.type === 'grenade' || proj.type === 'meteor' || proj.type === 'homing') {
                             explosions.push({ x: proj.x, y: proj.y, radius: proj.explosionRadius, damage: damage, maxRadius: proj.explosionRadius, color: '#ff9966', isFire: !!proj.isFire });
                         } else if (proj.type === 'freeze') {
                             if (!isStatusImmuneTarget(target)) {
-                                target.slowUntil = Date.now() + proj.slowDuration; target.slowEffect = proj.slowEffect; createParticles(target.x, target.y, '#99ccff', 8);
+                                target.slowUntil = Date.now() + proj.slowDuration; target.slowEffect = proj.slowEffect; applyBrittleStatus(target, proj.slowDuration); createParticles(target.x, target.y, '#99ccff', 8);
                             }
                         } else if (proj.type === 'poison') {
                             if (!isStatusImmuneTarget(target)) {
@@ -7130,8 +7152,7 @@ function updateLasers() {
                             damage *= 2;
                             showCritical(laser.target.x, laser.target.y);
                         }
-                        if (laser.target.resistance) damage *= (1 - laser.target.resistance);
-                        damage = Math.max(1, Math.round(damage));
+                        damage = Math.max(1, applyTargetDamageModifiers(laser.target, damage));
                         applyLifesteal(damage);
                         laser.target.health -= damage;
                         laser.nextTickAt = now + (laser.tickRate || 140);
@@ -7155,18 +7176,16 @@ function updateLasers() {
                         let damage = laser.damage; let isCritical = false;
                         if (Math.random() < player.critChance) { damage *= 2; isCritical = true; showCritical(target.x, target.y); }
                         
-                        if (!isFireImmuneTarget(target) && !isStatusImmuneTarget(target) && target.dousedUntil > now && laser.isFire) {
-                            createSteamExplosion(target.x, target.y);
-                        }
+                        if (laser.isFire) triggerSteamReaction(target);
                         if (laser.isFreeze && !isStatusImmuneTarget(target)) {
                             target.slowUntil = now + laser.slowDuration;
                             target.slowEffect = laser.slowEffect;
+                            applyBrittleStatus(target, laser.slowDuration);
                             if (Math.random() < 0.28) createParticles(target.x, target.y, '#c8f3ff', 4);
                         }
 
                         if (laser.isFire && isFireImmuneTarget(target)) damage = 0;
-                        if (target.resistance) damage *= (1 - target.resistance);
-                        damage = Math.round(damage);
+                        damage = applyTargetDamageModifiers(target, damage);
                         applyLifesteal(damage);
                         target.health -= damage; createParticles(target.x, target.y, laser.color, 2);
                         if (isBossDefeatThresholdReached(target)) {
@@ -7186,7 +7205,7 @@ function updateLasers() {
                 [...enemies, ...bosses].forEach(target => {
                     const dist = Math.hypot(target.x - cloud.x, target.y - cloud.y);
                     if (dist < cloud.aoeRadius) {
-                        target.health -= cloud.damage;
+                        target.health -= applyTargetDamageModifiers(target, cloud.damage);
                         if (!isStatusImmuneTarget(target)) {
                             target.poisonUntil = Date.now() + cloud.poisonDuration; target.poisonDamage = cloud.poisonDamage;
                         }
@@ -7260,9 +7279,9 @@ function updateLasers() {
                     const dist = Math.hypot(target.x - explosion.x, target.y - explosion.y);
                     if (dist < explosion.radius) {
                         let damage = explosion.damage * 0.1;
+                        if (explosion.isFire) triggerSteamReaction(target);
                         if (explosion.isFire && isFireImmuneTarget(target)) damage = 0;
-                        if (target.resistance) damage *= (1 - target.resistance);
-                        damage = Math.round(damage); target.health -= damage; createParticles(target.x, target.y, explosion.color, 3);
+                        damage = applyTargetDamageModifiers(target, damage); target.health -= damage; createParticles(target.x, target.y, explosion.color, 3);
                         if (isBossDefeatThresholdReached(target)) {
                             const enemyIndex = enemies.indexOf(target);
                             if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
@@ -8766,8 +8785,48 @@ function updateLasers() {
                         });
                     }
                 } else {
-                    ctx.strokeStyle = laser.color; ctx.lineWidth = laser.width; ctx.shadowBlur = performanceSettings.glowEffects ? 10 : 0; ctx.shadowColor = laser.color;
-                    ctx.beginPath(); ctx.moveTo(laser.x, laser.y); ctx.lineTo(endX, endY); ctx.stroke(); ctx.shadowBlur = 0;
+                    ctx.save();
+                    ctx.lineCap = 'round';
+                    ctx.shadowBlur = performanceSettings.glowEffects ? 20 : 0;
+                    ctx.shadowColor = laser.color;
+
+                    ctx.strokeStyle = 'rgba(102, 231, 255, 0.22)';
+                    ctx.lineWidth = laser.width + 10;
+                    ctx.beginPath(); ctx.moveTo(laser.x, laser.y); ctx.lineTo(endX, endY); ctx.stroke();
+
+                    const laserGradient = ctx.createLinearGradient(laser.x, laser.y, endX, endY);
+                    laserGradient.addColorStop(0, 'rgba(72, 208, 255, 0.9)');
+                    laserGradient.addColorStop(0.5, laser.color);
+                    laserGradient.addColorStop(1, 'rgba(196, 249, 255, 0.96)');
+                    ctx.strokeStyle = laserGradient;
+                    ctx.lineWidth = laser.width + 2;
+                    ctx.beginPath(); ctx.moveTo(laser.x, laser.y); ctx.lineTo(endX, endY); ctx.stroke();
+
+                    ctx.strokeStyle = 'rgba(245, 253, 255, 0.98)';
+                    ctx.lineWidth = Math.max(2, laser.width * 0.38);
+                    ctx.beginPath(); ctx.moveTo(laser.x, laser.y); ctx.lineTo(endX, endY); ctx.stroke();
+                    ctx.restore();
+
+                    const beamFlow = Date.now() * 0.0046;
+                    for (let i = 0; i < 5; i++) {
+                        const t = (beamFlow + i / 5) % 1;
+                        const px = laser.x + (endX - laser.x) * t;
+                        const py = laser.y + (endY - laser.y) * t;
+                        ctx.fillStyle = i % 2 === 0 ? 'rgba(190, 247, 255, 0.88)' : 'rgba(98, 224, 255, 0.76)';
+                        ctx.beginPath();
+                        ctx.arc(px, py, 1.2 + (1 - t) * 1.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                    ctx.beginPath();
+                    ctx.arc(endX, endY, Math.max(3, laser.width * 0.6), 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = 'rgba(120, 234, 255, 0.32)';
+                    ctx.beginPath();
+                    ctx.arc(endX, endY, Math.max(6, laser.width * 1.15), 0, Math.PI * 2);
+                    ctx.fill();
                 }
             });
 
