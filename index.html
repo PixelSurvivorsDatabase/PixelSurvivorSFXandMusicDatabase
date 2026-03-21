@@ -1931,6 +1931,144 @@
             font-size: 54px;
             animation-delay: 2.1s;
         }
+
+        .event-side-card {
+            position: absolute;
+            top: 94px;
+            right: -28px;
+            width: 230px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 16px 16px 15px;
+            border-radius: 18px;
+            border: 1px solid rgba(197, 255, 132, 0.38);
+            background: linear-gradient(145deg, rgba(18, 52, 24, 0.96), rgba(30, 82, 40, 0.95) 58%, rgba(127, 96, 20, 0.92));
+            color: #f8ffd9;
+            text-align: left;
+            box-shadow: 0 20px 34px rgba(0, 0, 0, 0.34), 0 0 28px rgba(116, 255, 126, 0.18);
+            cursor: pointer;
+            transform: rotate(4deg);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            z-index: 3;
+            overflow: hidden;
+        }
+
+        .event-side-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(140deg, rgba(255,255,255,0.16), transparent 32%, transparent 68%, rgba(255, 223, 124, 0.12));
+            pointer-events: none;
+        }
+
+        .event-side-card:hover {
+            transform: translateY(-4px) rotate(2deg);
+            box-shadow: 0 24px 36px rgba(0, 0, 0, 0.38), 0 0 34px rgba(152, 255, 112, 0.24);
+            filter: brightness(1.04);
+        }
+
+        .event-side-card[hidden] {
+            display: none !important;
+        }
+
+        .event-side-kicker {
+            font-size: 10px;
+            letter-spacing: 1.4px;
+            font-weight: 900;
+            color: #17310f;
+            background: linear-gradient(135deg, #f0ff96, #ffe17c);
+            border-radius: 999px;
+            padding: 4px 9px;
+            align-self: flex-start;
+            box-shadow: 0 0 16px rgba(255, 229, 122, 0.18);
+        }
+
+        .event-side-title {
+            font-size: 23px;
+            line-height: 1.02;
+            color: #fff9d6;
+            text-shadow: 0 0 18px rgba(220, 255, 170, 0.18);
+        }
+
+        .event-side-body {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #ebffd8;
+        }
+
+        .event-side-progress,
+        .event-side-reward {
+            font-size: 11px;
+            color: #fff5b2;
+        }
+
+        .event-side-progress {
+            font-weight: 700;
+        }
+
+        .event-modal-content {
+            max-width: 640px;
+        }
+
+        .event-modal-kicker {
+            margin-top: -4px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: #dfffaa;
+        }
+
+        .event-modal-copy {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #f4ffe2;
+            margin-bottom: 16px;
+        }
+
+        .event-modal-progress-wrap {
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(197, 255, 132, 0.22);
+            text-align: left;
+        }
+
+        .event-modal-progress-label {
+            font-size: 11px;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+            color: #d7ffb8;
+            margin-bottom: 6px;
+        }
+
+        .event-modal-progress {
+            font-size: 15px;
+            color: #fff7c6;
+            font-weight: 700;
+        }
+
+        body.lucky-mode .event-side-card {
+            border-color: rgba(197, 255, 132, 0.46);
+            box-shadow: 0 20px 34px rgba(0, 0, 0, 0.34), 0 0 34px rgba(152, 255, 112, 0.24);
+        }
+
+        @media (max-width: 980px) {
+            .event-side-card {
+                position: static;
+                width: min(100%, 360px);
+                margin: 18px auto 0;
+                transform: none;
+                right: auto;
+                top: auto;
+            }
+
+            .event-side-card:hover {
+                transform: translateY(-2px);
+            }
+        }
 </style>
 </head>
 <body>
@@ -2063,6 +2201,13 @@
                 </aside>
                 <div class="start-screen-main">
                     <div id="playerCountLabel" class="player-count-label">Players Online: --</div>
+                    <button id="stPatricksEventCard" class="event-side-card" type="button" hidden>
+                        <span class="event-side-kicker">LIMITED EVENT</span>
+                        <span class="event-side-title">ST. PATRICK'S LUCK</span>
+                        <span id="stPatricksEventBody" class="event-side-body">Triple shiny rates are live.</span>
+                        <span id="stPatricksEventProgress" class="event-side-progress">Shinies: 0 / 35</span>
+                        <span id="stPatricksEventReward" class="event-side-reward">Reward: Lucky Theme</span>
+                    </button>
                     <h1 id="gameTitle">&#x2694;&#xFE0F; Myths &amp; Steel &#x1F6E1;&#xFE0F;</h1>
                     <div id="menuVersionTag" class="menu-version-tag">v0.94.5</div>
                     <p id="gameSubtitle">Survive as long as you can.</p>
@@ -2103,6 +2248,25 @@
             </div>
         </div>
 
+
+        <div id="stPatricksEventModal" class="modal">
+            <div class="event-modal-content">
+                <h2>ST. PATRICK'S LUCK</h2>
+                <p class="event-modal-kicker">Limited-Time Event</p>
+                <p id="stPatricksEventModalIntro" class="event-modal-copy">Triple shiny rates are active on the hosted build while the event keeps getting polished.</p>
+                <div class="event-modal-progress-wrap">
+                    <div class="event-modal-progress-label">Event Progress</div>
+                    <div id="stPatricksEventModalProgress" class="event-modal-progress">Shinies Defeated During Event: 0 / 35</div>
+                </div>
+                <ul class="release-notes-list">
+                    <li>Shiny spawn rate is tripled for the duration of the event.</li>
+                    <li>Defeat 35 shiny enemies during the event to unlock the Lucky Theme.</li>
+                    <li>This event is still being expanded, so more polish and extras may arrive before full rollout.</li>
+                    <li>Event window: March 20 through April 3.</li>
+                </ul>
+                <button id="closeStPatricksEventBtn" class="btn-primary">CLOSE</button>
+            </div>
+        </div>
         <div id="modeSelectModal" class="modal">
             <h2>&#x1F3AE; Choose Mode</h2>
             <p class="mode-select-subtitle">Pick how you want to enter the run.</p>
@@ -2609,7 +2773,76 @@
             applyTheme();
         }
 
-                function applyTheme() {
+        
+        function getStPatricksEventStatus() {
+            normalizeUserStats();
+            const kills = userStats.eventShinyKills || 0;
+            const unlocked = !!userStats.luckyThemeUnlocked;
+            const remaining = Math.max(0, 35 - kills);
+            return { kills, unlocked, remaining };
+        }
+
+        function renderStPatricksEventPromo() {
+            const card = document.getElementById('stPatricksEventCard');
+            const bodyEl = document.getElementById('stPatricksEventBody');
+            const progressEl = document.getElementById('stPatricksEventProgress');
+            const rewardEl = document.getElementById('stPatricksEventReward');
+            const modal = document.getElementById('stPatricksEventModal');
+            const modalIntro = document.getElementById('stPatricksEventModalIntro');
+            const modalProgress = document.getElementById('stPatricksEventModalProgress');
+            if (!card || !bodyEl || !progressEl || !rewardEl || !modalIntro || !modalProgress) return;
+
+            if (!isStPatricksEventActive()) {
+                card.hidden = true;
+                if (modal) modal.style.display = 'none';
+                return;
+            }
+
+            const { kills, unlocked, remaining } = getStPatricksEventStatus();
+            card.hidden = false;
+            bodyEl.textContent = unlocked
+                ? 'Lucky Theme secured. Triple shiny rates are still active while the event keeps growing.'
+                : `Triple shiny rates are live. Defeat ${remaining} more ${remaining === 1 ? 'shiny' : 'shinies'} to unlock the Lucky Theme.`;
+            progressEl.textContent = unlocked
+                ? `Shinies: ${kills} / 35 • COMPLETE`
+                : `Shinies: ${kills} / 35`;
+            rewardEl.textContent = unlocked ? 'Reward: Lucky Theme Unlocked' : 'Reward: Lucky Theme';
+            modalIntro.textContent = unlocked
+                ? 'You already claimed the Lucky Theme. The St. Patrick\'s event is still active on the hosted build while more polish lands.'
+                : 'The St. Patrick\'s event is active on the hosted build. Shiny rates are tripled right now, and more event polish is still on the way before full rollout.';
+            modalProgress.textContent = unlocked
+                ? `Shinies Defeated During Event: ${kills} / 35 • Reward unlocked`
+                : `Shinies Defeated During Event: ${kills} / 35`;
+        }
+
+        function openStPatricksEventModal() {
+            if (!isStPatricksEventActive()) return;
+            renderStPatricksEventPromo();
+            const modal = document.getElementById('stPatricksEventModal');
+            if (!modal) return;
+            modal.style.display = 'block';
+        }
+
+        function closeStPatricksEventModal() {
+            const modal = document.getElementById('stPatricksEventModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+        }
+
+        function initStPatricksEventPromo() {
+            const card = document.getElementById('stPatricksEventCard');
+            const closeBtn = document.getElementById('closeStPatricksEventBtn');
+            if (card && !card.dataset.bound) {
+                card.dataset.bound = 'true';
+                card.addEventListener('click', openStPatricksEventModal);
+            }
+            if (closeBtn && !closeBtn.dataset.bound) {
+                closeBtn.dataset.bound = 'true';
+                closeBtn.addEventListener('click', closeStPatricksEventModal);
+            }
+            renderStPatricksEventPromo();
+        }
+        function applyTheme() {
             const body = document.body;
             const toggle = document.getElementById('christmasToggle');
             const deco = document.getElementById('themeDecoration');
@@ -2649,6 +2882,7 @@
                 document.title = "Myths & Steel - New Year's Edition";
             }
             updatePlayerCountLabel();
+            renderStPatricksEventPromo();
             saveTheme();
         }
         // --- AUDIO MANAGEMENT ---
@@ -10455,6 +10689,8 @@ function updateLasers() {
             applyCinematicHUDState();
             syncMobileHudState();
             updateBuffsDisplay();
+            const startScreenEl = document.getElementById('startScreen');
+            if (startScreenEl && startScreenEl.style.display !== 'none') renderStPatricksEventPromo();
             const healthPercent = (player.health / player.maxHealth) * 100;
             document.getElementById('healthFill').style.width = `${healthPercent}%`;
             document.getElementById('healthText').textContent = `${Math.ceil(player.health)}/${player.maxHealth}`;
@@ -10811,6 +11047,8 @@ function updateLasers() {
         initDB().then(() => {
             loadUserStats().then(() => {
                 Promise.all([loadTheme(), loadAudioSettings(), loadPerformanceSettings(), loadDeviceModeSettings()]).then(() => {
+                    initReleaseNotesModal();
+                    initStPatricksEventPromo();
                     initLiveAnnouncements();
                     initPlayerPresence();
                     resizeGameViewport();
