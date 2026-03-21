@@ -2107,7 +2107,89 @@
             100% { transform: scale(1); }
         }
 
-    </style>
+            .player-count-label {
+            position: absolute;
+            top: 6px;
+            left: 4%;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(8, 8, 18, 0.36);
+            color: #dfe8ff;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        body.lucky-mode {
+            background: linear-gradient(135deg, #071b0e 0%, #12351d 35%, #1f5b2d 70%, #0b2414 100%);
+        }
+
+        body.lucky-mode::before {
+            background:
+                radial-gradient(circle at 20% 20%, rgba(175, 255, 120, 0.08) 0%, transparent 35%),
+                radial-gradient(circle at 78% 26%, rgba(255, 229, 120, 0.09) 0%, transparent 38%),
+                radial-gradient(circle at 52% 78%, rgba(120, 255, 170, 0.05) 0%, transparent 34%);
+        }
+
+        body.lucky-mode #startScreen h1 {
+            color: #9bff75;
+            text-shadow: 0 0 15px rgba(120, 255, 150, 0.45);
+        }
+
+        body.lucky-mode .start-screen-sidebar {
+            border-color: rgba(155, 255, 117, 0.28);
+            background: rgba(10, 32, 16, 0.56);
+        }
+
+        body.lucky-mode .start-screen-sidebar h2 {
+            color: #ffe89a;
+        }
+
+        body.lucky-mode #optionsBtn:hover {
+            border-color: #9bff75;
+        }
+
+        body.lucky-mode #menuFunFact {
+            color: #d7ff9b;
+            text-shadow: 0 0 12px rgba(180, 255, 130, 0.38);
+        }
+
+        body.lucky-mode .player-count-label {
+            color: #f3ffcb;
+            border-color: rgba(155, 255, 117, 0.24);
+            background: rgba(16, 36, 20, 0.42);
+        }
+
+        body.lucky-mode .menu-version-tag {
+            border-color: rgba(155, 255, 117, 0.36);
+            background: rgba(160, 255, 140, 0.08);
+            color: #f5ffbf;
+            box-shadow: 0 0 18px rgba(155, 255, 117, 0.12);
+        }
+
+        body.lucky-mode .modal {
+            background: linear-gradient(135deg, #102515 0%, #183a22 50%, #0f2818 100%);
+            border-color: #2f8a43;
+            box-shadow: 0 0 40px rgba(50, 160, 80, 0.28);
+        }
+
+        .lucky-decoration::before {
+            content: '??';
+            top: 8%;
+            right: 11%;
+            font-size: 68px;
+        }
+
+        .lucky-decoration::after {
+            content: '??';
+            bottom: 11%;
+            left: 13%;
+            font-size: 54px;
+            animation-delay: 2.1s;
+        }
+</style>
 </head>
 <body>
     <!-- Decoration container, content changes based on theme via JS -->
@@ -2239,6 +2321,7 @@
                     </ul>
                 </aside>
                 <div class="start-screen-main">
+                    <div id="playerCountLabel" class="player-count-label">Players Online: --</div>
                     <h1 id="gameTitle">&#x2694;&#xFE0F; Myths &amp; Steel &#x1F6E1;&#xFE0F;</h1>
                     <div id="menuVersionTag" class="menu-version-tag">v0.94.5</div>
                     <p id="gameSubtitle">Survive as long as you can.</p>
@@ -2858,6 +2941,9 @@
 
         // --- THEME MANAGEMENT ---
         let isChristmasEnabled = false; // Default to New Year
+        const ST_PATRICK_EVENT_START_MS = Date.parse('2026-03-20T00:00:00Z');
+        const ST_PATRICK_EVENT_END_MS = Date.parse('2026-04-03T00:00:00Z');
+        const ST_PATRICK_SHINY_MULTIPLIER = 3;
 
         async function loadTheme() {
             const result = await loadData('settings', 'theme');
@@ -2873,30 +2959,67 @@
             await saveData('settings', 'theme', isChristmasEnabled ? 'christmas' : 'newyear');
         }
 
-        function applyTheme() {
+        function isStPatricksEventActive(now = Date.now()) {
+            return now >= ST_PATRICK_EVENT_START_MS && now < ST_PATRICK_EVENT_END_MS;
+        }
+
+        function updatePlayerCountLabel() {
+            const label = document.getElementById('playerCountLabel');
+            if (!label) return;
+            label.textContent = location.protocol === 'file:' ? 'Players Online: Local' : 'Players Online: --';
+        }
+
+        function maybeUnlockLuckyTheme() {
+            normalizeUserStats();
+            if (!isStPatricksEventActive()) return;
+            if (userStats.luckyThemeUnlocked) return;
+            if ((userStats.eventShinyKills || 0) < 35) return;
+            userStats.luckyThemeUnlocked = true;
+            persistUserStatsNow();
+            queueAchievementToast({ name: 'Lucky Theme Unlocked', desc: 'Defeat 35 shinies during the event to unlock the St. Patrick menu theme.' });
+            applyTheme();
+        }
+
+                function applyTheme() {
             const body = document.body;
             const toggle = document.getElementById('christmasToggle');
             const deco = document.getElementById('themeDecoration');
             const title = document.getElementById('gameTitle');
             const subtitle = document.getElementById('gameSubtitle');
+            const luckyThemeActive = !isChristmasEnabled && !!(userStats && userStats.luckyThemeUnlocked);
 
             if (isChristmasEnabled) {
                 body.classList.add('christmas-mode');
+                body.classList.remove('lucky-mode');
                 deco.classList.remove('newyear-decoration');
+                deco.classList.remove('lucky-decoration');
                 deco.classList.add('christmas-decoration');
                 if (toggle) toggle.checked = true;
-                title.textContent = '\u2694\uFE0F Myths & Steel \uD83D\uDEE1\uFE0F';
+                title.textContent = 'Myths & Steel';
                 subtitle.textContent = "Survive Christmas chaos!";
-                document.title = "\uD83C\uDF84 Myths & Steel - Christmas Edition";
+                document.title = "Myths & Steel - Christmas Edition";
+            } else if (luckyThemeActive) {
+                body.classList.remove('christmas-mode');
+                body.classList.add('lucky-mode');
+                deco.classList.remove('christmas-decoration');
+                deco.classList.remove('newyear-decoration');
+                deco.classList.add('lucky-decoration');
+                if (toggle) toggle.checked = false;
+                title.textContent = 'Myths & Steel';
+                subtitle.textContent = 'Luck favors the steel.';
+                document.title = 'Myths & Steel - Lucky Edition';
             } else {
                 body.classList.remove('christmas-mode');
+                body.classList.remove('lucky-mode');
                 deco.classList.remove('christmas-decoration');
+                deco.classList.remove('lucky-decoration');
                 deco.classList.add('newyear-decoration');
                 if (toggle) toggle.checked = false;
-                title.textContent = '\u2694\uFE0F Myths & Steel \uD83D\uDEE1\uFE0F';
+                title.textContent = 'Myths & Steel';
                 subtitle.textContent = "Welcome to New Year's Chaos!";
-                document.title = "\u2728 Myths & Steel - New Year's Edition";
+                document.title = "Myths & Steel - New Year's Edition";
             }
+            updatePlayerCountLabel();
             saveTheme();
         }
         // --- AUDIO MANAGEMENT ---
@@ -3328,6 +3451,8 @@
             if (typeof userStats.goldenKills !== 'number') userStats.goldenKills = 0;
             if (typeof userStats.shinyEncounters !== 'number') userStats.shinyEncounters = 0;
             if (typeof userStats.shinyKills !== 'number') userStats.shinyKills = 0;
+            if (typeof userStats.eventShinyKills !== 'number') userStats.eventShinyKills = 0;
+            if (typeof userStats.luckyThemeUnlocked !== 'boolean') userStats.luckyThemeUnlocked = false;
             if (!userStats.bossCodex || typeof userStats.bossCodex !== 'object') userStats.bossCodex = {};
             if (!userStats.achievements || typeof userStats.achievements !== 'object') userStats.achievements = {};
 
@@ -4431,7 +4556,8 @@
 
         function finalizeEnemySpawn(enemy) {
             if (!enemy || enemy.noShiny || enemy.isShiny) return enemy;
-            if (Math.random() >= SHINY_ENEMY_CHANCE) return enemy;
+            const shinyChance = SHINY_ENEMY_CHANCE * (isStPatricksEventActive() ? ST_PATRICK_SHINY_MULTIPLIER : 1);
+            if (Math.random() >= shinyChance) return enemy;
             enemy.isShiny = true;
             enemy.baseColor = enemy.color;
             enemy.color = invertColorString(enemy.color || '#ffffff');
@@ -6074,7 +6200,9 @@
             }
             if (enemy.isShiny) {
                 userStats.shinyKills = (userStats.shinyKills || 0) + 1;
+                if (isStPatricksEventActive()) userStats.eventShinyKills = (userStats.eventShinyKills || 0) + 1;
                 updatedStats = true;
+                maybeUnlockLuckyTheme();
             }
             if (updatedStats && !syncMilestoneAchievements()) {
                 persistUserStatsNow();
@@ -11817,6 +11945,7 @@ function updateLasers() {
             loadUserStats().then(() => {
                 Promise.all([loadTheme(), loadAudioSettings(), loadPerformanceSettings(), loadDeviceModeSettings()]).then(() => {
                     initLiveAnnouncements();
+                    updatePlayerCountLabel();
                     resizeGameViewport();
                     updateWeaponDisplay(); updateBuffsDisplay(); updateStatsDisplay(); draw();
                 });
@@ -11826,6 +11955,9 @@ function updateLasers() {
     </script>
 </body>
 </html>
+
+
+
 
 
 
