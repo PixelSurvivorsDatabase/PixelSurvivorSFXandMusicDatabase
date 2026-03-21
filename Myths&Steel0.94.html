@@ -542,9 +542,10 @@
             }
 
             #menuFunFact {
-                top: 4px;
-                right: 6%;
-                font-size: 13px;
+                top: -10px;
+                right: 2%;
+                max-width: 240px;
+                font-size: 12px;
             }
 
             .start-screen-layout {
@@ -2191,12 +2192,23 @@
 
             <div id="optionsPanelGameplay" class="options-panel active">
                 <div class="option-row">
-                    <span>Enable Christmas Theme</span>
-                    <label class="switch">
-                        <input type="checkbox" id="christmasToggle">
-                        <span class="slider"></span>
-                    </label>
+                    <span>Theme</span>
+                    <select id="themeModeSelect">
+                        <option value="newyear">New Year's Theme</option>
+                        <option value="christmas">Christmas Theme</option>
+                        <option value="lucky" id="themeModeLuckyOption">Lucky Theme (Locked)</option>
+                    </select>
                 </div>
+                <p id="themeModeNote" style="font-size: 12px; color: #aaa; margin-top:10px;">Lucky Theme unlock: defeat 35 event shinies.</p>
+                <div class="option-row">
+                    <span>Game Speed</span>
+                    <select id="gameSpeedSelect">
+                        <option value="1">1x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
+                <p id="gameSpeedUnlockNote" style="font-size: 12px; color: #aaa; margin-top:10px;">Unlock at 4 achievements (0/4).</p>
                 <div class="option-row">
                     <span>Device Layout</span>
                     <select id="deviceModeSelect">
@@ -2205,7 +2217,6 @@
                         <option value="mobile">Mobile</option>
                     </select>
                 </div>
-                <p style="font-size: 12px; color: #aaa; margin-top:10px;">Disabling this enables New Year's Theme (Fireworks).</p>
             </div>
 
             <div id="optionsPanelAudio" class="options-panel">
@@ -2489,23 +2500,105 @@
         }
 
         // --- THEME MANAGEMENT ---
-        let isChristmasEnabled = false; // Default to New Year
+        let isChristmasEnabled = false; // Compatibility flag for existing render paths
+        let selectedThemeMode = 'newyear';
+        let gameSpeedMultiplier = 1;
+        let gameSpeedStepCarry = 0;
+        const GAME_SPEED_UNLOCK_ACHIEVEMENTS = 4;
+        const SECRET_MYTHIC_SHINY_REQ = 150;
+        const SECRET_MYTHIC_GOLDEN_REQ = 50;
         const ST_PATRICK_EVENT_START_MS = Date.parse('2026-03-20T00:00:00Z');
         const ST_PATRICK_EVENT_END_MS = Date.parse('2026-04-03T00:00:00Z');
         const ST_PATRICK_SHINY_MULTIPLIER = 3;
 
-        async function loadTheme() {
+                async function loadTheme() {
             const result = await loadData('settings', 'theme');
-            if (result !== undefined) {
-                isChristmasEnabled = result === 'christmas';
-            } else {
-                isChristmasEnabled = false;
-            }
+            selectedThemeMode = normalizeThemeMode(result);
             applyTheme();
         }
 
         async function saveTheme() {
-            await saveData('settings', 'theme', isChristmasEnabled ? 'christmas' : 'newyear');
+            await saveData('settings', 'theme', normalizeThemeMode(selectedThemeMode));
+        }
+
+        function canUseLuckyTheme() {
+            return !!(userStats && userStats.luckyThemeUnlocked);
+        }
+
+        function normalizeThemeMode(mode) {
+            if (mode === true || mode === 'christmas') return 'christmas';
+            if (mode === 'lucky' && canUseLuckyTheme()) return 'lucky';
+            return 'newyear';
+        }
+
+        function getThemeBackdropStyle(themeMode = selectedThemeMode) {
+            switch (normalizeThemeMode(themeMode)) {
+                case 'christmas':
+                    return 'linear-gradient(135deg, #0a2847 0%, #1a3a52 50%, #2d5a7b 100%)';
+                case 'lucky':
+                    return 'linear-gradient(135deg, #08160b 0%, #12351b 50%, #2f642f 100%)';
+                case 'newyear':
+                default:
+                    return 'linear-gradient(135deg, #050510 0%, #1a0b2e 50%, #2d1b4e 100%)';
+            }
+        }
+
+        function clampGameSpeedSetting(value) {
+            const numeric = Number(value);
+            if (Math.abs(numeric - 2) < 0.2) return 2;
+            if (Math.abs(numeric - 1.5) < 0.2) return 1.5;
+            return 1;
+        }
+
+        async function loadGameSpeedSettings() {
+            const result = await loadData('settings', 'gameSpeed');
+            gameSpeedMultiplier = clampGameSpeedSetting(result);
+            updateGameSpeedUI();
+        }
+
+        async function saveGameSpeedSettings() {
+            await saveData('settings', 'gameSpeed', clampGameSpeedSetting(gameSpeedMultiplier));
+        }
+
+        function updateThemeModeUI() {
+            selectedThemeMode = normalizeThemeMode(selectedThemeMode);
+            const select = document.getElementById('themeModeSelect');
+            const luckyOption = document.getElementById('themeModeLuckyOption');
+            const note = document.getElementById('themeModeNote');
+            const luckyUnlocked = canUseLuckyTheme();
+            if (luckyOption) {
+                luckyOption.disabled = !luckyUnlocked;
+                luckyOption.textContent = luckyUnlocked ? 'Lucky Theme' : 'Lucky Theme (Locked)';
+            }
+            if (select) select.value = selectedThemeMode;
+            if (note) note.textContent = luckyUnlocked
+                ? 'Lucky Theme unlocked and ready to use.'
+                : 'Lucky Theme unlock: defeat 35 event shinies.';
+        }
+
+        function updateGameSpeedUI() {
+            const select = document.getElementById('gameSpeedSelect');
+            const note = document.getElementById('gameSpeedUnlockNote');
+            const unlockedCount = Math.min(typeof getUnlockedAchievementCount === 'function' ? getUnlockedAchievementCount() : 0, GAME_SPEED_UNLOCK_ACHIEVEMENTS);
+            const unlocked = unlockedCount >= GAME_SPEED_UNLOCK_ACHIEVEMENTS;
+            if (!unlocked) {
+                gameSpeedMultiplier = 1;
+                gameSpeedStepCarry = 0;
+            }
+            if (select) {
+                select.disabled = !unlocked;
+                select.value = String(unlocked ? clampGameSpeedSetting(gameSpeedMultiplier) : 1);
+            }
+            if (note) note.textContent = unlocked
+                ? 'Unlocked: choose how fast the run advances.'
+                : `Unlock at ${GAME_SPEED_UNLOCK_ACHIEVEMENTS} achievements (${unlockedCount}/${GAME_SPEED_UNLOCK_ACHIEVEMENTS}).`;
+        }
+
+        function getGameSimulationStepCount() {
+            gameSpeedStepCarry += clampGameSpeedSetting(gameSpeedMultiplier);
+            const steps = Math.max(1, Math.floor(gameSpeedStepCarry));
+            gameSpeedStepCarry -= steps;
+            return Math.min(steps, 3);
         }
 
         function isStPatricksEventActive(now = Date.now()) {
@@ -2518,7 +2611,7 @@
             label.textContent = location.protocol === 'file:' ? 'Players Online: Local' : 'Players Online: --';
         }
 
-        function maybeUnlockLuckyTheme() {
+                function maybeUnlockLuckyTheme() {
             normalizeUserStats();
             if (!isStPatricksEventActive()) return;
             if (userStats.luckyThemeUnlocked) return;
@@ -2529,31 +2622,41 @@
             applyTheme();
         }
 
-                function applyTheme() {
+        function syncSecretMythicUnlock() {
+            normalizeUserStats();
+            if (userStats.secretMythicUnlocked) return false;
+            if ((userStats.shinyKills || 0) < SECRET_MYTHIC_SHINY_REQ) return false;
+            if ((userStats.goldenKills || 0) < SECRET_MYTHIC_GOLDEN_REQ) return false;
+            userStats.secretMythicUnlocked = true;
+            persistUserStatsNow();
+            queueAchievementToast({ name: 'Secret Mythic Ready', desc: 'Hidden mythical unlock complete: 150 shinies and 50 goldens cleared.' });
+            return true;
+        }
+
+                        function applyTheme() {
             const body = document.body;
-            const toggle = document.getElementById('christmasToggle');
             const deco = document.getElementById('themeDecoration');
             const title = document.getElementById('gameTitle');
             const subtitle = document.getElementById('gameSubtitle');
-            const luckyThemeActive = !isChristmasEnabled && !!(userStats && userStats.luckyThemeUnlocked);
+            selectedThemeMode = normalizeThemeMode(selectedThemeMode);
+            isChristmasEnabled = selectedThemeMode === 'christmas';
+            updateThemeModeUI();
 
-            if (isChristmasEnabled) {
+            if (selectedThemeMode === 'christmas') {
                 body.classList.add('christmas-mode');
                 body.classList.remove('lucky-mode');
                 deco.classList.remove('newyear-decoration');
                 deco.classList.remove('lucky-decoration');
                 deco.classList.add('christmas-decoration');
-                if (toggle) toggle.checked = true;
                 title.textContent = 'Myths & Steel';
-                subtitle.textContent = "Survive Christmas chaos!";
-                document.title = "Myths & Steel - Christmas Edition";
-            } else if (luckyThemeActive) {
+                subtitle.textContent = 'Survive Christmas chaos!';
+                document.title = 'Myths & Steel - Christmas Edition';
+            } else if (selectedThemeMode === 'lucky') {
                 body.classList.remove('christmas-mode');
                 body.classList.add('lucky-mode');
                 deco.classList.remove('christmas-decoration');
                 deco.classList.remove('newyear-decoration');
                 deco.classList.add('lucky-decoration');
-                if (toggle) toggle.checked = false;
                 title.textContent = 'Myths & Steel';
                 subtitle.textContent = 'Luck favors the steel.';
                 document.title = 'Myths & Steel - Lucky Edition';
@@ -2563,12 +2666,12 @@
                 deco.classList.remove('christmas-decoration');
                 deco.classList.remove('lucky-decoration');
                 deco.classList.add('newyear-decoration');
-                if (toggle) toggle.checked = false;
                 title.textContent = 'Myths & Steel';
                 subtitle.textContent = "Welcome to New Year's Chaos!";
-                document.title = "Myths & Steel - New Year's Edition";
+                document.title = 'Myths & Steel - New Year''s Edition';
             }
-            updatePlayerCountLabel();
+            if (typeof updatePlayerCountLabel === 'function') updatePlayerCountLabel();
+            if (typeof renderStPatricksEventPromo === 'function') renderStPatricksEventPromo();
             saveTheme();
         }
         // --- AUDIO MANAGEMENT ---
@@ -2955,6 +3058,7 @@
             goldenKills: 0,
             shinyEncounters: 0,
             shinyKills: 0,
+            secretMythicUnlocked: false,
             achievements: {}
         };
 
@@ -3002,6 +3106,7 @@
             if (typeof userStats.shinyKills !== 'number') userStats.shinyKills = 0;
             if (typeof userStats.eventShinyKills !== 'number') userStats.eventShinyKills = 0;
             if (typeof userStats.luckyThemeUnlocked !== 'boolean') userStats.luckyThemeUnlocked = false;
+            if (typeof userStats.secretMythicUnlocked !== 'boolean') userStats.secretMythicUnlocked = false;
             if (!userStats.bossCodex || typeof userStats.bossCodex !== 'object') userStats.bossCodex = {};
             if (!userStats.achievements || typeof userStats.achievements !== 'object') userStats.achievements = {};
 
@@ -3029,6 +3134,7 @@
             saveData('userStats', 'stats', userStats);
             updateRecordDisplay();
             updateModeSelectUI();
+            updateGameSpeedUI();
         }
         let achievementToastTimeout = 0;
         let achievementToastHideTimeout = 0;
@@ -3162,9 +3268,13 @@
             if (cause === 'blackHole') {
                 unlockAchievement('master_void');
             }
-            if (updatedStats && !syncMilestoneAchievements()) {
-                persistUserStatsNow();
-                renderAchievements();
+            if (updatedStats) {
+                const milestoneUnlocked = syncMilestoneAchievements();
+                const secretUnlocked = syncSecretMythicUnlock();
+                if (!milestoneUnlocked && !secretUnlocked) {
+                    persistUserStatsNow();
+                    renderAchievements();
+                }
             }
         }
 
@@ -3195,6 +3305,7 @@
                 `;
             }).join('');
             updateModeSelectUI();
+            updateGameSpeedUI();
         }
 
 
@@ -3316,6 +3427,7 @@
             updateRecordDisplay();
             renderAchievements();
             updateModeSelectUI();
+            updateGameSpeedUI();
         }
 
         async function saveUserStats() {
@@ -3349,6 +3461,7 @@
                 await saveData('userStats', 'stats', userStats);
                 updateRecordDisplay();
                 updateModeSelectUI();
+            updateGameSpeedUI();
             } catch (e) {
                 console.error("[SAVE STATS] CRITICAL ERROR:", e);
             }
@@ -4471,18 +4584,44 @@
         setMenuFunFact();
 
         // Theme Event Listeners
-        document.getElementById('optionsBtn').addEventListener('click', () => {
-            document.getElementById('optionsModal').style.display = 'block';
-        });
-        
-        document.getElementById('closeOptionsBtn').addEventListener('click', () => {
-            document.getElementById('optionsModal').style.display = 'none';
-        });
+        const optionsBtnEl = document.getElementById('optionsBtn');
+        const closeOptionsBtnEl = document.getElementById('closeOptionsBtn');
+        const themeModeSelectEl = document.getElementById('themeModeSelect');
+        const gameSpeedSelectEl = document.getElementById('gameSpeedSelect');
 
-        document.getElementById('christmasToggle').addEventListener('change', (e) => {
-            isChristmasEnabled = e.target.checked;
-            applyTheme();
-        });
+        if (optionsBtnEl) {
+            optionsBtnEl.addEventListener('click', () => {
+                updateThemeModeUI();
+                updateGameSpeedUI();
+                document.getElementById('optionsModal').style.display = 'block';
+            });
+        }
+
+        if (closeOptionsBtnEl) {
+            closeOptionsBtnEl.addEventListener('click', () => {
+                document.getElementById('optionsModal').style.display = 'none';
+            });
+        }
+
+        if (themeModeSelectEl) {
+            themeModeSelectEl.addEventListener('change', (e) => {
+                selectedThemeMode = normalizeThemeMode(e.target.value);
+                applyTheme();
+            });
+        }
+
+        if (gameSpeedSelectEl) {
+            gameSpeedSelectEl.addEventListener('change', (e) => {
+                if (getUnlockedAchievementCount() < GAME_SPEED_UNLOCK_ACHIEVEMENTS) {
+                    updateGameSpeedUI();
+                    return;
+                }
+                gameSpeedMultiplier = clampGameSpeedSetting(e.target.value);
+                gameSpeedStepCarry = 0;
+                saveGameSpeedSettings();
+                updateGameSpeedUI();
+            });
+        }
         function initOptionsTabs() {
             const tabs = document.querySelectorAll('#optionsModal .options-tab');
             const panels = document.querySelectorAll('#optionsModal .options-panel');
@@ -4584,6 +4723,7 @@
 
         function openModeSelectModal() {
             updateModeSelectUI();
+            updateGameSpeedUI();
             document.getElementById('modeSelectModal').style.display = 'block';
         }
 
@@ -4622,6 +4762,7 @@
         function startGame(mode = 'classic') {
             if (mode === 'hardcore' && !isHardcoreUnlocked()) {
                 updateModeSelectUI();
+            updateGameSpeedUI();
                 return;
             }
             currentGameMode = mode;
@@ -4635,6 +4776,8 @@
             syncMobileHudState();
             lastTime = performance.now();
             lastSpawn = lastTime;
+            spawnClockMs = 0;
+            gameSpeedStepCarry = 0;
             gameLoop(lastTime);
         }
 
@@ -4651,7 +4794,7 @@
         function restartGame() {
             resetRunState();
             playMusicCue(currentGameMode === 'hardcore' ? 'hardcore' : 'classic', { restart: true, fadeInMs: 250 });
-            gameRunning = true; syncMobileHudState(); lastTime = performance.now(); lastSpawn = lastTime;
+            gameRunning = true; syncMobileHudState(); lastTime = performance.now(); lastSpawn = lastTime; spawnClockMs = 0; gameSpeedStepCarry = 0;
             gameLoop(lastTime);
         }
 
@@ -5000,9 +5143,13 @@
                 updatedStats = true;
                 maybeUnlockLuckyTheme();
             }
-            if (updatedStats && !syncMilestoneAchievements()) {
-                persistUserStatsNow();
-                renderAchievements();
+            if (updatedStats) {
+                const milestoneUnlocked = syncMilestoneAchievements();
+                const secretUnlocked = syncSecretMythicUnlock();
+                if (!milestoneUnlocked && !secretUnlocked) {
+                    persistUserStatsNow();
+                    renderAchievements();
+                }
             }
             spawnSoulEchoFromEnemy(enemy);
         }
@@ -10419,12 +10566,13 @@ function updateLasers() {
             mouse.y = (mouse.screenY !== undefined && mouse.screenY !== null) ? mouse.screenY : mouse.y;
         }
 
-        let lastSpawn = 0; let lastTime = 0;
+        let lastSpawn = 0; let lastTime = 0; let spawnClockMs = 0;
 
-        function gameLoop(timestamp) {
+                function gameLoop(timestamp) {
             if (!gameRunning) return;
-            const deltaTime = (timestamp - lastTime) / 1000; lastTime = timestamp;
-            updateWorldCamera(deltaTime);
+            const deltaTime = Math.max(0, (timestamp - lastTime) / 1000); lastTime = timestamp;
+            const effectiveDeltaTime = deltaTime * clampGameSpeedSetting(gameSpeedMultiplier);
+            updateWorldCamera(effectiveDeltaTime);
             syncMouseWorldPosition();
             updateBossCutscene();
             maybeTriggerCelestialCardCutscene();
@@ -10432,45 +10580,51 @@ function updateLasers() {
             updateFinalVictorySequence();
             if (!gamePaused) updateFinalArenaApproachDialogue();
             if (!gamePaused) {
-                gameTime += deltaTime;
-                
-                // Auto-save stats every 5 seconds
+                const simulationSteps = getGameSimulationStepCount();
+                const simulationDeltaTime = effectiveDeltaTime / simulationSteps;
+
                 if (Date.now() - lastAutoSaveTime > 5000) {
                     saveUserStats();
                     lastAutoSaveTime = Date.now();
                 }
 
-                const difficultyLevel = Math.floor(gameTime / 60);
-                if (difficultyLevel > currentDifficultyLevel) {
-                    currentDifficultyLevel = difficultyLevel;
-                    if (!finalArenaState.active) {
-                        const warning = document.getElementById('enemyStrengthWarning');
-                        warning.style.display = 'block';
-                        setTimeout(() => { warning.style.display = 'none'; }, 3000);
+                for (let step = 0; step < simulationSteps; step++) {
+                    gameTime += simulationDeltaTime;
+
+                    const difficultyLevel = Math.floor(gameTime / 60);
+                    if (difficultyLevel > currentDifficultyLevel) {
+                        currentDifficultyLevel = difficultyLevel;
+                        if (!finalArenaState.active) {
+                            const warning = document.getElementById('enemyStrengthWarning');
+                            warning.style.display = 'block';
+                            setTimeout(() => { warning.style.display = 'none'; }, 3000);
+                        }
                     }
+                    if (blackHoleCooldown > 0) blackHoleCooldown -= simulationDeltaTime;
+                    if (fugaCooldown > 0) fugaCooldown -= simulationDeltaTime;
+                    if (player.bloodMoon && gameTime >= 300 && !bloodMoonActive) { activateBloodMoon(); }
+                    if (bloodMoonActive) { bloodMoonTimer -= simulationDeltaTime; if (bloodMoonTimer <= 0) { deactivateBloodMoon(); } }
+                    updateSoulHarvest();
+                    updateBossFightAchievementTracker();
+                    if (player.soulHarvest && kills - soulHarvestKills >= 25) { activateSoulHarvest(); soulHarvestKills = kills; }
+                    updateBlackHoles(); updateFugaProjectiles(); updateShield(); updateFizzStreams();
+                    const spawnRate = Math.max(400, 2000 - gameTime * 5);
+                    spawnClockMs += simulationDeltaTime * 1000;
+                    if (spawnClockMs >= spawnRate) {
+                        spawnEnemy();
+                        spawnClockMs = 0;
+                        const extraSpawnChance = Math.min(0.5, gameTime / 600);
+                        if (Math.random() < extraSpawnChance && enemies.length < MAX_ENEMIES - 5) { setTimeout(() => spawnEnemy(), 500); }
+                    }
+                    if (!finalArenaState.active && gameTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
+                    updatePlayer(); updateEnemies(); updateBosses(); updateProjectiles(); updateLasers(); updateShurikens(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
+
+                    if (selectedThemeMode === 'christmas') updateSnowflakes();
+
+                    updateXPGems(); updateParticles(); updateDamageNumbers(); updateCriticalTexts(); checkGameOver();
+                    if (!gameRunning) break;
                 }
-                if (blackHoleCooldown > 0) blackHoleCooldown -= deltaTime;
-                if (fugaCooldown > 0) fugaCooldown -= deltaTime;
-                if (player.bloodMoon && gameTime >= 300 && !bloodMoonActive) { activateBloodMoon(); }
-                if (bloodMoonActive) { bloodMoonTimer -= deltaTime; if (bloodMoonTimer <= 0) { deactivateBloodMoon(); } }
-                updateSoulHarvest();
-                updateBossFightAchievementTracker();
-                if (player.soulHarvest && kills - soulHarvestKills >= 25) { activateSoulHarvest(); soulHarvestKills = kills; }
-                updateBlackHoles(); updateFugaProjectiles(); updateShield(); updateFizzStreams(); // NEW
-                const spawnRate = Math.max(400, 2000 - gameTime * 5);
-                if (timestamp - lastSpawn > spawnRate) {
-                    spawnEnemy(); lastSpawn = timestamp;
-                    let adjustedSpawnRate = spawnRate;
-                    if (enemies.length >= MAX_ENEMIES) adjustedSpawnRate = spawnRate * 2;
-                    const extraSpawnChance = Math.min(0.5, gameTime / 600);
-                    if (Math.random() < extraSpawnChance && enemies.length < MAX_ENEMIES - 5) { setTimeout(() => spawnEnemy(), 500); }
-                }
-                if (!finalArenaState.active && gameTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
-                updatePlayer(); updateEnemies(); updateBosses(); updateProjectiles(); updateLasers(); updateShurikens(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
-                
-                if (isChristmasEnabled) updateSnowflakes(); // Only update physics for snow if enabled
-                
-                updateXPGems(); updateParticles(); updateDamageNumbers(); updateCriticalTexts(); updateUI(); checkGameOver();
+                updateUI();
             }
             draw(); drawUI(); requestAnimationFrame(gameLoop);
         }
@@ -10730,7 +10884,7 @@ function updateLasers() {
         // Initialize
         initDB().then(() => {
             loadUserStats().then(() => {
-                Promise.all([loadTheme(), loadAudioSettings(), loadPerformanceSettings(), loadDeviceModeSettings()]).then(() => {
+                Promise.all([loadTheme(), loadGameSpeedSettings(), loadAudioSettings(), loadPerformanceSettings(), loadDeviceModeSettings()]).then(() => {
                     initLiveAnnouncements();
                     updatePlayerCountLabel();
                     resizeGameViewport();
