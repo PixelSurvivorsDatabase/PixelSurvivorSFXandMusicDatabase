@@ -778,6 +778,7 @@
             border: 1px solid rgba(212, 175, 55, 0.38);
             background: rgba(255, 235, 140, 0.08);
             color: #ffe89a;
+            cursor: pointer;
             font-size: 12px;
             font-weight: 800;
             letter-spacing: 1.4px;
@@ -10366,7 +10367,6 @@ function updateLasers() {
             const modal = document.getElementById('releaseNotesModal');
             if (!modal) return;
             modal.style.display = 'block';
-            markReleaseNotesSeen();
         }
 
         function closeReleaseNotesModal() {
@@ -10378,8 +10378,15 @@ function updateLasers() {
 
         function initReleaseNotesModal() {
             const closeBtn = document.getElementById('closeReleaseNotesBtn');
+            const versionTag = document.getElementById('menuVersionTag');
             if (closeBtn) closeBtn.addEventListener('click', closeReleaseNotesModal);
-            if (shouldAutoShowReleaseNotes()) openReleaseNotesModal();
+            if (versionTag) versionTag.addEventListener('click', openReleaseNotesModal);
+            if (shouldAutoShowReleaseNotes()) {
+                setTimeout(() => {
+                    const startScreen = document.getElementById('startScreen');
+                    if (startScreen && startScreen.style.display !== 'none') openReleaseNotesModal();
+                }, 220);
+            }
         }
 
         const LIVE_ANNOUNCEMENT_REFRESH_MS = 15000;
@@ -10604,6 +10611,7 @@ function updateLasers() {
     </script>
 </body>
 </html>
+
 
 
 
