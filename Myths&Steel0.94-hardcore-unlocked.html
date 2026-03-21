@@ -2488,7 +2488,8 @@
             "Hazmat runs faster than it should.",
             "Dragonlings bite back.",
             "A shift in reality can occur.",
-            "Peak was forged here."
+            "Peak was forged here.",
+            "Ever wonder why this game is called Myths and Steel, even though it doesn't have any myths or steel?"
         ];
         let lastMenuFunFactIndex = -1;
 
@@ -2513,8 +2514,13 @@
         const DEATH_GAMBLE_ROLL_KILLS = 5;
         const DEATH_GAMBLE_MIN_TARGETS = 5;
         const DEATH_GAMBLE_JACKPOT_CHANCE = 7;
+        const DEATH_GAMBLE_DOMAIN_DURATION_MS = 35 * 1000;
         const DEATH_GAMBLE_JACKPOT_DURATION_MS = ((4 * 60) + 11) * 1000;
         const DEATH_GAMBLE_JACKPOT_SPEED_MULTIPLIER = 2.5;
+        const DEATH_GAMBLE_FAIL_COOLDOWN_MS = 90 * 1000;
+        const DEATH_GAMBLE_JACKPOT_COOLDOWN_BASE_MS = 60 * 1000;
+        const DEATH_GAMBLE_JACKPOT_COOLDOWN_STEP_MS = 15 * 1000;
+        const DEATH_GAMBLE_JACKPOT_COOLDOWN_MIN_MS = 10 * 1000;
         const ST_PATRICK_EVENT_START_MS = Date.parse('2026-03-20T00:00:00Z');
         const ST_PATRICK_EVENT_END_MS = Date.parse('2026-04-03T00:00:00Z');
         const ST_PATRICK_SHINY_MULTIPLIER = 3;
@@ -2645,11 +2651,24 @@
             const card = document.getElementById('stPatricksEventCard');
             const bodyEl = document.getElementById('stPatricksEventBody');
             const progressEl = document.getElementById('stPatricksEventProgress');
+            const secretEl = document.getElementById('stPatricksEventSecret');
+            const requirementsEl = document.getElementById('stPatricksEventRequirements');
             const rewardEl = document.getElementById('stPatricksEventReward');
             const modal = document.getElementById('stPatricksEventModal');
             const modalIntro = document.getElementById('stPatricksEventModalIntro');
+            const modalProgressWrap = document.getElementById('stPatricksEventModalProgressWrap');
             const modalProgress = document.getElementById('stPatricksEventModalProgress');
-            if (!card || !bodyEl || !progressEl || !rewardEl || !modalIntro || !modalProgress) return;
+            const modalProgressState = document.getElementById('stPatricksEventModalProgressState');
+            const modalProgressFill = document.getElementById('stPatricksEventModalProgressFill');
+            const modalMythicWrap = document.getElementById('stPatricksEventModalMythicWrap');
+            const modalMythic = document.getElementById('stPatricksEventModalMythic');
+            const modalMythicState = document.getElementById('stPatricksEventModalMythicState');
+            const modalMythicShinyValue = document.getElementById('stPatricksEventModalMythicShinyValue');
+            const modalMythicShinyFill = document.getElementById('stPatricksEventModalMythicShinyFill');
+            const modalMythicGoldenValue = document.getElementById('stPatricksEventModalMythicGoldenValue');
+            const modalMythicGoldenFill = document.getElementById('stPatricksEventModalMythicGoldenFill');
+            const modalMythicCopy = document.getElementById('stPatricksEventModalMythicCopy');
+            if (!card || !bodyEl || !progressEl || !secretEl || !requirementsEl || !rewardEl || !modalIntro || !modalProgressWrap || !modalProgress || !modalProgressState || !modalProgressFill || !modalMythicWrap || !modalMythic || !modalMythicState || !modalMythicShinyValue || !modalMythicShinyFill || !modalMythicGoldenValue || !modalMythicGoldenFill || !modalMythicCopy) return;
 
             if (!isStPatricksEventActive()) {
                 card.hidden = true;
@@ -2658,13 +2677,25 @@
             }
 
             const { kills, unlocked, remaining } = getStPatricksEventStatus();
+            const shinyKills = userStats.shinyKills || 0;
+            const goldenKills = userStats.goldenKills || 0;
+            const mythicUnlocked = !!userStats.secretMythicUnlocked;
+            const eventRatio = Math.max(0, Math.min(1, kills / 35));
+            const shinyRatio = Math.max(0, Math.min(1, shinyKills / SECRET_MYTHIC_SHINY_REQ));
+            const goldenRatio = Math.max(0, Math.min(1, goldenKills / SECRET_MYTHIC_GOLDEN_REQ));
             card.hidden = false;
             bodyEl.textContent = unlocked
-                ? 'Lucky Theme secured. Triple shiny rates are still active while the event keeps growing.'
-                : `Triple shiny rates are live. Defeat ${remaining} more ${remaining === 1 ? 'shiny' : 'shinies'} to unlock the Lucky Theme.`;
+                ? 'Lucky Theme secured. Triple shiny rates are still live.'
+                : `Triple shiny rates live. ${remaining} more ${remaining === 1 ? 'event shiny' : 'event shinies'} for Lucky Theme.`;
             progressEl.textContent = unlocked
                 ? `Shinies: ${kills} / 35 â€¢ COMPLETE`
                 : `Shinies: ${kills} / 35`;
+            secretEl.textContent = mythicUnlocked
+                ? 'Secret Mythic: Death Gamble ready. Press G for the white domain.'
+                : 'Secret Mythic: Death Gamble. White domain, 1-in-7 jackpot every 5 kills.';
+            requirementsEl.textContent = mythicUnlocked
+                ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens â€¢ READY`
+                : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             rewardEl.textContent = unlocked ? 'Reward: Lucky Theme Unlocked' : 'Reward: Lucky Theme';
             modalIntro.textContent = unlocked
                 ? 'You already claimed the Lucky Theme. The St. Patrick\'s event is still active on the hosted build while more polish lands.'
@@ -2672,6 +2703,21 @@
             modalProgress.textContent = unlocked
                 ? `Shinies Defeated During Event: ${kills} / 35 â€¢ Reward unlocked`
                 : `Shinies Defeated During Event: ${kills} / 35`;
+            modalProgressState.textContent = unlocked ? 'Complete' : 'Live';
+            modalProgressWrap.classList.toggle('complete', unlocked);
+            modalProgressFill.style.width = `${(eventRatio * 100).toFixed(1)}%`;
+            modalMythic.textContent = mythicUnlocked
+                ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens â€¢ UNLOCKED`
+                : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
+            modalMythicState.textContent = mythicUnlocked ? 'Unlocked' : 'Locked';
+            modalMythicWrap.classList.toggle('complete', mythicUnlocked);
+            modalMythicShinyValue.textContent = `${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ}`;
+            modalMythicGoldenValue.textContent = `${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ}`;
+            modalMythicShinyFill.style.width = `${(shinyRatio * 100).toFixed(1)}%`;
+            modalMythicGoldenFill.style.width = `${(goldenRatio * 100).toFixed(1)}%`;
+            modalMythicCopy.textContent = mythicUnlocked
+                ? 'Death Gamble is unlocked. Press G to drag enemies into the white domain, then roll for a 1-in-7 jackpot every 5 kills.'
+                : 'Hidden mythic unlock: gather 150 total shinies and 50 total golden kills to unlock Death Gamble. Press G to open a white domain and roll for jackpot every 5 kills.';
         }
 
         function openStPatricksEventModal() {
@@ -2763,10 +2809,16 @@
         };
 
         const themeSongEl = document.getElementById('themeSong');
+        const deathGambleJackpotSong = new Audio(encodeURI('Hakari _Jackpot_ OST [ Jujutsu Shenanigans ] - Copy.mp3'));
+        deathGambleJackpotSong.loop = true;
+        deathGambleJackpotSong.preload = 'auto';
         const DEFAULT_THEME_SONG_SRC = themeSongEl ? themeSongEl.getAttribute('src') || '' : '';
         let themeSongFadeMultiplier = 1;
         let activeThemeFadeToken = 0;
         let currentMusicCue = null;
+        let deathGambleMusicOverrideActive = false;
+
+        audioRegistry.music.push({ element: deathGambleJackpotSong, base: 0.62 });
 
         function clamp01(v) { return Math.max(0, Math.min(1, v)); }
         function easeOutCubic(v) { const t = clamp01(v); return 1 - Math.pow(1 - t, 3); }
@@ -3060,7 +3112,7 @@
                 fugaBtn.classList.toggle('ready', ready);
             }
             if (deathGambleBtn) {
-                const ready = !!player.deathGamble && !deathGambleState.active && !isDeathGambleJackpotActive() && gameRunning && !gamePaused && getDeathGambleActivationTargetCount() >= DEATH_GAMBLE_MIN_TARGETS;
+                const ready = !!player.deathGamble && !deathGambleState.active && !isDeathGambleJackpotActive() && !isDeathGambleOnCooldown() && gameRunning && !gamePaused && getDeathGambleActivationTargetCount() >= DEATH_GAMBLE_MIN_TARGETS;
                 deathGambleBtn.disabled = !ready;
                 deathGambleBtn.classList.toggle('ready', ready);
                 deathGambleBtn.classList.toggle('active', !!deathGambleState.active || isDeathGambleJackpotActive());
@@ -3655,12 +3707,15 @@
         let lastHealTime = 0;
         let deathGambleState = {
             active: false,
+            activeUntil: 0,
             jackpotUntil: 0,
+            cooldownUntil: 0,
             domainKills: 0,
             killsSinceRoll: 0,
             rollRevealUntil: 0,
             rollNumbers: [0, 0, 0],
             rollWasJackpot: false,
+            consecutiveJackpots: 0,
             noticeUntil: 0,
             noticeText: '',
             noticeTone: 'ready'
@@ -3941,7 +3996,7 @@
 
             blackHoleCooldown = 0; fugaCooldown = 0; bloodMoonActive = false; bloodMoonTimer = 0;
             invincibleUntil = 0; soulHarvestKills = 0; blackHoles = []; soulHarvestActive = false; lastHealTime = 0;
-            deathGambleState.active = false; deathGambleState.jackpotUntil = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
+            deathGambleState.active = false; deathGambleState.activeUntil = 0; deathGambleState.jackpotUntil = 0; deathGambleState.cooldownUntil = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.consecutiveJackpots = 0; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
             bossCutscene.active = false; bossCutscene.bossId = null; bossCutscene.lines = []; bossCutscene.lineIndex = 0; bossCutscene.nextLineAt = 0; bossCutscene.onComplete = null;
             celestialPhaseEffects.pulseActive = false; celestialPhaseEffects.pulseStart = 0; celestialPhaseEffects.collapseStart = 0;
             celestialCardCutscene.active = false; celestialCardCutscene.triggered = false; celestialCardCutscene.startTime = 0; celestialCardCutscene.bossId = null; celestialCardCutscene.midShakeTriggered = false; celestialCardCutscene.flashTriggered = false;
@@ -3950,6 +4005,7 @@
             classicEndlessActive = false; classicEndlessChoicePending = false;
             bossFightNoHitActive = false; bossFightNoHitEligible = true; bossFightTrackedHealth = player.health;
             currentWorldCameraX = 0;
+            stopDeathGambleJackpotMusic({ resumeTheme: false });
             stopThemeSongFade(); themeSongFadeMultiplier = 1; currentMusicCue = null;
 
             enemies = []; projectiles = []; xpGems = []; particles = []; lasers = []; explosions = [];
@@ -4459,7 +4515,7 @@
             { name: 'Soul Harvest', rarity: 'mythical', description: 'Gain temporary invincibility for 8 seconds after every 25 kills. Each stack increases duration by 1s and boosts damage/speed by 1%.', effect: () => { player.soulHarvest = (player.soulHarvest || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Black Hole', rarity: 'mythical', description: 'Create a black hole that pulls in and destroys all enemies on screen. Press 2 to activate. At 5 stacks, it ends with an implosion.', effect: () => { player.blackHole = (player.blackHole || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Fuga', rarity: 'mythical', description: 'Launch a devastating fire arrow that deals 125 damage, creates a massive explosion, and ignites enemies!', effect: () => { player.fuga = (player.fuga || 0) + 1; }, stats: 'Mythical Ability' },
-            { name: 'Death Gamble', rarity: 'mythical', description: 'Hidden mythic. Press G to drag every current enemy into a white domain. Every 5 kills rolls 3 cards for a 1-in-7 jackpot. Jackpot grants +50 HP/s, x3 damage, 50% damage reduction, and x2.5 move speed for 4:11.', effect: () => { player.deathGamble = true; }, stats: 'Secret Mythical Ability' },
+            { name: 'Death Gamble', rarity: 'mythical', description: 'Hidden mythic. Press G to open a 35-second white domain. Every 5 kills rolls 3 cards for a 1-in-7 jackpot. Misses put it on a 1:30 cooldown. Jackpot grants +50 HP/s, x3 damage, 50% damage reduction, and x2.5 move speed for 4:11, with cooldowns chaining down to 10 seconds on consecutive wins.', effect: () => { player.deathGamble = true; }, stats: 'Secret Mythical Ability' },
             { name: 'Add Firework Blaster', rarity: 'epic', description: 'Blasts 5 colorful explosives that deal 8 damage in a spread. Large AOE explosion ignites enemies!', effect: () => { player.weapons['Firework Blaster'] = (player.weapons['Firework Blaster'] || 0) + 1; if (!player.lastShot['Firework Blaster']) player.lastShot['Firework Blaster'] = 0; recordFireworkStacks(player.weapons['Firework Blaster'] || 0); }, stats: 'Firework Weapon' },
             { name: 'XP Collection Range Increase', rarity: 'rare', description: 'Increase the distance at which you collect XP Gems by 10%.', effect: () => { player.xpCollectionRangeStacks++; player.xpCollectionRange = Math.round(player.xpCollectionRange * 1.1); }, stats: '+10% XP Range' },
             { name: 'The Gilded Magnum', rarity: 'legendary', description: '"99 bugs on the wall, 99 bugs... take one down, pass it around..." Fires 4 champagne rounds, then reloads for 3-4s. Each bullet deals 10 damage (+10% per stack) and applies Doused. Doused enemies hit by Fire trigger Steam Explosions!', effect: () => { player.weapons['The Gilded Magnum'] = (player.weapons['The Gilded Magnum'] || 0) + 1; if (!player.lastShot['The Gilded Magnum']) player.lastShot['The Gilded Magnum'] = 0; }, stats: 'Fizz Weapon' }
@@ -5147,6 +5203,13 @@
             finalArenaState.active = false;
             classicEndlessChoicePending = false;
             hideClassicEndlessChoice();
+            stopDeathGambleJackpotMusic({ resumeTheme: false });
+            deathGambleState.active = false;
+            deathGambleState.activeUntil = 0;
+            deathGambleState.jackpotUntil = 0;
+            deathGambleState.cooldownUntil = 0;
+            deathGambleState.noticeUntil = 0;
+            deathGambleState.noticeText = '';
             const gameOverModal = document.getElementById('gameOver');
             const gameOverTitle = document.querySelector('#gameOver h2');
             if (gameOverTitle) {
@@ -5515,6 +5578,24 @@
             return !!deathGambleState.jackpotUntil && now < deathGambleState.jackpotUntil;
         }
 
+        function isDeathGambleOnCooldown(now = Date.now()) {
+            return !!deathGambleState.cooldownUntil && now < deathGambleState.cooldownUntil;
+        }
+
+        function getDeathGambleCooldownRemainingSeconds(now = Date.now()) {
+            return Math.max(0, ((deathGambleState.cooldownUntil || 0) - now) / 1000);
+        }
+
+        function getDeathGambleDomainRemainingSeconds(now = Date.now()) {
+            return Math.max(0, ((deathGambleState.activeUntil || 0) - now) / 1000);
+        }
+
+        function getDeathGambleJackpotChainCooldownMs() {
+            const streak = Math.max(1, deathGambleState.consecutiveJackpots || 1);
+            const reduced = DEATH_GAMBLE_JACKPOT_COOLDOWN_BASE_MS - Math.max(0, streak - 1) * DEATH_GAMBLE_JACKPOT_COOLDOWN_STEP_MS;
+            return Math.max(DEATH_GAMBLE_JACKPOT_COOLDOWN_MIN_MS, reduced);
+        }
+
         function getCurrentPlayerHealRate() {
             return player.healRate + (isDeathGambleJackpotActive() ? 50 : 0);
         }
@@ -5552,6 +5633,13 @@
             deathGambleState.noticeText = text;
             deathGambleState.noticeTone = tone;
             deathGambleState.noticeUntil = Date.now() + durationMs;
+        }
+
+        function setDeathGambleCooldown(durationMs, { resetJackpotChain = false, noticeText = '' } = {}) {
+            deathGambleState.cooldownUntil = Date.now() + Math.max(0, durationMs);
+            if (resetJackpotChain) deathGambleState.consecutiveJackpots = 0;
+            if (noticeText) showDeathGambleNotice(noticeText, 1850, 'cooldown');
+            updateMobileAbilityButtons();
         }
 
         function isStatusImmuneTarget(target) {
@@ -6212,18 +6300,27 @@
         function endDeathGambleDomain(reason = '') {
             if (!deathGambleState.active) return;
             deathGambleState.active = false;
+            deathGambleState.activeUntil = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.domainKills = 0;
-            if (reason) showDeathGambleNotice(reason, 1500, 'cooldown');
-            updateMobileAbilityButtons();
+            const cleanedReason = reason ? String(reason).replace(/\s*[.!?]+$/, '') : 'The domain collapsed';
+            const cooldownText = formatBuffCountdown(DEATH_GAMBLE_FAIL_COOLDOWN_MS / 1000);
+            setDeathGambleCooldown(DEATH_GAMBLE_FAIL_COOLDOWN_MS, {
+                resetJackpotChain: true,
+                noticeText: `${cleanedReason}. Cooldown ${cooldownText}.`
+            });
         }
 
         function startDeathGambleJackpot() {
             deathGambleState.active = false;
+            deathGambleState.activeUntil = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.domainKills = 0;
+            deathGambleState.cooldownUntil = 0;
+            deathGambleState.consecutiveJackpots += 1;
             deathGambleState.jackpotUntil = Date.now() + DEATH_GAMBLE_JACKPOT_DURATION_MS;
-            showDeathGambleNotice('Jackpot hit. The house pays out.', 2200, 'active');
+            startDeathGambleJackpotMusic();
+            showDeathGambleNotice(`Jackpot hit. Next cooldown ${formatBuffCountdown(getDeathGambleJackpotChainCooldownMs() / 1000)}.`, 2200, 'active');
             screenShake(12, 220);
             createParticles(player.x, player.y, '#f6ff9b', 42);
             updateMobileAbilityButtons();
@@ -6258,18 +6355,29 @@
                 deathGambleState.noticeUntil = 0;
                 deathGambleState.noticeText = '';
             }
-            if (deathGambleState.jackpotUntil && now >= deathGambleState.jackpotUntil) {
-                deathGambleState.jackpotUntil = 0;
-                showDeathGambleNotice('Jackpot faded. Roll again when the crowd returns.', 1800, 'cooldown');
+            if (deathGambleState.cooldownUntil && now >= deathGambleState.cooldownUntil) {
+                deathGambleState.cooldownUntil = 0;
                 updateMobileAbilityButtons();
             }
+            if (deathGambleState.jackpotUntil && now >= deathGambleState.jackpotUntil) {
+                const cooldownMs = getDeathGambleJackpotChainCooldownMs();
+                deathGambleState.jackpotUntil = 0;
+                stopDeathGambleJackpotMusic({ resumeTheme: true });
+                setDeathGambleCooldown(cooldownMs, {
+                    noticeText: `Jackpot faded. Cooldown ${formatBuffCountdown(cooldownMs / 1000)}.`
+                });
+            }
             if (!deathGambleState.active) return;
+            if (now >= (deathGambleState.activeUntil || 0)) {
+                endDeathGambleDomain('The domain timed out');
+                return;
+            }
             if (getDeathGambleActivationTargetCount() <= 0) {
-                endDeathGambleDomain('The domain emptied out and shattered.');
+                endDeathGambleDomain('The domain emptied out and shattered');
                 return;
             }
             if (getDeathGambleActivationTargetCount() + deathGambleState.killsSinceRoll < DEATH_GAMBLE_ROLL_KILLS) {
-                endDeathGambleDomain('Not enough enemies remain for another roll.');
+                endDeathGambleDomain('Not enough enemies remain for another roll');
             }
         }
 
@@ -6279,6 +6387,11 @@
                 showDeathGambleNotice('The domain will not open during a cinematic.', 1400, 'cooldown');
                 return;
             }
+            if (isDeathGambleOnCooldown()) {
+                showDeathGambleNotice(`Death Gamble cooling down: ${formatBuffCountdown(getDeathGambleCooldownRemainingSeconds())}.`, 1650, 'cooldown');
+                updateMobileAbilityButtons();
+                return;
+            }
             const targetCount = getDeathGambleActivationTargetCount();
             if (targetCount < DEATH_GAMBLE_MIN_TARGETS) {
                 showDeathGambleNotice(`Need ${DEATH_GAMBLE_MIN_TARGETS} enemies or bosses to open the domain.`, 1600, 'cooldown');
@@ -6286,6 +6399,7 @@
                 return;
             }
             deathGambleState.active = true;
+            deathGambleState.activeUntil = Date.now() + DEATH_GAMBLE_DOMAIN_DURATION_MS;
             deathGambleState.domainKills = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.rollRevealUntil = 0;
@@ -8560,8 +8674,8 @@ function updateLasers() {
                     addBuffCard(buffsList, {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
-                        timer: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS}`,
-                        detail: `${getDeathGambleActivationTargetCount()} targets trapped in the white domain`,
+                        timer: formatBuffCountdown(getDeathGambleDomainRemainingSeconds(now)),
+                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll • ${getDeathGambleActivationTargetCount()} targets in the white domain`,
                         state: 'active'
                     });
                 } else if (isDeathGambleJackpotActive(now)) {
@@ -8571,6 +8685,14 @@ function updateLasers() {
                         timer: formatBuffCountdown(Math.max(0, (deathGambleState.jackpotUntil - now) / 1000)),
                         detail: 'x3 damage, +50 HP/s, 50% damage taken, and x2.5 speed',
                         state: 'active'
+                    });
+                } else if (isDeathGambleOnCooldown(now)) {
+                    addBuffCard(buffsList, {
+                        icon: '[DG]',
+                        name: 'Death Gamble [G]',
+                        timer: formatBuffCountdown(getDeathGambleCooldownRemainingSeconds(now)),
+                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` • jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
+                        state: 'cooldown'
                     });
                 } else {
                     addBuffCard(buffsList, {
@@ -9200,6 +9322,207 @@ function updateLasers() {
             ctx.stroke();
         }
 
+        function drawDeathGambleJackpotAura(now) {
+            if (!isDeathGambleJackpotActive(now)) return;
+
+            const pulse = 0.5 + 0.5 * Math.sin(now / 120);
+            const swell = 0.5 + 0.5 * Math.sin(now / 185 + 0.75);
+            const auraRadius = player.radius * (5.1 + pulse * 1.15);
+            const auraHeight = player.radius * (7.2 + swell * 1.25);
+
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+
+            const baseGlow = ctx.createRadialGradient(
+                player.x,
+                player.y + player.radius * 0.1,
+                player.radius * 0.45,
+                player.x,
+                player.y + player.radius * 0.15,
+                auraRadius
+            );
+            baseGlow.addColorStop(0, `rgba(245, 255, 248, ${0.9 - pulse * 0.06})`);
+            baseGlow.addColorStop(0.18, `rgba(186, 255, 223, ${0.5 + pulse * 0.16})`);
+            baseGlow.addColorStop(0.48, `rgba(54, 255, 173, ${0.3 + pulse * 0.14})`);
+            baseGlow.addColorStop(1, 'rgba(54, 255, 173, 0)');
+            ctx.fillStyle = baseGlow;
+            ctx.beginPath();
+            ctx.arc(player.x, player.y + player.radius * 0.15, auraRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            const flameBodies = [
+                { ox: 0, oy: player.radius * 0.4, rx: player.radius * (2.8 + pulse * 0.3), ry: auraHeight * 0.56, alpha: 0.34 },
+                { ox: -player.radius * (2.15 + pulse * 0.2), oy: player.radius * 0.35, rx: player.radius * 2.1, ry: auraHeight * 0.45, alpha: 0.22 },
+                { ox: player.radius * (2.2 + pulse * 0.18), oy: player.radius * 0.4, rx: player.radius * 2.05, ry: auraHeight * 0.46, alpha: 0.21 },
+                { ox: -player.radius * 0.95, oy: -player.radius * (1.7 + swell * 0.35), rx: player.radius * 1.45, ry: auraHeight * 0.26, alpha: 0.25 },
+                { ox: player.radius * 0.9, oy: -player.radius * (1.85 + pulse * 0.3), rx: player.radius * 1.35, ry: auraHeight * 0.24, alpha: 0.23 },
+                { ox: 0, oy: -player.radius * (2.8 + pulse * 0.55), rx: player.radius * 1.15, ry: auraHeight * 0.2, alpha: 0.27 }
+            ];
+
+            flameBodies.forEach((blob, index) => {
+                const blobGlow = ctx.createRadialGradient(
+                    player.x + blob.ox,
+                    player.y + blob.oy,
+                    player.radius * 0.15,
+                    player.x + blob.ox,
+                    player.y + blob.oy,
+                    Math.max(blob.rx, blob.ry)
+                );
+                blobGlow.addColorStop(0, `rgba(235, 255, 244, ${blob.alpha + 0.16})`);
+                blobGlow.addColorStop(0.38, `rgba(90, 255, 182, ${blob.alpha})`);
+                blobGlow.addColorStop(1, 'rgba(36, 255, 165, 0)');
+                ctx.fillStyle = blobGlow;
+                ctx.beginPath();
+                ctx.ellipse(
+                    player.x + blob.ox,
+                    player.y + blob.oy,
+                    blob.rx,
+                    blob.ry,
+                    Math.sin(now / 340 + index * 0.9) * 0.16,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            });
+
+            ctx.fillStyle = `rgba(132, 255, 201, ${0.11 + pulse * 0.08})`;
+            ctx.beginPath();
+            ctx.moveTo(player.x - player.radius * 3.2, player.y + player.radius * 2.65);
+            ctx.bezierCurveTo(
+                player.x - player.radius * 4.2, player.y + player.radius * 0.95,
+                player.x - player.radius * 3.55, player.y - player.radius * 2.1,
+                player.x - player.radius * 1.55, player.y - player.radius * 3.95
+            );
+            ctx.bezierCurveTo(
+                player.x - player.radius * 0.8, player.y - player.radius * 4.7,
+                player.x + player.radius * 0.65, player.y - player.radius * 4.95,
+                player.x + player.radius * 1.55, player.y - player.radius * 4.05
+            );
+            ctx.bezierCurveTo(
+                player.x + player.radius * 3.65, player.y - player.radius * 2.25,
+                player.x + player.radius * 4.3, player.y + player.radius * 1.1,
+                player.x + player.radius * 3.12, player.y + player.radius * 2.8
+            );
+            ctx.quadraticCurveTo(player.x, player.y + player.radius * 4.6, player.x - player.radius * 3.2, player.y + player.radius * 2.65);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.lineCap = 'round';
+            for (let i = 0; i < 4; i++) {
+                const side = i % 2 === 0 ? -1 : 1;
+                const wispBaseX = player.x + side * player.radius * (1.2 + i * 0.5);
+                const wispBaseY = player.y + player.radius * (2.15 - i * 0.15);
+                const wispTopX = player.x + side * player.radius * (1.8 + i * 0.42) + Math.sin(now / 210 + i) * 7;
+                const wispTopY = player.y - player.radius * (2.8 + i * 0.55);
+                ctx.strokeStyle = `rgba(190, 255, 228, ${0.14 + pulse * 0.08 - i * 0.02})`;
+                ctx.lineWidth = Math.max(1.6, 3.2 - i * 0.35);
+                ctx.beginPath();
+                ctx.moveTo(wispBaseX, wispBaseY);
+                ctx.quadraticCurveTo(
+                    player.x + side * player.radius * (2.7 + i * 0.28),
+                    player.y - player.radius * (0.25 + i * 0.48),
+                    wispTopX,
+                    wispTopY
+                );
+                ctx.stroke();
+            }
+
+            if (performanceSettings.glowEffects) {
+                for (let i = 0; i < 10; i++) {
+                    const drift = now / 360 + i * 0.7;
+                    const sparkX = player.x + Math.cos(drift * (1.05 + i * 0.04)) * (player.radius * (2.2 + (i % 3) * 0.7));
+                    const sparkY = player.y - player.radius * (1.8 + (i % 4) * 0.58) + Math.sin(drift * 1.55 + i) * 10;
+                    const sparkRadius = 1.8 + (i % 3) * 0.55 + pulse * 0.45;
+                    const spark = ctx.createRadialGradient(sparkX, sparkY, 0, sparkX, sparkY, sparkRadius * 4.2);
+                    spark.addColorStop(0, 'rgba(255,255,255,0.96)');
+                    spark.addColorStop(0.35, 'rgba(190,255,226,0.72)');
+                    spark.addColorStop(1, 'rgba(90,255,182,0)');
+                    ctx.fillStyle = spark;
+                    ctx.beginPath();
+                    ctx.arc(sparkX, sparkY, sparkRadius * 4.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            ctx.restore();
+        }
+
+        function drawDeathGambleJackpotScreenGlow(now) {
+            if (!isDeathGambleJackpotActive(now)) return;
+
+            const pulse = 0.5 + 0.5 * Math.sin(now / 150);
+            const surge = 0.5 + 0.5 * Math.sin(now / 290 + 0.85);
+            const borderSize = 86 + pulse * 28;
+            const bottomSize = 112 + surge * 34;
+
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.globalCompositeOperation = 'screen';
+
+            const vignette = ctx.createRadialGradient(
+                canvas.width / 2,
+                canvas.height / 2,
+                canvas.width * 0.2,
+                canvas.width / 2,
+                canvas.height / 2,
+                canvas.width * 0.74
+            );
+            vignette.addColorStop(0, 'rgba(0, 255, 160, 0)');
+            vignette.addColorStop(1, `rgba(70, 255, 170, ${0.045 + pulse * 0.03})`);
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const leftGlow = ctx.createLinearGradient(0, 0, borderSize, 0);
+            leftGlow.addColorStop(0, `rgba(110, 255, 187, ${0.25 + pulse * 0.14})`);
+            leftGlow.addColorStop(0.5, `rgba(80, 255, 170, ${0.12 + pulse * 0.08})`);
+            leftGlow.addColorStop(1, 'rgba(60, 255, 160, 0)');
+            ctx.fillStyle = leftGlow;
+            ctx.fillRect(0, 0, borderSize, canvas.height);
+
+            const rightGlow = ctx.createLinearGradient(canvas.width, 0, canvas.width - borderSize, 0);
+            rightGlow.addColorStop(0, `rgba(110, 255, 187, ${0.25 + pulse * 0.14})`);
+            rightGlow.addColorStop(0.5, `rgba(80, 255, 170, ${0.12 + pulse * 0.08})`);
+            rightGlow.addColorStop(1, 'rgba(60, 255, 160, 0)');
+            ctx.fillStyle = rightGlow;
+            ctx.fillRect(canvas.width - borderSize, 0, borderSize, canvas.height);
+
+            const topGlow = ctx.createLinearGradient(0, 0, 0, borderSize);
+            topGlow.addColorStop(0, `rgba(118, 255, 198, ${0.22 + surge * 0.12})`);
+            topGlow.addColorStop(0.55, `rgba(82, 255, 173, ${0.11 + pulse * 0.06})`);
+            topGlow.addColorStop(1, 'rgba(60, 255, 160, 0)');
+            ctx.fillStyle = topGlow;
+            ctx.fillRect(0, 0, canvas.width, borderSize);
+
+            const bottomGlow = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - bottomSize);
+            bottomGlow.addColorStop(0, `rgba(132, 255, 205, ${0.28 + surge * 0.16})`);
+            bottomGlow.addColorStop(0.38, `rgba(92, 255, 178, ${0.15 + pulse * 0.08})`);
+            bottomGlow.addColorStop(1, 'rgba(60, 255, 160, 0)');
+            ctx.fillStyle = bottomGlow;
+            ctx.fillRect(0, canvas.height - bottomSize, canvas.width, bottomSize);
+
+            const corners = [
+                { x: 0, y: 0 },
+                { x: canvas.width, y: 0 },
+                { x: 0, y: canvas.height },
+                { x: canvas.width, y: canvas.height }
+            ];
+            corners.forEach((corner, index) => {
+                const radius = 180 + (index >= 2 ? 48 : 16) + surge * 34;
+                const cornerGlow = ctx.createRadialGradient(corner.x, corner.y, 14, corner.x, corner.y, radius);
+                cornerGlow.addColorStop(0, `rgba(186, 255, 226, ${0.26 + pulse * 0.12})`);
+                cornerGlow.addColorStop(0.35, `rgba(86, 255, 178, ${0.14 + surge * 0.08})`);
+                cornerGlow.addColorStop(1, 'rgba(54, 255, 173, 0)');
+                ctx.fillStyle = cornerGlow;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            });
+
+            ctx.strokeStyle = `rgba(208, 255, 232, ${0.24 + pulse * 0.18})`;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+
+            ctx.restore();
+        }
+
         function drawDeathGambleOverlay() {
             const now = Date.now();
             const showRoll = now < (deathGambleState.rollRevealUntil || 0);
@@ -9213,15 +9536,15 @@ function updateLasers() {
 
             if (deathGambleState.active) {
                 ctx.fillStyle = 'rgba(255,255,255,0.92)';
-                ctx.fillRect(canvas.width / 2 - 190, 22, 380, 74);
+                ctx.fillRect(canvas.width / 2 - 235, 22, 470, 74);
                 ctx.strokeStyle = 'rgba(45,45,45,0.25)';
                 ctx.lineWidth = 2;
-                ctx.strokeRect(canvas.width / 2 - 190, 22, 380, 74);
+                ctx.strokeRect(canvas.width / 2 - 235, 22, 470, 74);
                 ctx.fillStyle = '#111111';
                 ctx.font = 'bold 22px Orbitron';
                 ctx.fillText('DEATH GAMBLE DOMAIN', canvas.width / 2, 50);
                 ctx.font = '14px Orbitron';
-                ctx.fillText(`Roll progress ${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS}  |  Targets ${getDeathGambleActivationTargetCount()}`, canvas.width / 2, 76);
+                ctx.fillText(`Roll ${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS}  |  Targets ${getDeathGambleActivationTargetCount()}  |  Time ${formatBuffCountdown(getDeathGambleDomainRemainingSeconds(now))}`, canvas.width / 2, 76);
             }
 
             if (jackpotActive) {
@@ -10651,6 +10974,7 @@ function updateLasers() {
                 ctx.shadowBlur = 0; ctx.restore();
             });
 
+            drawDeathGambleJackpotAura(now);
             ctx.fillStyle = '#4ecdc4'; ctx.strokeStyle = '#2a7f7e'; ctx.lineWidth = 3;
             ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
@@ -10716,6 +11040,8 @@ function updateLasers() {
 
         function drawUI() {
             const worldCameraX = getWorldCameraX();
+            const now = Date.now();
+            drawDeathGambleJackpotScreenGlow(now);
             damageNumbers.forEach(num => {
                 ctx.fillStyle = '#ffcc00'; ctx.font = 'bold 20px Orbitron'; ctx.textAlign = 'center';
                 ctx.fillText(`-${num.damage}`, num.x - worldCameraX, num.y);
