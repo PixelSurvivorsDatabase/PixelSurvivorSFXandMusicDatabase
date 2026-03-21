@@ -529,8 +529,7 @@
             align-items: center;
             justify-content: center;
             min-width: 0;
-            padding-top: 40px;
-            padding-right: 186px;
+            padding-top: 34px;
             text-align: center;
         }
 
@@ -747,10 +746,11 @@
             font-size: 14px;
             margin-bottom: 20px;
         #menuFunFact {
+        #menuFunFact {
             position: absolute;
             top: -18px;
-            right: 144px;
-            max-width: 230px;
+            right: 0.8%;
+            max-width: 290px;
             color: #ffe46b;
             font-size: 14px;
             font-weight: bold;
@@ -759,13 +759,12 @@
             white-space: normal;
             text-align: right;
             text-shadow: 0 0 12px rgba(255, 228, 107, 0.45);
-            transform: rotate(-4deg) scale(1);
+            transform: rotate(-5deg) scale(1);
             transform-origin: top right;
             min-height: 22px;
             pointer-events: none;
             animation: menuFunFactPulse 1.8s ease-in-out infinite;
         }
-
         body.christmas-mode #menuFunFact {
             color: #9fe1ff;
             text-shadow: 0 0 12px rgba(120, 210, 255, 0.42);
@@ -1854,11 +1853,11 @@
         }
 
         .player-count-label {
+        .player-count-label {
             position: absolute;
-            top: 12px;
-            right: 14px;
-            left: auto;
-            max-width: 130px;
+            top: 14px;
+            left: 14px;
+            max-width: 160px;
             padding: 5px 11px;
             border-radius: 999px;
             border: 1px solid rgba(255,255,255,0.14);
@@ -1870,9 +1869,8 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            z-index: 3;
+            z-index: 2;
         }
-
         body.lucky-mode {
             background: linear-gradient(135deg, #071b0e 0%, #12351d 35%, #1f5b2d 70%, #0b2414 100%);
         }
@@ -1938,13 +1936,13 @@
             left: 13%;
         .event-side-card {
             position: absolute;
-            top: 104px;
-            right: 0;
-            width: 182px;
+            top: 176px;
+            right: -8px;
+            width: 210px;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding: 14px 14px 13px;
+            padding: 15px 15px 14px;
             border-radius: 18px;
             border: 1px solid rgba(197, 255, 132, 0.38);
             background: linear-gradient(145deg, rgba(18, 52, 24, 0.96), rgba(30, 82, 40, 0.95) 58%, rgba(127, 96, 20, 0.92));
@@ -1952,13 +1950,11 @@
             text-align: left;
             box-shadow: 0 20px 34px rgba(0, 0, 0, 0.34), 0 0 28px rgba(116, 255, 126, 0.18);
             cursor: pointer;
-            transform: rotate(1deg);
+            transform: rotate(1.5deg);
             transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
             z-index: 3;
             overflow: hidden;
         }
-
-
         .event-side-card::before {
             content: '';
             position: absolute;
