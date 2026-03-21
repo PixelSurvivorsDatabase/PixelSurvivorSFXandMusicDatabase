@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1976,6 +1976,7 @@
             <div class="mobile-ability-cluster">
                 <button id="mobileBlackHoleBtn" class="mobile-ability-btn" type="button">2<small>VOID</small></button>
                 <button id="mobileFugaBtn" class="mobile-ability-btn" type="button">3<small>FUGA</small></button>
+                <button id="mobileDeathGambleBtn" class="mobile-ability-btn" type="button">G<small>JACK</small></button>
                 <button id="mobileAcceleratorBtn" class="mobile-ability-btn" type="button">4<small>ACCEL</small></button>
             </div>
         </div>
@@ -2074,6 +2075,7 @@
                         <p>Bosses spawn every 2 minutes</p>
                         <p>Press 2 for Black Hole (if unlocked)</p>
                         <p>Press 3 for Fuga (if unlocked)</p>
+                        <p>Press G for Death Gamble (if unlocked)</p>
                         <p>Hold 4 for Accelerator (if unlocked)</p>
                     </div>
                     
@@ -2092,13 +2094,14 @@
             <div class="release-notes-content">
                 <h2>WHAT'S NEW IN 0.94.5</h2>
                 <p class="release-notes-kicker">Release Notes</p>
-                <p class="release-notes-copy">This patch sharpens the game up for release with better weapon identity, stronger UI feedback, and new systems for replayability and live support.</p>
+                <p class="release-notes-copy">0.94.5 expands progression, live support, and event systems with a major UI pass, new unlock hooks, and stronger weapon identity across the run.</p>
                 <ul class="release-notes-list">
-                    <li>Added the Boss Codex / Encounter Log.</li>
-                    <li>Added weapon masteries at 5 stacks.</li>
-                    <li>Reworked Freeze Ray, Black Hole, Laser Beam, and Shuriken visuals/behavior.</li>
-                    <li>Expanded boss presentation and encounter polish.</li>
-                    <li>Improved mobile behavior and hosted-build support.</li>
+                    <li>Added the Boss Codex / Encounter Log to Records.</li>
+                    <li>Added live announcements, the release notes popup, and hosted live player count support.</li>
+                    <li>Added the St. Patrick's event preview, Lucky Theme unlock, and theme selector.</li>
+                    <li>Added weapon masteries at 5 stacks for Freeze Ray, Black Hole, Shuriken, Homing Missiles, and Accelerator.</li>
+                    <li>Reworked Freeze Ray, Black Hole, Laser Beam, Shuriken, Soul Reaver, and Hazmat-related combat polish.</li>
+                    <li>Expanded the admin panel and separated the admin build into its own save database.</li>
                 </ul>
                 <button id="closeReleaseNotesBtn" class="btn-primary">JUMP IN</button>
             </div>
@@ -2208,7 +2211,7 @@
                         <option value="2">2x</option>
                     </select>
                 </div>
-                <p id="gameSpeedUnlockNote" style="font-size: 12px; color: #aaa; margin-top:10px;">Unlock at 4 achievements (0/4).</p>
+                <p id="gameSpeedUnlockNote" style="font-size: 12px; color: #aaa; margin-top:10px;">Unlock at 6 achievements (0/6).</p>
                 <div class="option-row">
                     <span>Device Layout</span>
                     <select id="deviceModeSelect">
@@ -2504,9 +2507,14 @@
         let selectedThemeMode = 'newyear';
         let gameSpeedMultiplier = 1;
         let gameSpeedStepCarry = 0;
-        const GAME_SPEED_UNLOCK_ACHIEVEMENTS = 4;
+        const GAME_SPEED_UNLOCK_ACHIEVEMENTS = 6;
         const SECRET_MYTHIC_SHINY_REQ = 150;
         const SECRET_MYTHIC_GOLDEN_REQ = 50;
+        const DEATH_GAMBLE_ROLL_KILLS = 5;
+        const DEATH_GAMBLE_MIN_TARGETS = 5;
+        const DEATH_GAMBLE_JACKPOT_CHANCE = 7;
+        const DEATH_GAMBLE_JACKPOT_DURATION_MS = ((4 * 60) + 11) * 1000;
+        const DEATH_GAMBLE_JACKPOT_SPEED_MULTIPLIER = 2.5;
         const ST_PATRICK_EVENT_START_MS = Date.parse('2026-03-20T00:00:00Z');
         const ST_PATRICK_EVENT_END_MS = Date.parse('2026-04-03T00:00:00Z');
         const ST_PATRICK_SHINY_MULTIPLIER = 3;
@@ -2633,7 +2641,67 @@
             return true;
         }
 
-                        function applyTheme() {
+        function renderStPatricksEventPromo() {
+            const card = document.getElementById('stPatricksEventCard');
+            const bodyEl = document.getElementById('stPatricksEventBody');
+            const progressEl = document.getElementById('stPatricksEventProgress');
+            const rewardEl = document.getElementById('stPatricksEventReward');
+            const modal = document.getElementById('stPatricksEventModal');
+            const modalIntro = document.getElementById('stPatricksEventModalIntro');
+            const modalProgress = document.getElementById('stPatricksEventModalProgress');
+            if (!card || !bodyEl || !progressEl || !rewardEl || !modalIntro || !modalProgress) return;
+
+            if (!isStPatricksEventActive()) {
+                card.hidden = true;
+                if (modal) modal.style.display = 'none';
+                return;
+            }
+
+            const { kills, unlocked, remaining } = getStPatricksEventStatus();
+            card.hidden = false;
+            bodyEl.textContent = unlocked
+                ? 'Lucky Theme secured. Triple shiny rates are still active while the event keeps growing.'
+                : `Triple shiny rates are live. Defeat ${remaining} more ${remaining === 1 ? 'shiny' : 'shinies'} to unlock the Lucky Theme.`;
+            progressEl.textContent = unlocked
+                ? `Shinies: ${kills} / 35 â€¢ COMPLETE`
+                : `Shinies: ${kills} / 35`;
+            rewardEl.textContent = unlocked ? 'Reward: Lucky Theme Unlocked' : 'Reward: Lucky Theme';
+            modalIntro.textContent = unlocked
+                ? 'You already claimed the Lucky Theme. The St. Patrick\'s event is still active on the hosted build while more polish lands.'
+                : 'The St. Patrick\'s event is active on the hosted build. Shiny rates are tripled right now, and more event polish is still on the way before full rollout.';
+            modalProgress.textContent = unlocked
+                ? `Shinies Defeated During Event: ${kills} / 35 â€¢ Reward unlocked`
+                : `Shinies Defeated During Event: ${kills} / 35`;
+        }
+
+        function openStPatricksEventModal() {
+            if (!isStPatricksEventActive()) return;
+            renderStPatricksEventPromo();
+            const modal = document.getElementById('stPatricksEventModal');
+            if (!modal) return;
+            modal.style.display = 'block';
+        }
+
+        function closeStPatricksEventModal() {
+            const modal = document.getElementById('stPatricksEventModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+        }
+
+        function initStPatricksEventPromo() {
+            const card = document.getElementById('stPatricksEventCard');
+            const closeBtn = document.getElementById('closeStPatricksEventBtn');
+            if (card && !card.dataset.bound) {
+                card.dataset.bound = 'true';
+                card.addEventListener('click', openStPatricksEventModal);
+            }
+            if (closeBtn && !closeBtn.dataset.bound) {
+                closeBtn.dataset.bound = 'true';
+                closeBtn.addEventListener('click', closeStPatricksEventModal);
+            }
+            renderStPatricksEventPromo();
+        }
+                function applyTheme() {
             const body = document.body;
             const deco = document.getElementById('themeDecoration');
             const title = document.getElementById('gameTitle');
@@ -2668,7 +2736,7 @@
                 deco.classList.add('newyear-decoration');
                 title.textContent = 'Myths & Steel';
                 subtitle.textContent = "Welcome to New Year's Chaos!";
-                document.title = 'Myths & Steel - New Year''s Edition';
+                document.title = 'Myths & Steel - New Year\'s Edition';
             }
             if (typeof updatePlayerCountLabel === 'function') updatePlayerCountLabel();
             if (typeof renderStPatricksEventPromo === 'function') renderStPatricksEventPromo();
@@ -2979,6 +3047,7 @@
         function updateMobileAbilityButtons() {
             const blackHoleBtn = document.getElementById('mobileBlackHoleBtn');
             const fugaBtn = document.getElementById('mobileFugaBtn');
+            const deathGambleBtn = document.getElementById('mobileDeathGambleBtn');
             const acceleratorBtn = document.getElementById('mobileAcceleratorBtn');
             if (blackHoleBtn) {
                 const ready = !!player.blackHole && blackHoleCooldown <= 0 && gameRunning && !gamePaused;
@@ -2989,6 +3058,12 @@
                 const ready = !!player.fuga && fugaCooldown <= 0 && gameRunning && !gamePaused;
                 fugaBtn.disabled = !ready;
                 fugaBtn.classList.toggle('ready', ready);
+            }
+            if (deathGambleBtn) {
+                const ready = !!player.deathGamble && !deathGambleState.active && !isDeathGambleJackpotActive() && gameRunning && !gamePaused && getDeathGambleActivationTargetCount() >= DEATH_GAMBLE_MIN_TARGETS;
+                deathGambleBtn.disabled = !ready;
+                deathGambleBtn.classList.toggle('ready', ready);
+                deathGambleBtn.classList.toggle('active', !!deathGambleState.active || isDeathGambleJackpotActive());
             }
             if (acceleratorBtn) {
                 const ready = !!player.weapons['Accelerator'] && gameRunning && !gamePaused;
@@ -3547,6 +3622,7 @@
             soulHarvest: 0,
             blackHole: 0,
             fuga: 0,
+            deathGamble: false,
             invincible: false,
             baseSpeed: 4,
             shield: 0,
@@ -3577,6 +3653,18 @@
         let soulHarvestDamageBoost = 0.1; 
         let soulHarvestSpeedBoost = 0.1; 
         let lastHealTime = 0;
+        let deathGambleState = {
+            active: false,
+            jackpotUntil: 0,
+            domainKills: 0,
+            killsSinceRoll: 0,
+            rollRevealUntil: 0,
+            rollNumbers: [0, 0, 0],
+            rollWasJackpot: false,
+            noticeUntil: 0,
+            noticeText: '',
+            noticeTone: 'ready'
+        };
 
         // Input handling
         const keys = {};
@@ -3845,7 +3933,7 @@
             player.damage = 10; player.baseDamage = 10; player.baseCritChance = 0.1; player.baseSpeed = 4; player.speed = 4;
             player.fireRate = 1; player.critChance = 0.1; player.expGain = 1; player.healRate = 0; player.vampirism = 0;
             player.shield = 0; player.shieldRadius = 25; player.shieldKnockback = 5; player.shieldCooldown = 0;
-            player.bloodMoon = false; player.soulHarvest = 0; player.blackHole = 0; player.fuga = 0; player.invincible = false;
+            player.bloodMoon = false; player.soulHarvest = 0; player.blackHole = 0; player.fuga = 0; player.deathGamble = false; player.invincible = false;
             player.homingSpeedMult = 0;
             player.xpCollectionRange = 100; player.xpCollectionRangeStacks = 0;
             player.isBurning = false; player.burnTickTime = 0; player.burnUntil = 0; player.burnDamage = 0;
@@ -3853,6 +3941,7 @@
 
             blackHoleCooldown = 0; fugaCooldown = 0; bloodMoonActive = false; bloodMoonTimer = 0;
             invincibleUntil = 0; soulHarvestKills = 0; blackHoles = []; soulHarvestActive = false; lastHealTime = 0;
+            deathGambleState.active = false; deathGambleState.jackpotUntil = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
             bossCutscene.active = false; bossCutscene.bossId = null; bossCutscene.lines = []; bossCutscene.lineIndex = 0; bossCutscene.nextLineAt = 0; bossCutscene.onComplete = null;
             celestialPhaseEffects.pulseActive = false; celestialPhaseEffects.pulseStart = 0; celestialPhaseEffects.collapseStart = 0;
             celestialCardCutscene.active = false; celestialCardCutscene.triggered = false; celestialCardCutscene.startTime = 0; celestialCardCutscene.bossId = null; celestialCardCutscene.midShakeTriggered = false; celestialCardCutscene.flashTriggered = false;
@@ -4370,6 +4459,7 @@
             { name: 'Soul Harvest', rarity: 'mythical', description: 'Gain temporary invincibility for 8 seconds after every 25 kills. Each stack increases duration by 1s and boosts damage/speed by 1%.', effect: () => { player.soulHarvest = (player.soulHarvest || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Black Hole', rarity: 'mythical', description: 'Create a black hole that pulls in and destroys all enemies on screen. Press 2 to activate. At 5 stacks, it ends with an implosion.', effect: () => { player.blackHole = (player.blackHole || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Fuga', rarity: 'mythical', description: 'Launch a devastating fire arrow that deals 125 damage, creates a massive explosion, and ignites enemies!', effect: () => { player.fuga = (player.fuga || 0) + 1; }, stats: 'Mythical Ability' },
+            { name: 'Death Gamble', rarity: 'mythical', description: 'Hidden mythic. Press G to drag every current enemy into a white domain. Every 5 kills rolls 3 cards for a 1-in-7 jackpot. Jackpot grants +50 HP/s, x3 damage, 50% damage reduction, and x2.5 move speed for 4:11.', effect: () => { player.deathGamble = true; }, stats: 'Secret Mythical Ability' },
             { name: 'Add Firework Blaster', rarity: 'epic', description: 'Blasts 5 colorful explosives that deal 8 damage in a spread. Large AOE explosion ignites enemies!', effect: () => { player.weapons['Firework Blaster'] = (player.weapons['Firework Blaster'] || 0) + 1; if (!player.lastShot['Firework Blaster']) player.lastShot['Firework Blaster'] = 0; recordFireworkStacks(player.weapons['Firework Blaster'] || 0); }, stats: 'Firework Weapon' },
             { name: 'XP Collection Range Increase', rarity: 'rare', description: 'Increase the distance at which you collect XP Gems by 10%.', effect: () => { player.xpCollectionRangeStacks++; player.xpCollectionRange = Math.round(player.xpCollectionRange * 1.1); }, stats: '+10% XP Range' },
             { name: 'The Gilded Magnum', rarity: 'legendary', description: '"99 bugs on the wall, 99 bugs... take one down, pass it around..." Fires 4 champagne rounds, then reloads for 3-4s. Each bullet deals 10 damage (+10% per stack) and applies Doused. Doused enemies hit by Fire trigger Steam Explosions!', effect: () => { player.weapons['The Gilded Magnum'] = (player.weapons['The Gilded Magnum'] || 0) + 1; if (!player.lastShot['The Gilded Magnum']) player.lastShot['The Gilded Magnum'] = 0; }, stats: 'Fizz Weapon' }
@@ -4379,6 +4469,7 @@
             keys[e.key.toLowerCase()] = true;
             if (e.key === '2' && player.blackHole) activateBlackHole();
             if (e.key === '3' && player.fuga) activateFuga();
+            if (e.key.toLowerCase() === 'g' && player.deathGamble) activateDeathGamble();
         });
 
         document.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
@@ -4459,6 +4550,7 @@
         const aimZone = document.getElementById('mobileAimZone');
         const mobileBlackHoleBtn = document.getElementById('mobileBlackHoleBtn');
         const mobileFugaBtn = document.getElementById('mobileFugaBtn');
+        const mobileDeathGambleBtn = document.getElementById('mobileDeathGambleBtn');
         const mobileAcceleratorBtn = document.getElementById('mobileAcceleratorBtn');
         const deviceModeSelect = document.getElementById('deviceModeSelect');
 
@@ -4539,6 +4631,15 @@
             };
             mobileFugaBtn.addEventListener('click', triggerFuga);
             mobileFugaBtn.addEventListener('touchstart', triggerFuga, { passive: false });
+        }
+
+        if (mobileDeathGambleBtn) {
+            const triggerDeathGamble = (e) => {
+                if (e) e.preventDefault();
+                if (player.deathGamble) activateDeathGamble();
+            };
+            mobileDeathGambleBtn.addEventListener('click', triggerDeathGamble);
+            mobileDeathGambleBtn.addEventListener('touchstart', triggerDeathGamble, { passive: false });
         }
 
         if (mobileAcceleratorBtn) {
@@ -5129,6 +5230,7 @@
             createParticles(enemy.x, enemy.y, enemy.color, 15);
             xpGems.push({ x: enemy.x, y: enemy.y, value: enemy.expValue, radius: 8 });
             if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+            registerDeathGambleKill();
             kills++;
             updateCombo(enemy.x, enemy.y);
             normalizeUserStats();
@@ -5169,6 +5271,7 @@
             onBossKilled(boss, cause);
             const bossIndex = bosses.indexOf(boss);
             if (bossIndex > -1) bosses.splice(bossIndex, 1);
+            registerDeathGambleKill();
             kills += 10;
             updateCombo(boss.x, boss.y);
             advanceWaveAfterBossKill();
@@ -5404,6 +5507,53 @@
             if (player.vampirism) player.health = Math.min(player.health + amount * player.vampirism, player.maxHealth);
         }
 
+        function getDeathGambleActivationTargetCount() {
+            return enemies.length + bosses.length;
+        }
+
+        function isDeathGambleJackpotActive(now = Date.now()) {
+            return !!deathGambleState.jackpotUntil && now < deathGambleState.jackpotUntil;
+        }
+
+        function getCurrentPlayerHealRate() {
+            return player.healRate + (isDeathGambleJackpotActive() ? 50 : 0);
+        }
+
+        function getPlayerDamageDealtMultiplier() {
+            return isDeathGambleJackpotActive() ? 3 : 1;
+        }
+
+        function getPlayerDamageTakenMultiplier() {
+            return isDeathGambleJackpotActive() ? 0.5 : 1;
+        }
+
+        function getPlayerMovementSpeedMultiplier() {
+            return isDeathGambleJackpotActive() ? DEATH_GAMBLE_JACKPOT_SPEED_MULTIPLIER : 1;
+        }
+
+        function applyPlayerAttackDamageModifiers(target, damage) {
+            return applyTargetDamageModifiers(target, damage * getPlayerDamageDealtMultiplier());
+        }
+
+        function applyPlayerDamage(amount) {
+            const actualDamage = Math.max(0, Math.round((amount || 0) * getPlayerDamageTakenMultiplier()));
+            if (actualDamage <= 0) return 0;
+            player.health -= actualDamage;
+            return actualDamage;
+        }
+
+        function updatePlayerRegeneration(deltaSeconds) {
+            const healRate = getCurrentPlayerHealRate();
+            if (healRate <= 0 || player.health >= player.maxHealth) return;
+            player.health = Math.min(player.maxHealth, player.health + healRate * deltaSeconds);
+        }
+
+        function showDeathGambleNotice(text, durationMs = 1400, tone = 'ready') {
+            deathGambleState.noticeText = text;
+            deathGambleState.noticeTone = tone;
+            deathGambleState.noticeUntil = Date.now() + durationMs;
+        }
+
         function isStatusImmuneTarget(target) {
             return !!(target && (target.statusImmune || target.bossType === 'celestialGuardian' || target.type === 'weepingCelestial'));
         }
@@ -5483,7 +5633,7 @@
                     target.slowEffect = Math.min(target.slowEffect || 1, 0.45);
                     applyBrittleStatus(target, 1200, 1.4);
                 }
-                const shatterDamage = applyTargetDamageModifiers(target, 20);
+                const shatterDamage = applyPlayerAttackDamageModifiers(target, 20);
                 target.health -= shatterDamage;
                 createParticles(target.x, target.y, '#c8f3ff', 6);
                 if (isBossDefeatThresholdReached(target)) {
@@ -5505,7 +5655,7 @@
             [...enemies, ...bosses].forEach(target => {
                 const dist = Math.hypot(target.x - hole.x, target.y - hole.y);
                 if (dist > implosionRadius + (target.radius || 0)) return;
-                const implosionDamage = applyTargetDamageModifiers(target, 48);
+                const implosionDamage = applyPlayerAttackDamageModifiers(target, 48);
                 target.health -= implosionDamage;
                 if (!isStatusImmuneTarget(target)) {
                     target.stunnedUntil = Math.max(target.stunnedUntil || 0, Date.now() + 650);
@@ -5553,7 +5703,7 @@
             [...enemies, ...bosses].forEach(target => {
                 const dist = Math.hypot(target.x - laser.target.x, target.y - laser.target.y);
                 if (dist > burstRadius + (target.radius || 0)) return;
-                const damage = applyTargetDamageModifiers(target, target === laser.target ? burstDamage : Math.round(burstDamage * 0.55));
+                const damage = applyPlayerAttackDamageModifiers(target, target === laser.target ? burstDamage : Math.round(burstDamage * 0.55));
                 target.health -= damage;
                 createParticles(target.x, target.y, '#dff9ff', 5);
                 if (isBossDefeatThresholdReached(target)) {
@@ -5619,7 +5769,7 @@
             }
             if (now >= (player.burnTickTime || 0)) {
                 const burnDamage = Math.max(1, Math.round(player.burnDamage || 4));
-                player.health -= burnDamage;
+                applyPlayerDamage(burnDamage);
                 player.burnTickTime = now + 700;
                 for (let i = 0; i < 4; i++) {
                     particles.push({ x: player.x + (Math.random() - 0.5) * player.radius * 1.8, y: player.y + (Math.random() - 0.5) * player.radius * 1.8, vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5, radius: Math.random() * 3 + 1.5, color: '#ff5a1f', life: 0.35, type: 'normal' });
@@ -5644,7 +5794,8 @@
                 }
                 if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
             }
-            player.x += dx * player.speed; player.y += dy * player.speed;
+            const movementSpeed = player.speed * getPlayerMovementSpeedMultiplier();
+            player.x += dx * movementSpeed; player.y += dy * movementSpeed;
             if (finalArenaState.active) {
                 const layout = getFinalArenaLayout();
                 if (player.x >= layout.leftArena.left) {
@@ -5733,7 +5884,7 @@
                     if (dist < enemy.radius + shuriken.size && now - lastHitAt >= 140) {
                         let damage = shuriken.damage; let isCritical = false;
                         if (Math.random() < player.critChance) { damage *= 2; isCritical = true; createParticles(shuriken.x, shuriken.y, '#ffff66',5); showDamageNumber(enemy.x, enemy.y, damage); showCritical(enemy.x, enemy.y); }
-                        damage = applyTargetDamageModifiers(enemy, damage);
+                        damage = applyPlayerAttackDamageModifiers(enemy, damage);
                         applyLifesteal(damage);
                         enemy.health -= damage; createParticles(shuriken.x, shuriken.y, shuriken.color, 3);
                         if (hasWeaponMastery('Shuriken')) {
@@ -5998,7 +6149,7 @@
             if (chainsLeft <= 0 || !target) return;
             visitedTargets.add(target);
             particles.push({ x: x, y: y, endX: target.x, endY: target.y, color: '#ffffcc', type: 'lightning', life: 10 });
-            let actualDamage = applyTargetDamageModifiers(target, damage);
+            let actualDamage = applyPlayerAttackDamageModifiers(target, damage);
             if (!isStatusImmuneTarget(target)) {
                 target.stunnedUntil = Math.max(target.stunnedUntil || 0, Date.now() + stunDuration);
             }
@@ -6021,6 +6172,133 @@
                     }, 50);
                 }
             }
+        }
+
+        function buildDeathGambleRollNumbers(isJackpot) {
+            const pick = () => Math.floor(Math.random() * DEATH_GAMBLE_JACKPOT_CHANCE) + 1;
+            if (isJackpot) {
+                const value = pick();
+                return [value, value, value];
+            }
+            const numbers = [pick(), pick(), pick()];
+            if (numbers[0] === numbers[1] && numbers[1] === numbers[2]) {
+                numbers[2] = numbers[2] === DEATH_GAMBLE_JACKPOT_CHANCE ? 1 : numbers[2] + 1;
+            }
+            return numbers;
+        }
+
+        function repositionDeathGambleArena() {
+            const worldLeft = getWorldCameraX();
+            const worldRight = worldLeft + canvas.width;
+            const centerX = worldLeft + canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const targets = [...bosses, ...enemies];
+            const count = Math.max(1, targets.length);
+            player.x = centerX;
+            player.y = centerY;
+            targets.forEach((target, index) => {
+                const angle = ((Math.PI * 2) / count) * index + Math.random() * 0.35;
+                const ringX = target.bossType ? canvas.width * 0.34 : canvas.width * (0.23 + (index % 3) * 0.045);
+                const ringY = target.bossType ? canvas.height * 0.29 : canvas.height * (0.18 + (index % 2) * 0.05);
+                const jitter = target.bossType ? 20 : 34;
+                target.x = Math.max(worldLeft + target.radius + 42, Math.min(worldRight - target.radius - 42, centerX + Math.cos(angle) * ringX + (Math.random() - 0.5) * jitter));
+                target.y = Math.max(target.radius + 42, Math.min(canvas.height - target.radius - 42, centerY + Math.sin(angle) * ringY + (Math.random() - 0.5) * jitter));
+                target.stunnedUntil = Math.max(target.stunnedUntil || 0, Date.now() + 450);
+                target.nextHitTime = Math.max(target.nextHitTime || 0, Date.now() + 450);
+            });
+            projectiles = projectiles.filter((proj) => !proj.fromEnemy);
+        }
+
+        function endDeathGambleDomain(reason = '') {
+            if (!deathGambleState.active) return;
+            deathGambleState.active = false;
+            deathGambleState.killsSinceRoll = 0;
+            deathGambleState.domainKills = 0;
+            if (reason) showDeathGambleNotice(reason, 1500, 'cooldown');
+            updateMobileAbilityButtons();
+        }
+
+        function startDeathGambleJackpot() {
+            deathGambleState.active = false;
+            deathGambleState.killsSinceRoll = 0;
+            deathGambleState.domainKills = 0;
+            deathGambleState.jackpotUntil = Date.now() + DEATH_GAMBLE_JACKPOT_DURATION_MS;
+            showDeathGambleNotice('Jackpot hit. The house pays out.', 2200, 'active');
+            screenShake(12, 220);
+            createParticles(player.x, player.y, '#f6ff9b', 42);
+            updateMobileAbilityButtons();
+        }
+
+        function resolveDeathGambleRoll() {
+            if (!deathGambleState.active) return;
+            deathGambleState.killsSinceRoll = 0;
+            const jackpot = Math.floor(Math.random() * DEATH_GAMBLE_JACKPOT_CHANCE) === 0;
+            deathGambleState.rollNumbers = buildDeathGambleRollNumbers(jackpot);
+            deathGambleState.rollWasJackpot = jackpot;
+            deathGambleState.rollRevealUntil = Date.now() + 1800;
+            if (jackpot) startDeathGambleJackpot();
+        }
+
+        function registerDeathGambleKill() {
+            if (!deathGambleState.active) return;
+            deathGambleState.domainKills += 1;
+            deathGambleState.killsSinceRoll += 1;
+            if (deathGambleState.killsSinceRoll >= DEATH_GAMBLE_ROLL_KILLS) {
+                resolveDeathGambleRoll();
+                return;
+            }
+            if (getDeathGambleActivationTargetCount() + deathGambleState.killsSinceRoll < DEATH_GAMBLE_ROLL_KILLS) {
+                endDeathGambleDomain('Not enough enemies remain for another roll.');
+            }
+        }
+
+        function updateDeathGambleState() {
+            const now = Date.now();
+            if (deathGambleState.noticeUntil && now >= deathGambleState.noticeUntil) {
+                deathGambleState.noticeUntil = 0;
+                deathGambleState.noticeText = '';
+            }
+            if (deathGambleState.jackpotUntil && now >= deathGambleState.jackpotUntil) {
+                deathGambleState.jackpotUntil = 0;
+                showDeathGambleNotice('Jackpot faded. Roll again when the crowd returns.', 1800, 'cooldown');
+                updateMobileAbilityButtons();
+            }
+            if (!deathGambleState.active) return;
+            if (getDeathGambleActivationTargetCount() <= 0) {
+                endDeathGambleDomain('The domain emptied out and shattered.');
+                return;
+            }
+            if (getDeathGambleActivationTargetCount() + deathGambleState.killsSinceRoll < DEATH_GAMBLE_ROLL_KILLS) {
+                endDeathGambleDomain('Not enough enemies remain for another roll.');
+            }
+        }
+
+        function activateDeathGamble() {
+            if (!player.deathGamble || deathGambleState.active || isDeathGambleJackpotActive() || !gameRunning || gamePaused) return;
+            if (bossCutscene.active || celestialCardCutscene.active || finalVictorySequence.active || finalArenaState.active) {
+                showDeathGambleNotice('The domain will not open during a cinematic.', 1400, 'cooldown');
+                return;
+            }
+            const targetCount = getDeathGambleActivationTargetCount();
+            if (targetCount < DEATH_GAMBLE_MIN_TARGETS) {
+                showDeathGambleNotice(`Need ${DEATH_GAMBLE_MIN_TARGETS} enemies or bosses to open the domain.`, 1600, 'cooldown');
+                updateMobileAbilityButtons();
+                return;
+            }
+            deathGambleState.active = true;
+            deathGambleState.domainKills = 0;
+            deathGambleState.killsSinceRoll = 0;
+            deathGambleState.rollRevealUntil = 0;
+            deathGambleState.rollNumbers = [0, 0, 0];
+            deathGambleState.rollWasJackpot = false;
+            deathGambleState.noticeText = '';
+            deathGambleState.noticeUntil = 0;
+            repositionDeathGambleArena();
+            screenShake(14, 240);
+            createParticles(player.x, player.y, '#ffffff', 36);
+            const targets = [...bosses, ...enemies];
+            targets.forEach((target) => createParticles(target.x, target.y, '#ffffff', target.bossType ? 24 : 12));
+            updateMobileAbilityButtons();
         }
 
         function activateBlackHole() {
@@ -6105,7 +6383,7 @@
             [...enemies, ...bosses].forEach(target => {
                 const dist = Math.hypot(target.x - x, target.y - y);
                 if (dist < expansionRadius) {
-                    let steamDamage = applyTargetDamageModifiers(target, 10); // Fixed small damage for mini-explosion
+                    let steamDamage = applyPlayerAttackDamageModifiers(target, 10); // Fixed small damage for mini-explosion
                     target.health -= steamDamage;
                     applyLifesteal(steamDamage);
                     
@@ -6169,7 +6447,7 @@
                     // Damage
                     let finalDamage = damage;
                     if (isFireImmuneTarget(target)) finalDamage = 0;
-                    finalDamage = applyTargetDamageModifiers(target, finalDamage);
+                    finalDamage = applyPlayerAttackDamageModifiers(target, finalDamage);
                     target.health -= finalDamage;
                     
                     // Ignite
@@ -6203,7 +6481,7 @@
                         const force = (1 - dist / pullRadius) * 4.2;
                         enemy.x += Math.cos(angle) * force; enemy.y += Math.sin(angle) * force;
                         if (dist < hole.radius) {
-                            enemy.health -= hole.damage;
+                            enemy.health -= applyPlayerAttackDamageModifiers(enemy, hole.damage);
                             createParticles(enemy.x, enemy.y, '#1a082a', 4);
                             if (enemy.health <= 0) {
                                 const enemyIndex = enemies.indexOf(enemy);
@@ -6281,7 +6559,7 @@
                             if (Math.random() < player.critChance) {
                                 damage *= 2; isCritical = true; createParticles(enemy.x, enemy.y, '#ffff66',5); showDamageNumber(enemy.x, enemy.y, damage); showCritical(enemy.x, enemy.y);
                             }
-                            damage = applyTargetDamageModifiers(enemy, damage);
+                            damage = applyPlayerAttackDamageModifiers(enemy, damage);
                             applyLifesteal(damage);
                             enemy.health -= damage; createParticles(enemy.x, enemy.y, stream.color, 3);
                             
@@ -6375,7 +6653,7 @@
         }
 
         function spawnEnemy() {
-            if (finalArenaState.active) return;
+            if (finalArenaState.active || deathGambleState.active) return;
             if (enemies.length >= MAX_ENEMIES) return;
             const enemyTypes = getCurrentEnemyTypes();
             let type = currentGameMode === 'hardcore' ? 'crystal' : 'basic';
@@ -6411,6 +6689,7 @@
         }
 
         function spawnBoss() {
+            if (deathGambleState.active) return;
             if (currentGameMode === 'hardcore' && waveNumber > getWaveLimit()) return;
             const bossTypes = getCurrentBossTypes();
             const classicWaveTwentyBoss = currentGameMode === 'classic' && waveNumber === 20;
@@ -6659,16 +6938,16 @@
                         if (hitNow >= enemy.nextHitTime) {
                             let damage = enemy.damage;
                             if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
-                            player.health -= damage;
-                            if ((enemy.type === 'dragonling' || enemy.igniteOnTouch) && damage > 0) ignitePlayer(4200, 4);
+                            const actualDamage = applyPlayerDamage(damage);
+                            if ((enemy.type === 'dragonling' || enemy.igniteOnTouch) && actualDamage > 0) ignitePlayer(4200, 4);
                             enemy.nextHitTime = hitNow + (enemy.hitCooldownMs || 4000);
                             createParticles(enemy.x, enemy.y, enemy.color, 10);
                         }
                     } else {
                         let damage = enemy.damage;
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
-                        player.health -= damage;
-                        if ((enemy.type === 'dragonling' || enemy.igniteOnTouch) && damage > 0) ignitePlayer(4200, 4);
+                        const actualDamage = applyPlayerDamage(damage);
+                        if ((enemy.type === 'dragonling' || enemy.igniteOnTouch) && actualDamage > 0) ignitePlayer(4200, 4);
                         createParticles(enemy.x, enemy.y, enemy.color, 10); enemies.splice(index, 1);
                     }
                 }
@@ -6710,9 +6989,6 @@
 
                 if (!isStatusImmuneTarget(boss) && Date.now() < boss.dousedUntil) {
                     boss.color = '#99ccff';
-                }
-                if (boss.bossType === 'soulReaver' && Math.random() < 0.16) {
-                    particles.push({ x: boss.x + (Math.random() - 0.5) * boss.radius * 1.6, y: boss.y + (Math.random() - 0.5) * boss.radius * 1.6, vx: (Math.random() - 0.5) * 0.8, vy: -Math.random() * 0.9, radius: Math.random() * 3 + 1, color: Math.random() < 0.5 ? '#eff5ff' : '#cbb9ff', life: 0.55, type: 'normal' });
                 }
 
                 if (boss.bossType === 'celestialGuardian' && boss.phase === 2 && now >= (boss.regenTickAt || 0)) {
@@ -6793,8 +7069,8 @@
                     if (!player.invincible) {
                         if (player.shield > 0) { player.shield--; stealAmount = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                         if (stealAmount > 0) {
-                            player.health -= stealAmount;
-                            boss.health = Math.min(boss.maxHealth, boss.health + stealAmount);
+                            const actualSteal = applyPlayerDamage(stealAmount);
+                            boss.health = Math.min(boss.maxHealth, boss.health + actualSteal);
                             const drainColor = isSoulReaver ? '#dfe9ff' : '#7b47c8';
                             const bossDrainColor = isSoulReaver ? '#c6afff' : '#bfa0ff';
                             createParticles(player.x, player.y, drainColor, 6);
@@ -6815,9 +7091,11 @@
                         let damage = Math.round(18 * boss.phase);
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                         if (damage > 0) {
-                            player.health -= damage;
+                            const actualDamage = applyPlayerDamage(damage);
+                            if (actualDamage > 0) {
                                 stunPlayer(1500);
-                            createParticles(player.x, player.y, '#f2c14e', 22);
+                                createParticles(player.x, player.y, '#f2c14e', 22);
+                            }
                         }
                     }
                     boss.goldTrapStrikeTime = 0;
@@ -6834,8 +7112,8 @@
                         let damage = Math.round((boss.bossType === 'soulReaver' ? 34 : 20) * boss.phase);
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                         if (damage > 0) {
-                            player.health -= damage;
-                            createParticles(player.x, player.y, boss.bossType === 'soulReaver' ? '#eef6ff' : '#8b65d9', 14);
+                            const actualDamage = applyPlayerDamage(damage);
+                            if (actualDamage > 0) createParticles(player.x, player.y, boss.bossType === 'soulReaver' ? '#eef6ff' : '#8b65d9', 14);
                         }
                     }
                     boss.scytheSlashHitTime = 0;
@@ -6850,9 +7128,11 @@
                         let damage = Math.round(96 * Math.max(1, boss.phase || 1));
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 12); }
                         if (damage > 0) {
-                            player.health -= damage;
-                            createParticles(player.x, player.y, '#f4f8ff', 18);
-                            screenShake();
+                            const actualDamage = applyPlayerDamage(damage);
+                            if (actualDamage > 0) {
+                                createParticles(player.x, player.y, '#f4f8ff', 18);
+                                screenShake();
+                            }
                         }
                     }
                     boss.worldSlashHitTime = 0;
@@ -6869,9 +7149,11 @@
                         let damage = 130;
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                         if (damage > 0) {
-                            player.health -= damage;
-                            createParticles(player.x, player.y, '#ffffff', 14);
-                            screenShake();
+                            const actualDamage = applyPlayerDamage(damage);
+                            if (actualDamage > 0) {
+                                createParticles(player.x, player.y, '#ffffff', 14);
+                                screenShake();
+                            }
                         }
                     }
                     boss.celestialSwordHitTime = 0;
@@ -6899,9 +7181,13 @@
                         if (!player.invincible && distToSlash < player.radius + 38) {
                             let damage = 550;
                             if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
-                            if (damage > 0) player.health -= damage;
-                            createParticles(player.x, player.y, '#ffffff', 18);
-                            screenShake();
+                            if (damage > 0) {
+                                const actualDamage = applyPlayerDamage(damage);
+                                if (actualDamage > 0) {
+                                    createParticles(player.x, player.y, '#ffffff', 18);
+                                    screenShake();
+                                }
+                            }
                         }
                     }
                     boss.dashSlashAt = 0;
@@ -6930,8 +7216,8 @@
                             let damage = isCelestialBeam ? 22 : Math.round(8 * boss.phase);
                             if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                             if (damage > 0) {
-                                player.health -= damage;
-                                if (!isCelestialBeam) ignitePlayer(4200, 4);
+                                const actualDamage = applyPlayerDamage(damage);
+                                if (actualDamage > 0 && !isCelestialBeam) ignitePlayer(4200, 4);
                             }
                             createParticles(player.x, player.y, isCelestialBeam ? '#ffffff' : '#ff6600', 5);
                         }
@@ -7003,7 +7289,11 @@
                             const angle = Math.random() * Math.PI * 2; const distance = 150 + Math.random() * 100;
                             boss.x = player.x + Math.cos(angle) * distance; boss.y = player.y + Math.sin(angle) * distance; createParticles(boss.x, boss.y, '#6633cc', 20); break;
                         case 'curse':
-                            if (!player.invincible) { player.health -= Math.round(10 * boss.phase); createParticles(player.x, player.y, '#6633cc', 15); } break;
+                            if (!player.invincible) {
+                                const actualDamage = applyPlayerDamage(Math.round(10 * boss.phase));
+                                if (actualDamage > 0) createParticles(player.x, player.y, '#6633cc', 15);
+                            }
+                            break;
                         case 'zombieHorde':
                             const hordeTotal = 12 + boss.phase * 8;
                             const waveCount = 3;
@@ -7104,9 +7394,13 @@
                             break;
                         case 'soulSteal':
                             if (!player.invincible) {
-                                const stealAmount = Math.round(15 * boss.phase); player.health -= stealAmount;
-                                boss.health = Math.min(boss.maxHealth, boss.health + stealAmount);
-                                createParticles(player.x, player.y, '#6633cc', 15); createParticles(boss.x, boss.y, '#6633cc', 15);
+                                const stealAmount = Math.round(15 * boss.phase);
+                                const actualSteal = applyPlayerDamage(stealAmount);
+                                boss.health = Math.min(boss.maxHealth, boss.health + actualSteal);
+                                if (actualSteal > 0) {
+                                    createParticles(player.x, player.y, '#6633cc', 15);
+                                    createParticles(boss.x, boss.y, '#6633cc', 15);
+                                }
                             }
                             break;
                         case 'fireBeam':
@@ -7424,7 +7718,7 @@
                         boss.health -= 20; createParticles(boss.x, boss.y, '#99ccff', 10);
                         player.shield--; player.shieldCooldown = player.shieldMaxCooldown; screenShake();
                         boss.nextHitTime = now + hitCooldown;
-                        if (isBossDefeatThresholdReached(boss)) {
+                    if (isBossDefeatThresholdReached(boss)) {
                             defeatBoss(boss, 'shield');
                         }
                     }
@@ -7432,8 +7726,10 @@
                     if (now >= (boss.nextHitTime || 0)) {
                         let damage = boss.damage;
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
-                        if (damage > 0) player.health -= damage;
-                        createParticles(boss.x, boss.y, boss.color, 20);
+                        if (damage > 0) {
+                            const actualDamage = applyPlayerDamage(damage);
+                            if (actualDamage > 0) createParticles(boss.x, boss.y, boss.color, 20);
+                        }
                         boss.nextHitTime = now + hitCooldown;
                     }
                 }
@@ -7456,9 +7752,11 @@
                 let damage = proj.damage;
                 if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                 if (damage > 0) {
-                    player.health -= damage;
-                    if (proj.isFire) ignitePlayer(proj.igniteDuration || 5000, proj.burnDamage || 5);
-                    createParticles(player.x, player.y, proj.color || '#ff8844', 8);
+                    const actualDamage = applyPlayerDamage(damage);
+                    if (actualDamage > 0) {
+                        if (proj.isFire) ignitePlayer(proj.igniteDuration || 5000, proj.burnDamage || 5);
+                        createParticles(player.x, player.y, proj.color || '#ff8844', 8);
+                    }
                 }
             }
         }
@@ -7493,8 +7791,8 @@
                     createParticles(player.x, player.y, '#99ccff', 10);
                 }
                 if (damage > 0) {
-                    player.health -= damage;
-                    createParticles(player.x, player.y, '#ffffff', 14);
+                    const actualDamage = applyPlayerDamage(damage);
+                    if (actualDamage > 0) createParticles(player.x, player.y, '#ffffff', 14);
                 }
             }
         }
@@ -7584,8 +7882,10 @@
                         if (playerDist < (proj.explosionRadius || 76) + player.radius && !player.invincible) {
                             let damage = proj.damage || 100;
                             if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
-                            if (damage > 0) player.health -= damage;
-                            createParticles(player.x, player.y, '#ffffff', 12);
+                            if (damage > 0) {
+                                const actualDamage = applyPlayerDamage(damage);
+                                if (actualDamage > 0) createParticles(player.x, player.y, '#ffffff', 12);
+                            }
                         }
                         screenShake();
                         projectiles.splice(index, 1);
@@ -7601,8 +7901,8 @@
                         let damage = proj.directHitDamage || proj.damage;
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                         if (damage > 0) {
-                            player.health -= damage;
-                            if (boss.bossType === 'demon') ignitePlayer(4200, 4);
+                            const actualDamage = applyPlayerDamage(damage);
+                            if (actualDamage > 0 && (proj.isFire || proj.igniteDuration)) ignitePlayer(proj.igniteDuration || 4200, proj.burnDamage || 4);
                         }
                         detonateEnemyMeteor(proj);
                         projectiles.splice(index, 1);
@@ -7635,9 +7935,11 @@
                         let damage = proj.damage;
                         if (player.shield > 0) { player.shield--; damage = 0; createParticles(player.x, player.y, '#99ccff', 10); }
                         if (damage > 0 && !player.invincible) {
-                            player.health -= damage;
-                            if (proj.isFire) ignitePlayer(proj.igniteDuration || 4000, proj.burnDamage || 4);
-                            createParticles(player.x, player.y, proj.color, 6);
+                            const actualDamage = applyPlayerDamage(damage);
+                            if (actualDamage > 0) {
+                                if (proj.isFire) ignitePlayer(proj.igniteDuration || 4000, proj.burnDamage || 4);
+                                createParticles(player.x, player.y, proj.color, 6);
+                            }
                         }
                         projectiles.splice(index, 1);
                     }
@@ -7655,7 +7957,7 @@
                             damage *= 2; isCritical = true; createParticles(proj.x, proj.y, '#ffff66',5); showDamageNumber(target.x, target.y, damage); showCritical(target.x, target.y);
                         }
                         if (proj.isFire && isFireImmuneTarget(target)) damage = 0;
-                        damage = applyTargetDamageModifiers(target, damage);
+                        damage = applyPlayerAttackDamageModifiers(target, damage);
                         applyLifesteal(damage);
 
                         if (proj.type === 'grenade' || proj.type === 'meteor' || proj.type === 'homing') {
@@ -7786,7 +8088,7 @@ function updateLasers() {
                 [...enemies, ...bosses].forEach(target => {
                     const dist = Math.hypot(target.x - cloud.x, target.y - cloud.y);
                     if (dist < cloud.aoeRadius) {
-                        target.health -= applyTargetDamageModifiers(target, cloud.damage);
+                        target.health -= applyPlayerAttackDamageModifiers(target, cloud.damage);
                         if (!isStatusImmuneTarget(target)) {
                             target.poisonUntil = Date.now() + cloud.poisonDuration; target.poisonDamage = cloud.poisonDamage;
                         }
@@ -7862,7 +8164,7 @@ function updateLasers() {
                         let damage = explosion.damage * 0.1;
                         if (explosion.isFire) triggerSteamReaction(target);
                         if (explosion.isFire && isFireImmuneTarget(target)) damage = 0;
-                        damage = applyTargetDamageModifiers(target, damage); target.health -= damage; createParticles(target.x, target.y, explosion.color, 3);
+                        damage = applyPlayerAttackDamageModifiers(target, damage); target.health -= damage; createParticles(target.x, target.y, explosion.color, 3);
                         if (isBossDefeatThresholdReached(target)) {
                             const enemyIndex = enemies.indexOf(target);
                             if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
@@ -7967,6 +8269,10 @@ function updateLasers() {
                 }
                 
                 let availableUpgrades = upgradeDatabase.filter(u => u.rarity === selectedRarity);
+                availableUpgrades = availableUpgrades.filter((upgrade) => {
+                    if (upgrade.name === 'Death Gamble') return !!userStats.secretMythicUnlocked && !player.deathGamble;
+                    return true;
+                });
                 
                 // Specific logic: If XP Range is selectedRarity, and stack count >= 15, skip it
                 if (player.xpCollectionRangeStacks >= 15 && selectedRarity === 'rare') {
@@ -8203,12 +8509,14 @@ function updateLasers() {
                     state: 'passive'
                 });
             }
-            if (player.healRate > 0) {
+            const currentHealRate = getCurrentPlayerHealRate();
+
+            if (currentHealRate > 0) {
                 addBuffCard(buffsList, {
                     icon: '[HP]',
                     name: 'Regeneration',
-                    detail: `Heal +${player.healRate}/s`,
-                    state: 'passive'
+                    detail: `Heal +${Math.round(currentHealRate)}/s`,
+                    state: isDeathGambleJackpotActive(now) ? 'active' : 'passive'
                 });
             }
             if (player.vampirism > 0) {
@@ -8246,6 +8554,32 @@ function updateLasers() {
                     detail: fugaCooldown > 0 ? 'Cooldown in progress' : 'Ability ready',
                     state: fugaCooldown > 0 ? 'cooldown' : 'ready'
                 });
+            }
+            if (player.deathGamble) {
+                if (deathGambleState.active) {
+                    addBuffCard(buffsList, {
+                        icon: '[DG]',
+                        name: 'Death Gamble [G]',
+                        timer: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS}`,
+                        detail: `${getDeathGambleActivationTargetCount()} targets trapped in the white domain`,
+                        state: 'active'
+                    });
+                } else if (isDeathGambleJackpotActive(now)) {
+                    addBuffCard(buffsList, {
+                        icon: '[777]',
+                        name: 'Jackpot',
+                        timer: formatBuffCountdown(Math.max(0, (deathGambleState.jackpotUntil - now) / 1000)),
+                        detail: 'x3 damage, +50 HP/s, 50% damage taken, and x2.5 speed',
+                        state: 'active'
+                    });
+                } else {
+                    addBuffCard(buffsList, {
+                        icon: '[DG]',
+                        name: 'Death Gamble [G]',
+                        detail: `Ready when ${DEATH_GAMBLE_MIN_TARGETS}+ enemies are on the field`,
+                        state: getDeathGambleActivationTargetCount() >= DEATH_GAMBLE_MIN_TARGETS ? 'ready' : 'cooldown'
+                    });
+                }
             }
             if (player.soulHarvest) {
                 const killsNeeded = Math.max(0, 25 - (kills - soulHarvestKills));
@@ -8302,11 +8636,11 @@ function updateLasers() {
         }
 
         function updateStatsDisplay() {
-            document.getElementById('statDamage').textContent = Math.round(player.damage);
+            document.getElementById('statDamage').textContent = Math.round(player.damage * getPlayerDamageDealtMultiplier());
             document.getElementById('statFireRate').textContent = Math.round(player.fireRate * 100) + '%';
             document.getElementById('statCritChance').textContent = Math.round(player.critChance * 100) + '%';
             document.getElementById('statExpGain').textContent = Math.round(player.expGain * 100) + '%';
-            document.getElementById('statHealRate').textContent = player.healRate + '/s';
+            document.getElementById('statHealRate').textContent = Math.round(getCurrentPlayerHealRate()) + '/s';
             document.getElementById('statXpRange').textContent = Math.round(player.xpCollectionRange) + 'px';
         }
 
@@ -8819,12 +9153,137 @@ function updateLasers() {
             ctx.restore();
         }
 
+        function drawDeathGambleBackdrop(now, worldCameraX) {
+            const left = worldCameraX;
+            const right = worldCameraX + canvas.width;
+            const gradient = ctx.createLinearGradient(left, 0, left, canvas.height);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.55, '#f7f7f7');
+            gradient.addColorStop(1, '#ececec');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(left, 0, canvas.width, canvas.height);
+
+            const haze = 0.08 + 0.03 * Math.sin(now / 260);
+            for (let i = 0; i < 6; i++) {
+                const x = left + canvas.width * (0.12 + i * 0.15);
+                const y = canvas.height * (0.18 + (i % 3) * 0.23);
+                const radius = 120 + (i % 3) * 38;
+                const ring = ctx.createRadialGradient(x, y, 12, x, y, radius);
+                ring.addColorStop(0, `rgba(255,255,255,${0.28 + haze})`);
+                ring.addColorStop(0.45, 'rgba(220,220,220,0.14)');
+                ring.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = ring;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.strokeStyle = 'rgba(170, 170, 170, 0.16)';
+            ctx.lineWidth = 1;
+            for (let x = Math.floor(left / 70) * 70; x < right + 70; x += 70) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 30; y < canvas.height; y += 70) {
+                ctx.beginPath();
+                ctx.moveTo(left, y);
+                ctx.lineTo(right, y);
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = 'rgba(60, 60, 60, 0.18)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(left + canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) * 0.27, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        function drawDeathGambleOverlay() {
+            const now = Date.now();
+            const showRoll = now < (deathGambleState.rollRevealUntil || 0);
+            const showNotice = !!deathGambleState.noticeText && now < (deathGambleState.noticeUntil || 0);
+            const jackpotActive = isDeathGambleJackpotActive(now);
+            if (!deathGambleState.active && !showRoll && !showNotice && !jackpotActive) return;
+
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.textAlign = 'center';
+
+            if (deathGambleState.active) {
+                ctx.fillStyle = 'rgba(255,255,255,0.92)';
+                ctx.fillRect(canvas.width / 2 - 190, 22, 380, 74);
+                ctx.strokeStyle = 'rgba(45,45,45,0.25)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(canvas.width / 2 - 190, 22, 380, 74);
+                ctx.fillStyle = '#111111';
+                ctx.font = 'bold 22px Orbitron';
+                ctx.fillText('DEATH GAMBLE DOMAIN', canvas.width / 2, 50);
+                ctx.font = '14px Orbitron';
+                ctx.fillText(`Roll progress ${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS}  |  Targets ${getDeathGambleActivationTargetCount()}`, canvas.width / 2, 76);
+            }
+
+            if (jackpotActive) {
+                const timeLeft = Math.max(0, (deathGambleState.jackpotUntil - now) / 1000);
+                ctx.fillStyle = 'rgba(35, 44, 22, 0.86)';
+                ctx.fillRect(canvas.width / 2 - 205, 106, 410, 60);
+                ctx.strokeStyle = 'rgba(240,255,160,0.45)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(canvas.width / 2 - 205, 106, 410, 60);
+                ctx.fillStyle = '#f6ffb4';
+                ctx.font = 'bold 22px Orbitron';
+                ctx.fillText('JACKPOT ACTIVE', canvas.width / 2, 131);
+                ctx.font = '14px Orbitron';
+                ctx.fillText(`x3 damage  |  +50 HP/s  |  50% damage taken  |  x2.5 speed  |  ${formatBuffCountdown(timeLeft)}`, canvas.width / 2, 152);
+            }
+
+            if (showRoll) {
+                const cardY = canvas.height * 0.22;
+                const cardW = 92;
+                const cardH = 124;
+                const gap = 26;
+                const startX = canvas.width / 2 - (cardW * 1.5) - gap;
+                deathGambleState.rollNumbers.forEach((value, index) => {
+                    const cardX = startX + index * (cardW + gap);
+                    ctx.fillStyle = deathGambleState.rollWasJackpot ? 'rgba(246,255,180,0.96)' : 'rgba(255,255,255,0.96)';
+                    ctx.fillRect(cardX, cardY, cardW, cardH);
+                    ctx.strokeStyle = deathGambleState.rollWasJackpot ? 'rgba(125,140,40,0.75)' : 'rgba(40,40,40,0.32)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(cardX, cardY, cardW, cardH);
+                    ctx.fillStyle = '#1b1b1b';
+                    ctx.font = 'bold 44px Orbitron';
+                    ctx.fillText(String(value), cardX + cardW / 2, cardY + 72);
+                    ctx.font = '12px Orbitron';
+                    ctx.fillText('ROLL', cardX + cardW / 2, cardY + 102);
+                });
+                ctx.fillStyle = '#111111';
+                ctx.font = 'bold 26px Orbitron';
+                ctx.fillText(deathGambleState.rollWasJackpot ? 'JACKPOT' : 'NO MATCH', canvas.width / 2, cardY + cardH + 34);
+            }
+
+            if (showNotice) {
+                ctx.fillStyle = deathGambleState.noticeTone === 'active' ? 'rgba(36, 50, 20, 0.88)' : 'rgba(24,24,24,0.84)';
+                ctx.fillRect(canvas.width / 2 - 230, canvas.height - 84, 460, 46);
+                ctx.strokeStyle = deathGambleState.noticeTone === 'active' ? 'rgba(240,255,160,0.45)' : 'rgba(255,255,255,0.2)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(canvas.width / 2 - 230, canvas.height - 84, 460, 46);
+                ctx.fillStyle = deathGambleState.noticeTone === 'active' ? '#f6ffb4' : '#f5f5f5';
+                ctx.font = '14px Orbitron';
+                ctx.fillText(deathGambleState.noticeText, canvas.width / 2, canvas.height - 55);
+            }
+
+            ctx.restore();
+        }
+
         function draw() {
             const worldCameraX = getWorldCameraX();
             ctx.save();
             ctx.translate(-worldCameraX, 0);
             // Dynamic Background based on Theme
-            if (isChristmasEnabled) {
+            if (deathGambleState.active) {
+                drawDeathGambleBackdrop(Date.now(), worldCameraX);
+            } else if (isChristmasEnabled) {
                 const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 gradient.addColorStop(0, '#0a1929'); gradient.addColorStop(0.5, '#0f2940'); gradient.addColorStop(1, '#1a3a52');
                 ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -9986,6 +10445,11 @@ function updateLasers() {
                     ctx.beginPath();
                     ctx.arc(centerX, centerY, Math.max(radius, 1), 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.strokeStyle = `rgba(255,255,255,${0.95 * shockAlpha})`;
+                    ctx.lineWidth = 14;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, Math.max(radius - 6, 1), 0, Math.PI * 2);
+                    ctx.stroke();
                     ctx.restore();
                 }
             }
@@ -10261,6 +10725,7 @@ function updateLasers() {
                 ctx.fillText('CRITICAL!', text.x - worldCameraX, text.y);
             });
             drawCelestialCardCutscene();
+            drawDeathGambleOverlay();
         }
 
         function drawCelestialCardCutscene() {
@@ -10603,18 +11068,22 @@ function updateLasers() {
                     if (player.bloodMoon && gameTime >= 300 && !bloodMoonActive) { activateBloodMoon(); }
                     if (bloodMoonActive) { bloodMoonTimer -= simulationDeltaTime; if (bloodMoonTimer <= 0) { deactivateBloodMoon(); } }
                     updateSoulHarvest();
+                    updateDeathGambleState();
                     updateBossFightAchievementTracker();
                     if (player.soulHarvest && kills - soulHarvestKills >= 25) { activateSoulHarvest(); soulHarvestKills = kills; }
                     updateBlackHoles(); updateFugaProjectiles(); updateShield(); updateFizzStreams();
-                    const spawnRate = Math.max(400, 2000 - gameTime * 5);
-                    spawnClockMs += simulationDeltaTime * 1000;
-                    if (spawnClockMs >= spawnRate) {
-                        spawnEnemy();
-                        spawnClockMs = 0;
-                        const extraSpawnChance = Math.min(0.5, gameTime / 600);
-                        if (Math.random() < extraSpawnChance && enemies.length < MAX_ENEMIES - 5) { setTimeout(() => spawnEnemy(), 500); }
+                    updatePlayerRegeneration(simulationDeltaTime);
+                    if (!deathGambleState.active) {
+                        const spawnRate = Math.max(400, 2000 - gameTime * 5);
+                        spawnClockMs += simulationDeltaTime * 1000;
+                        if (spawnClockMs >= spawnRate) {
+                            spawnEnemy();
+                            spawnClockMs = 0;
+                            const extraSpawnChance = Math.min(0.5, gameTime / 600);
+                            if (Math.random() < extraSpawnChance && enemies.length < MAX_ENEMIES - 5) { setTimeout(() => spawnEnemy(), 500); }
+                        }
+                        if (!finalArenaState.active && gameTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
                     }
-                    if (!finalArenaState.active && gameTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
                     updatePlayer(); updateEnemies(); updateBosses(); updateProjectiles(); updateLasers(); updateShurikens(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
 
                     if (selectedThemeMode === 'christmas') updateSnowflakes();
@@ -10775,7 +11244,7 @@ function updateLasers() {
             const top = active[0];
             banner.hidden = false;
             bannerTitle.textContent = top.title;
-            bannerSubtitle.textContent = `${top.senderName} • ${top.body}`.trim();
+            bannerSubtitle.textContent = `${top.senderName} â€¢ ${top.body}`.trim();
 
             active.forEach((entry) => {
                 const item = document.createElement('div');
@@ -10883,8 +11352,9 @@ function updateLasers() {
         initDB().then(() => {
             loadUserStats().then(() => {
                 Promise.all([loadTheme(), loadGameSpeedSettings(), loadAudioSettings(), loadPerformanceSettings(), loadDeviceModeSettings()]).then(() => {
+                    initReleaseNotesModal();
+                    initStPatricksEventPromo();
                     initLiveAnnouncements();
-                    updatePlayerCountLabel();
                     resizeGameViewport();
                     updateWeaponDisplay(); updateBuffsDisplay(); updateStatsDisplay(); draw();
                 });
