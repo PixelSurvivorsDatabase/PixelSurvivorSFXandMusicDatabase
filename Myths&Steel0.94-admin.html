@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -490,6 +490,47 @@
             border: 1px solid rgba(212, 175, 55, 0.28);
             background: rgba(8, 4, 20, 0.5);
             box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .modal,
+        .start-screen-sidebar,
+        .announcement-list,
+        .release-notes-list,
+        .achievements-list,
+        .codex-list,
+        .admin-tabs,
+        .admin-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .modal::-webkit-scrollbar,
+        .start-screen-sidebar::-webkit-scrollbar,
+        .announcement-list::-webkit-scrollbar,
+        .release-notes-list::-webkit-scrollbar,
+        .achievements-list::-webkit-scrollbar,
+        .codex-list::-webkit-scrollbar,
+        .admin-tabs::-webkit-scrollbar,
+        .admin-content::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+
+        #stPatricksEventModal .event-modal-content {
+            max-height: min(74vh, 680px);
+            overflow-y: auto;
+            padding-right: 4px;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        #stPatricksEventModal .event-modal-content::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
         }
 
         body.christmas-mode .start-screen-sidebar {
@@ -1503,6 +1544,11 @@
             text-align: center;
         }
 
+        .performance-status-note {
+            margin-top: 6px;
+            color: #d7e7ff;
+        }
+
         #mobileHud {
             position: absolute;
             inset: 0;
@@ -2339,7 +2385,7 @@
                     </div>
                     
                     <div class="menu-buttons-row">
-                        <button id="startBtn" class="btn-primary">&#x25B6;&#xFE0F; START GAME</button>
+                        <button id="startBtn" class="btn-primary" onclick="openModeSelectModal()">&#x25B6;&#xFE0F; START GAME</button>
                         <button id="persistentStatsBtn" class="btn-secondary">&#x1F3C6; RECORDS</button>
                     </div>
                     
@@ -2373,17 +2419,17 @@
                 <div class="mode-card">
                     <h3>Classic</h3>
                     <p>The standard run. Build up, survive the waves, and chase your best score.</p>
-                    <button id="classicModeBtn" class="btn-primary">PLAY CLASSIC</button>
+                    <button id="classicModeBtn" class="btn-primary" onclick="startGame('classic')">PLAY CLASSIC</button>
                 </div>
                 <div id="hardcoreModeCard" class="mode-card locked">
                     <div id="hardcoreModeOverlay" class="mode-card-overlay">Locked</div>
                     <h3>Hardcore</h3>
                     <p>Fight through a brutal 25-wave gauntlet with a new enemy roster and deadlier bosses.</p>
                     <p id="hardcoreModeRequirements" class="mode-requirements">Reach Wave 20 in Classic and unlock 3 achievements.</p>
-                    <button id="hardcoreModeBtn" class="btn-secondary" type="button" disabled>HARDCORE LOCKED</button>
+                    <button id="hardcoreModeBtn" class="btn-secondary" type="button" onclick="startGame('hardcore')" disabled>HARDCORE LOCKED</button>
                 </div>
             </div>
-            <button id="closeModeSelectBtn" class="btn-secondary" type="button">BACK</button>
+            <button id="closeModeSelectBtn" class="btn-secondary" type="button" onclick="closeModeSelectModal()">BACK</button>
         </div>
         <div id="classicEndlessModal" class="modal">
             <h2>Classic Complete</h2>
@@ -2511,6 +2557,14 @@
                 </div>
 
                 <div class="option-row">
+                    <span class="performance-toggle-label">Auto Optimize</span>
+                    <label class="switch">
+                        <input type="checkbox" id="performanceAutoOptimizeToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="option-row">
                     <span class="performance-toggle-label">Theme Ambience</span>
                     <label class="switch">
                         <input type="checkbox" id="performanceThemeEffectsToggle" checked>
@@ -2550,7 +2604,8 @@
                     </label>
                 </div>
 
-                <p class="performance-note">These settings only change presentation and background visuals. They do not alter damage, movement, spawn rates, timers, or any other gameplay behavior.</p>
+                <p id="performanceStatusNote" class="performance-note performance-status-note">Runtime status: Full Fidelity â€¢ 60 FPS</p>
+                <p class="performance-note">Auto Optimize only trims visuals and HUD refresh frequency when the game gets stressed. It never changes damage, movement, spawn rates, timers, or any other gameplay behavior.</p>
             </div>
 
             <button id="closeOptionsBtn" class="btn-primary" style="font-size: 14px; padding: 10px 20px;">CLOSE</button>
@@ -2966,8 +3021,13 @@
         const DEATH_GAMBLE_MIN_TARGETS = 5;
         const DEATH_GAMBLE_JACKPOT_CHANCE = 7;
         const DEATH_GAMBLE_DOMAIN_DURATION_MS = 35 * 1000;
+        const DEATH_GAMBLE_EXPANSION_DURATION_MS = 900;
+        const DEATH_GAMBLE_DOMAIN_RADIUS_X_RATIO = 0.47;
+        const DEATH_GAMBLE_DOMAIN_RADIUS_Y_RATIO = 0.43;
         const DEATH_GAMBLE_JACKPOT_DURATION_MS = ((4 * 60) + 11) * 1000;
         const DEATH_GAMBLE_JACKPOT_SPEED_MULTIPLIER = 2.5;
+        const DEATH_GAMBLE_BARRIER_PUSH_FACTOR = 0.13;
+        const DEATH_GAMBLE_BARRIER_BOSS_PUSH_FACTOR = 0.09;
         const DEATH_GAMBLE_FAIL_COOLDOWN_MS = 90 * 1000;
         const DEATH_GAMBLE_JACKPOT_COOLDOWN_BASE_MS = 60 * 1000;
         const DEATH_GAMBLE_JACKPOT_COOLDOWN_STEP_MS = 15 * 1000;
@@ -3015,9 +3075,16 @@
             return 1;
         }
 
+        function applyGameSpeedSetting(value, { resetFrameClock = false } = {}) {
+            gameSpeedMultiplier = clampGameSpeedSetting(value);
+            gameSpeedStepCarry = 0;
+            if (resetFrameClock && typeof performance !== 'undefined') lastTime = performance.now();
+            return gameSpeedMultiplier;
+        }
+
         async function loadGameSpeedSettings() {
             const result = await loadData('settings', 'gameSpeed');
-            gameSpeedMultiplier = clampGameSpeedSetting(result);
+            applyGameSpeedSetting(result);
             updateGameSpeedUI();
         }
 
@@ -3060,7 +3127,12 @@
         }
 
         function getGameSimulationStepCount() {
-            gameSpeedStepCarry += clampGameSpeedSetting(gameSpeedMultiplier);
+            const speed = clampGameSpeedSetting(gameSpeedMultiplier);
+            if (speed <= 1) {
+                gameSpeedStepCarry = 0;
+                return 1;
+            }
+            gameSpeedStepCarry += speed;
             const steps = Math.max(1, Math.floor(gameSpeedStepCarry));
             gameSpeedStepCarry -= steps;
             return Math.min(steps, 3);
@@ -3139,27 +3211,27 @@
                 ? 'Lucky Theme secured. Triple shiny rates are still live.'
                 : `Triple shiny rates live. ${remaining} more ${remaining === 1 ? 'event shiny' : 'event shinies'} for Lucky Theme.`;
             progressEl.textContent = unlocked
-                ? `Shinies: ${kills} / 35 â€¢ COMPLETE`
+                ? `Shinies: ${kills} / 35 Ã¢â‚¬Â¢ COMPLETE`
                 : `Shinies: ${kills} / 35`;
             secretEl.textContent = mythicUnlocked
                 ? 'Secret Mythic: Death Gamble ready. Press G for the white domain.'
                 : 'Secret Mythic: Death Gamble. White domain, 1-in-7 jackpot every 5 kills.';
             requirementsEl.textContent = mythicUnlocked
-                ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens â€¢ READY`
-                : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
+                ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens Ã¢â‚¬Â¢ READY`
+                : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             rewardEl.textContent = unlocked ? 'Reward: Lucky Theme Unlocked' : 'Reward: Lucky Theme';
             modalIntro.textContent = unlocked
                 ? 'You already claimed the Lucky Theme. The St. Patrick\'s event is still active on the hosted build while more polish lands.'
                 : 'The St. Patrick\'s event is active on the hosted build. Shiny rates are tripled right now, and more event polish is still on the way before full rollout.';
             modalProgress.textContent = unlocked
-                ? `Shinies Defeated During Event: ${kills} / 35 â€¢ Reward unlocked`
+                ? `Shinies Defeated During Event: ${kills} / 35 Ã¢â‚¬Â¢ Reward unlocked`
                 : `Shinies Defeated During Event: ${kills} / 35`;
             modalProgressState.textContent = unlocked ? 'Complete' : 'Live';
             modalProgressWrap.classList.toggle('complete', unlocked);
             modalProgressFill.style.width = `${(eventRatio * 100).toFixed(1)}%`;
             modalMythic.textContent = mythicUnlocked
-                ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens â€¢ UNLOCKED`
-                : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
+                ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens Ã¢â‚¬Â¢ UNLOCKED`
+                : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             modalMythicState.textContent = mythicUnlocked ? 'Unlocked' : 'Locked';
             modalMythicWrap.classList.toggle('complete', mythicUnlocked);
             modalMythicShinyValue.textContent = `${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ}`;
@@ -3361,9 +3433,40 @@
             }
         }
 
+        function startDeathGambleJackpotMusic() {
+            const bgm = document.getElementById('themeSong');
+            deathGambleMusicOverrideActive = true;
+            stopThemeSongFade();
+            themeSongFadeMultiplier = 0;
+            applyAudioVolumes();
+            if (bgm) bgm.pause();
+            try { deathGambleJackpotSong.currentTime = 0; } catch (error) {}
+            deathGambleJackpotSong.play().catch(e => {
+                console.log("Audio play was prevented until interaction or failed:", e);
+            });
+        }
+
+        function stopDeathGambleJackpotMusic({ resumeTheme = false } = {}) {
+            const wasActive = deathGambleMusicOverrideActive;
+            deathGambleMusicOverrideActive = false;
+            deathGambleJackpotSong.pause();
+            try { deathGambleJackpotSong.currentTime = 0; } catch (error) {}
+            if (!resumeTheme || !wasActive || !gameRunning || bossCutscene.active || celestialCardCutscene.active || finalVictorySequence.active) return;
+            const resumeCue = currentMusicCue || (currentGameMode === 'hardcore' ? 'hardcore' : 'classic');
+            if (!resumeCue) return;
+            playMusicCue(resumeCue, { restart: false, fadeInMs: 350 });
+        }
+
         function fadeOutCurrentMusic(durationMs = 1600, { pause = true, resetTime = false } = {}) {
             const bgm = document.getElementById('themeSong');
             if (!bgm) return;
+            if (deathGambleMusicOverrideActive) {
+                deathGambleJackpotSong.pause();
+                if (resetTime) {
+                    try { deathGambleJackpotSong.currentTime = 0; } catch (error) {}
+                }
+                deathGambleMusicOverrideActive = false;
+            }
             fadeThemeSongTo(0, durationMs, () => {
                 if (pause) bgm.pause();
                 if (resetTime) bgm.currentTime = 0;
@@ -3374,6 +3477,13 @@
             const bgm = document.getElementById('themeSong');
             if (!bgm) return;
             stopThemeSongFade();
+            if (deathGambleMusicOverrideActive) {
+                deathGambleJackpotSong.pause();
+                if (resetTime) {
+                    try { deathGambleJackpotSong.currentTime = 0; } catch (error) {}
+                }
+                deathGambleMusicOverrideActive = false;
+            }
             themeSongFadeMultiplier = 1;
             bgm.pause();
             if (resetTime) bgm.currentTime = 0;
@@ -3430,6 +3540,7 @@
 
         const defaultPerformanceSettings = {
             particleDensity: 1,
+            autoOptimize: true,
             themeEffects: true,
             screenShake: true,
             showGrid: true,
@@ -3437,16 +3548,41 @@
             showWeaponsPanel: true
         };
 
+        const PERFORMANCE_PROFILES = [
+            { label: 'Full Fidelity', particleScale: 1, themeEffects: true, showGrid: true, glowEffects: true, showWeaponsPanel: true, uiRefreshMs: 70 },
+            { label: 'Balanced', particleScale: 0.82, themeEffects: true, showGrid: true, glowEffects: true, showWeaponsPanel: true, uiRefreshMs: 95 },
+            { label: 'Stabilizing', particleScale: 0.62, themeEffects: false, showGrid: false, glowEffects: true, showWeaponsPanel: true, uiRefreshMs: 130 },
+            { label: 'Survival', particleScale: 0.42, themeEffects: false, showGrid: false, glowEffects: false, showWeaponsPanel: false, uiRefreshMs: 170 }
+        ];
+        const PERFORMANCE_STATUS_REFRESH_MS = 300;
+        const MAX_FRAME_DELTA_SECONDS = 0.05;
+
         let performanceSettings = { ...defaultPerformanceSettings };
+        let performanceRuntime = {
+            profileIndex: 0,
+            averageFrameMs: 16.67,
+            fps: 60,
+            lowPerformanceMs: 0,
+            recoveryMs: 0,
+            lastUiRefreshAt: 0,
+            lastStatusRefreshAt: 0,
+            uiDirty: true
+        };
+        let cachedUiElements = null;
 
         function clampPerformanceDensity(v) {
             return Math.max(0.25, Math.min(1, Number(v) || 1));
+        }
+
+        function clampEffectiveParticleDensity(v) {
+            return Math.max(0.15, Math.min(1, Number(v) || 1));
         }
 
         function normalizePerformanceSettings(saved) {
             const normalized = { ...defaultPerformanceSettings };
             if (saved && typeof saved === 'object') {
                 normalized.particleDensity = clampPerformanceDensity(saved.particleDensity);
+                normalized.autoOptimize = saved.autoOptimize !== false;
                 normalized.themeEffects = saved.themeEffects !== false;
                 normalized.screenShake = saved.screenShake !== false;
                 normalized.showGrid = saved.showGrid !== false;
@@ -3456,12 +3592,117 @@
             return normalized;
         }
 
+        function getPerformanceProfile() {
+            const index = performanceSettings.autoOptimize ? performanceRuntime.profileIndex : 0;
+            return PERFORMANCE_PROFILES[Math.max(0, Math.min(PERFORMANCE_PROFILES.length - 1, index))];
+        }
+
+        function isThemeEffectsEnabled() {
+            return performanceSettings.themeEffects && !!getPerformanceProfile().themeEffects;
+        }
+
+        function isGridOverlayEnabled() {
+            return performanceSettings.showGrid && !!getPerformanceProfile().showGrid;
+        }
+
+        function isGlowEffectsEnabled() {
+            return performanceSettings.glowEffects && !!getPerformanceProfile().glowEffects;
+        }
+
+        function isWeaponsPanelEnabled() {
+            return performanceSettings.showWeaponsPanel && !!getPerformanceProfile().showWeaponsPanel;
+        }
+
+        function getPerformanceStatusText() {
+            const fps = Math.max(1, Math.round(performanceRuntime.fps || 60));
+            if (!performanceSettings.autoOptimize) return `Runtime status: Manual Visuals â€¢ ${fps} FPS`;
+            return `Runtime status: ${getPerformanceProfile().label} â€¢ ${fps} FPS`;
+        }
+
+        function markPerformanceUiDirty() {
+            performanceRuntime.uiDirty = true;
+        }
+
+        function refreshPerformanceStatusNote(force = false) {
+            const now = performance.now();
+            if (!force && now - performanceRuntime.lastStatusRefreshAt < PERFORMANCE_STATUS_REFRESH_MS) return;
+            performanceRuntime.lastStatusRefreshAt = now;
+            const statusNote = document.getElementById('performanceStatusNote');
+            if (statusNote) statusNote.textContent = getPerformanceStatusText();
+        }
+
+        function resetPerformanceRuntime() {
+            performanceRuntime.profileIndex = 0;
+            performanceRuntime.averageFrameMs = 16.67;
+            performanceRuntime.fps = 60;
+            performanceRuntime.lowPerformanceMs = 0;
+            performanceRuntime.recoveryMs = 0;
+            performanceRuntime.lastUiRefreshAt = 0;
+            performanceRuntime.lastStatusRefreshAt = 0;
+            performanceRuntime.uiDirty = true;
+            refreshPerformanceStatusNote(true);
+        }
+
+        function updateAdaptivePerformance(frameMs) {
+            if (!Number.isFinite(frameMs) || frameMs <= 0) return;
+            const sampleMs = frameMs > 180 ? 16.67 : Math.max(8, Math.min(80, frameMs));
+            performanceRuntime.averageFrameMs = performanceRuntime.averageFrameMs * 0.88 + sampleMs * 0.12;
+            performanceRuntime.fps = 1000 / performanceRuntime.averageFrameMs;
+
+            if (!performanceSettings.autoOptimize) {
+                performanceRuntime.profileIndex = 0;
+                performanceRuntime.lowPerformanceMs = 0;
+                performanceRuntime.recoveryMs = 0;
+                refreshPerformanceStatusNote();
+                return;
+            }
+
+            const strained = performanceRuntime.averageFrameMs > 22.5 || sampleMs > 28;
+            if (strained) {
+                performanceRuntime.lowPerformanceMs += sampleMs;
+            } else {
+                performanceRuntime.lowPerformanceMs = Math.max(0, performanceRuntime.lowPerformanceMs - sampleMs * 0.75);
+            }
+
+            const recovering = performanceRuntime.averageFrameMs < 18.4 && sampleMs < 20;
+            if (recovering) {
+                performanceRuntime.recoveryMs += sampleMs;
+            } else {
+                performanceRuntime.recoveryMs = Math.max(0, performanceRuntime.recoveryMs - sampleMs);
+            }
+
+            if (performanceRuntime.lowPerformanceMs >= 1200 && performanceRuntime.profileIndex < PERFORMANCE_PROFILES.length - 1) {
+                performanceRuntime.profileIndex++;
+                performanceRuntime.lowPerformanceMs = 0;
+                performanceRuntime.recoveryMs = 0;
+                markPerformanceUiDirty();
+                applyPerformanceSettings();
+            } else if (performanceRuntime.recoveryMs >= 4200 && performanceRuntime.profileIndex > 0) {
+                performanceRuntime.profileIndex--;
+                performanceRuntime.lowPerformanceMs = 0;
+                performanceRuntime.recoveryMs = 0;
+                markPerformanceUiDirty();
+                applyPerformanceSettings();
+            } else {
+                refreshPerformanceStatusNote();
+            }
+        }
+
+        function shouldRefreshPerformanceUi(now = performance.now()) {
+            if (performanceRuntime.uiDirty || now - performanceRuntime.lastUiRefreshAt >= getPerformanceProfile().uiRefreshMs) {
+                performanceRuntime.lastUiRefreshAt = now;
+                performanceRuntime.uiDirty = false;
+                return true;
+            }
+            return false;
+        }
+
         function getCosmeticParticleScale() {
-            return clampPerformanceDensity(performanceSettings.particleDensity);
+            return clampEffectiveParticleDensity(performanceSettings.particleDensity * getPerformanceProfile().particleScale);
         }
 
         function getParticleBudget() {
-            return Math.max(150, Math.round(1200 * getCosmeticParticleScale()));
+            return Math.max(120, Math.round(1200 * getCosmeticParticleScale()));
         }
 
         function getActiveSnowflakeCount() {
@@ -3471,19 +3712,22 @@
         function syncPerformanceOptionsUI() {
             const particleSlider = document.getElementById('performanceParticleDensitySlider');
             const particleValue = document.getElementById('performanceParticleDensityValue');
+            const autoToggle = document.getElementById('performanceAutoOptimizeToggle');
             const themeToggle = document.getElementById('performanceThemeEffectsToggle');
             const shakeToggle = document.getElementById('performanceScreenShakeToggle');
             const gridToggle = document.getElementById('performanceGridToggle');
             const glowToggle = document.getElementById('performanceGlowToggle');
             const weaponsToggle = document.getElementById('performanceWeaponsToggle');
 
-            if (particleSlider) particleSlider.value = Math.round(getCosmeticParticleScale() * 100);
-            if (particleValue) particleValue.textContent = `${Math.round(getCosmeticParticleScale() * 100)}%`;
+            if (particleSlider) particleSlider.value = Math.round(clampPerformanceDensity(performanceSettings.particleDensity) * 100);
+            if (particleValue) particleValue.textContent = `${Math.round(clampPerformanceDensity(performanceSettings.particleDensity) * 100)}%`;
+            if (autoToggle) autoToggle.checked = performanceSettings.autoOptimize;
             if (themeToggle) themeToggle.checked = performanceSettings.themeEffects;
             if (shakeToggle) shakeToggle.checked = performanceSettings.screenShake;
             if (gridToggle) gridToggle.checked = performanceSettings.showGrid;
             if (glowToggle) glowToggle.checked = performanceSettings.glowEffects;
             if (weaponsToggle) weaponsToggle.checked = performanceSettings.showWeaponsPanel;
+            refreshPerformanceStatusNote(true);
         }
 
         function applyPerformanceSettings() {
@@ -3491,13 +3735,18 @@
             const weaponDisplay = document.getElementById('weaponDisplay');
             if (!performanceSettings.screenShake && container) {
                 container.classList.remove('shake');
+                container.style.setProperty('--shake-x', '0px');
+                container.style.setProperty('--shake-y', '0px');
+                clearScreenShake();
             }
-            if (!performanceSettings.themeEffects) {
+            if (!isThemeEffectsEnabled()) {
                 fireworks = [];
             }
             if (weaponDisplay) {
-                weaponDisplay.style.display = performanceSettings.showWeaponsPanel ? 'block' : 'none';
+                weaponDisplay.style.display = isWeaponsPanelEnabled() ? 'block' : 'none';
             }
+            markPerformanceUiDirty();
+            refreshPerformanceStatusNote(true);
         }
 
         async function loadPerformanceSettings() {
@@ -3514,6 +3763,12 @@
         let isMobileControlMode = false;
         let activeShakeInterval = 0;
         let activeShakeTimeout = 0;
+        let screenShakeState = {
+            until: 0,
+            startedAt: 0,
+            durationMs: 0,
+            intensity: 0
+        };
 
         function normalizeDeviceModePreference(saved) {
             return ['auto', 'desktop', 'mobile'].includes(saved) ? saved : 'auto';
@@ -4161,6 +4416,12 @@
             activeUntil: 0,
             jackpotUntil: 0,
             cooldownUntil: 0,
+            expansionStartedAt: 0,
+            expansionUntil: 0,
+            expansionWaveId: 0,
+            barrierScale: 0,
+            arenaCenterX: 0,
+            arenaCenterY: 0,
             domainKills: 0,
             killsSinceRoll: 0,
             rollRevealUntil: 0,
@@ -4451,7 +4712,7 @@
 
             blackHoleCooldown = 0; fugaCooldown = 0; bloodMoonActive = false; bloodMoonTimer = 0;
             invincibleUntil = 0; soulHarvestKills = 0; blackHoles = []; soulHarvestActive = false; lastHealTime = 0;
-            deathGambleState.active = false; deathGambleState.activeUntil = 0; deathGambleState.jackpotUntil = 0; deathGambleState.cooldownUntil = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.consecutiveJackpots = 0; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
+            deathGambleState.active = false; deathGambleState.activeUntil = 0; deathGambleState.jackpotUntil = 0; deathGambleState.cooldownUntil = 0; deathGambleState.expansionStartedAt = 0; deathGambleState.expansionUntil = 0; deathGambleState.expansionWaveId = 0; deathGambleState.barrierScale = 0; deathGambleState.arenaCenterX = 0; deathGambleState.arenaCenterY = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.consecutiveJackpots = 0; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
             bossCutscene.active = false; bossCutscene.bossId = null; bossCutscene.lines = []; bossCutscene.lineIndex = 0; bossCutscene.nextLineAt = 0; bossCutscene.onComplete = null;
             celestialPhaseEffects.pulseActive = false; celestialPhaseEffects.pulseStart = 0; celestialPhaseEffects.collapseStart = 0;
             celestialCardCutscene.active = false; celestialCardCutscene.triggered = false; celestialCardCutscene.startTime = 0; celestialCardCutscene.bossId = null; celestialCardCutscene.midShakeTriggered = false; celestialCardCutscene.flashTriggered = false;
@@ -4462,6 +4723,8 @@
             currentWorldCameraX = 0;
             stopDeathGambleJackpotMusic({ resumeTheme: false });
             stopThemeSongFade(); themeSongFadeMultiplier = 1; currentMusicCue = null;
+            clearScreenShake();
+            resetPerformanceRuntime();
 
             enemies = []; projectiles = []; xpGems = []; particles = []; lasers = []; explosions = [];
             bosses = []; damageNumbers = []; criticalTexts = []; poisonClouds = []; shurikens = [];
@@ -4942,666 +5205,6 @@
             startBossCutscene(null, stage.lines, null, '???');
         }
 
-        function formatAdminLabel(key) {
-            return String(key)
-                .replace(/([a-z])([A-Z])/g, '$1 $2')
-                .replace(/_/g, ' ')
-                .replace(/\b\w/g, (char) => char.toUpperCase());
-        }
-
-        const ADMIN_UNIT_GROUPS = [
-            { label: 'Classic Enemies', kind: 'enemy', roster: 'classic', defs: classicEnemyTypes },
-            { label: 'Hardcore Enemies', kind: 'enemy', roster: 'hardcore', defs: hardcoreEnemyTypes },
-            { label: 'Classic Bosses', kind: 'boss', roster: 'classic', defs: classicBossTypes },
-            { label: 'Hardcore Bosses', kind: 'boss', roster: 'hardcore', defs: hardcoreBossTypes }
-        ];
-
-        const ADMIN_STACK_TARGETS = [
-            ...Object.keys(weaponNameMap).map((weaponName) => ({ value: `weapon:${weaponName}`, label: `Weapon Stack: ${weaponName}` })),
-            { value: 'player:blackHole', label: 'Ability Stack: Black Hole' },
-            { value: 'player:fuga', label: 'Ability Stack: Fuga' },
-            { value: 'player:soulHarvest', label: 'Ability Stack: Soul Harvest' },
-            { value: 'player:deathGamble', label: 'Ability Toggle: Death Gamble', max: 1 },
-            { value: 'player:shield', label: 'Buff Stack: Shield' },
-            { value: 'player:xpCollectionRangeStacks', label: 'Buff Stack: XP Range' }
-        ];
-
-        function setAdminStatus(message) {
-            const statusEl = document.getElementById('adminStatus');
-            if (statusEl) statusEl.textContent = message;
-        }
-
-        function getAdminArenaBounds(radius = 0) {
-            if (finalArenaState.active) {
-                const layout = getFinalArenaLayout();
-                if (player.x >= layout.road.right) {
-                    return layout.bossArena;
-                }
-                if (player.x >= layout.road.left) {
-                    return layout.road;
-                }
-                return layout.leftArena;
-            }
-            return { left: 0, right: canvas.width, top: 0, bottom: canvas.height };
-        }
-
-        function getAdminSpawnPoint(radius = 20, minDistance = 150, maxDistance = 240) {
-            const bounds = getAdminArenaBounds(radius);
-            for (let i = 0; i < 12; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const distance = minDistance + Math.random() * (maxDistance - minDistance);
-                const x = Math.max(bounds.left + radius, Math.min(bounds.right - radius, player.x + Math.cos(angle) * distance));
-                const y = Math.max(bounds.top + radius, Math.min(bounds.bottom - radius, player.y + Math.sin(angle) * distance));
-                if (Math.hypot(x - player.x, y - player.y) >= Math.max(80, radius * 2)) {
-                    return { x, y };
-                }
-            }
-            return {
-                x: Math.max(bounds.left + radius, Math.min(bounds.right - radius, player.x + minDistance)),
-                y: Math.max(bounds.top + radius, Math.min(bounds.bottom - radius, player.y))
-            };
-        }
-
-        function populateAdminSelects() {
-            const spawnSelect = document.getElementById('adminSpawnType');
-            const stackSelect = document.getElementById('adminStackTarget');
-            if (spawnSelect && !spawnSelect.dataset.ready) {
-                ADMIN_UNIT_GROUPS.forEach((group) => {
-                    const optgroup = document.createElement('optgroup');
-                    optgroup.label = group.label;
-                    Object.keys(group.defs).forEach((typeKey) => {
-                        const option = document.createElement('option');
-                        option.value = `${group.kind}|${group.roster}|${typeKey}`;
-                        option.textContent = formatAdminLabel(typeKey);
-                        optgroup.appendChild(option);
-                    });
-                    spawnSelect.appendChild(optgroup);
-                });
-                spawnSelect.dataset.ready = 'true';
-            }
-            if (stackSelect && !stackSelect.dataset.ready) {
-                ADMIN_STACK_TARGETS.forEach((target) => {
-                    const option = document.createElement('option');
-                    option.value = target.value;
-                    option.textContent = target.label;
-                    stackSelect.appendChild(option);
-                });
-                stackSelect.dataset.ready = 'true';
-            }
-        }
-
-        function refreshAdminPanelValues() {
-            populateAdminSelects();
-            const setValue = (id, value) => {
-                const el = document.getElementById(id);
-                if (el) el.value = value;
-            };
-            setValue('adminWaveInput', waveNumber);
-            setValue('adminGameTimeInput', Math.floor(gameTime));
-            setValue('adminHealthInput', Math.round(player.health));
-            setValue('adminMaxHealthInput', Math.round(player.maxHealth));
-            setValue('adminLevelInput', player.level);
-            setValue('adminExpInput', Math.round(player.exp));
-            setValue('adminExpToNextInput', Math.round(player.expToNext));
-            setValue('adminBaseDamageInput', Math.round(player.baseDamage));
-            setValue('adminBaseSpeedInput', Number(player.baseSpeed).toFixed(1));
-            setValue('adminBaseCritInput', Math.round(player.baseCritChance * 100));
-            setValue('adminExpGainInput', Math.round(player.expGain * 100));
-            setValue('adminHealRateInput', player.healRate);
-            setValue('adminVampirismInput', (player.vampirism * 100).toFixed(1));
-            setValue('adminShieldInput', player.shield || 0);
-            syncAdminStackValueInput();
-            refreshAdminControlStates();
-        }
-
-        function refreshAdminControlStates() {
-            const invincibilityBtn = document.getElementById('adminToggleInvincibilityBtn');
-            const freezeBtn = document.getElementById('adminFreezeEnemiesBtn');
-            const playerFireBtn = document.getElementById('adminTogglePlayerFireBtn');
-            const hudBtn = document.getElementById('adminToggleHudBtn');
-            if (invincibilityBtn) invincibilityBtn.textContent = `INVINCIBILITY: ${adminGodMode ? 'ON' : 'OFF'}`;
-            if (freezeBtn) freezeBtn.textContent = `PAUSE HOSTILES: ${adminEnemiesFrozen ? 'ON' : 'OFF'}`;
-            if (playerFireBtn) playerFireBtn.textContent = `PLAYER FIRE: ${adminPlayerFireBlocked ? 'OFF' : 'ON'}`;
-            if (hudBtn) hudBtn.textContent = `HUD: ${adminHudHidden ? 'OFF' : 'ON'}`;
-        }
-
-        function getCurrentAdminStackValue(targetValue) {
-            const [scope, key] = String(targetValue || '').split(':');
-            if (scope === 'weapon') return Math.max(0, Math.floor(Number(player.weapons[key] || 0)));
-            if (scope === 'player') return Math.max(0, Math.floor(Number(player[key] || 0)));
-            return 0;
-        }
-
-        function syncAdminStackValueInput() {
-            const targetSelect = document.getElementById('adminStackTarget');
-            const stackInput = document.getElementById('adminStackValue');
-            if (!targetSelect || !stackInput) return;
-            const targetConfig = ADMIN_STACK_TARGETS.find((target) => target.value === targetSelect.value);
-            if (targetConfig && typeof targetConfig.max === 'number') {
-                stackInput.max = String(targetConfig.max);
-            } else {
-                stackInput.removeAttribute('max');
-            }
-            stackInput.value = getCurrentAdminStackValue(targetSelect.value);
-        }
-
-        function normalizeAdminWeaponState() {
-            Object.keys(weaponNameMap).forEach((weaponName) => {
-                const rawCount = Math.max(0, Math.floor(Number(player.weapons[weaponName] || 0)));
-                const count = weaponName === 'Homing Missiles' ? Math.min(rawCount, MAX_HOMING_STACKS) : rawCount;
-                if (count > 0) {
-                    player.weapons[weaponName] = count;
-                    if (typeof player.lastShot[weaponName] !== 'number') player.lastShot[weaponName] = 0;
-                } else {
-                    delete player.weapons[weaponName];
-                    delete player.lastShot[weaponName];
-                }
-            });
-            recordFireworkStacks(player.weapons['Firework Blaster'] || 0);
-        }
-
-        function refreshAdminAdjustedPlayerState() {
-            player.level = Math.max(1, Math.floor(Number(player.level) || 1));
-            player.maxHealth = Math.max(1, Math.round(Number(player.maxHealth) || 1));
-            player.health = Math.max(0, Math.min(player.maxHealth, Number(player.health) || 0));
-            player.exp = Math.max(0, Math.round(Number(player.exp) || 0));
-            player.expToNext = Math.max(1, Math.round(Number(player.expToNext) || 1));
-            player.baseDamage = Math.max(0, Math.round(Number(player.baseDamage) || 0));
-            player.baseSpeed = Math.max(0.1, Number(player.baseSpeed) || 0.1);
-            player.speed = player.baseSpeed;
-            player.baseCritChance = clamp01((Number(player.baseCritChance) || 0));
-            player.expGain = Math.max(0, Number(player.expGain) || 0);
-            player.healRate = Math.max(0, Number(player.healRate) || 0);
-            player.vampirism = Math.max(0, Number(player.vampirism) || 0);
-            player.shield = Math.max(0, Math.floor(Number(player.shield) || 0));
-            player.shieldRadius = 25 + player.shield * 2;
-            player.shieldKnockback = 5 + player.shield;
-            player.xpCollectionRangeStacks = Math.max(0, Math.floor(Number(player.xpCollectionRangeStacks) || 0));
-            player.xpCollectionRange = Math.max(100, Math.round(100 * Math.pow(1.1, player.xpCollectionRangeStacks)));
-            normalizeAdminWeaponState();
-            updateSynergies();
-            updateWeaponDisplay();
-            updateBuffsDisplay();
-            updateStatsDisplay();
-            updateUI();
-            refreshAdminPanelValues();
-        }
-
-        function spawnAdminUnit(unitValue) {
-            const [kind, roster, typeKey] = String(unitValue || '').split('|');
-            const group = ADMIN_UNIT_GROUPS.find((entry) => entry.kind === kind && entry.roster === roster);
-            if (!group || !group.defs[typeKey]) return false;
-            const unitData = group.defs[typeKey];
-            const linearStrengthMult = getDifficultyMultiplier();
-            const speedStrengthMult = getDifficultySpeedMultiplier();
-            const spawnPoint = getAdminSpawnPoint(unitData.radius || 18, kind === 'boss' ? 220 : 140, kind === 'boss' ? 300 : 220);
-            const scaledHealth = Math.round(unitData.health * linearStrengthMult);
-            const spawnNow = Date.now();
-            const entranceEnabled = kind === 'boss' && typeKey !== 'celestialGuardian';
-            const entranceAccent = kind === 'boss' ? getBossEntranceAccentColor(typeKey, unitData) : '#ffffff';
-            const introSignatureAbility = kind === 'boss' ? getBossIntroSignatureAbility(typeKey) : '';
-
-            if (kind === 'enemy') {
-                enemies.push({
-                    x: spawnPoint.x, y: spawnPoint.y, ...unitData, maxHealth: scaledHealth, health: scaledHealth, baseMaxHealth: scaledHealth, type: typeKey,
-                    slowUntil: 0, poisonUntil: 0, poisonDamage: 0, damage: Math.round(unitData.damage * linearStrengthMult),
-                    speed: unitData.speed * speedStrengthMult, isBurning: false, burnTickTime: 0, dousedUntil: 0, dousedMultiplier: 1.5
-                });
-            } else {
-                bosses.push({
-                    x: spawnPoint.x, y: spawnPoint.y, bossType: typeKey, fireBeamUntil: 0, fireBeamNext: 0, fireBeamAngle: 0, fireBeamTickNext: 0,
-                    dashUntil: 0, dashVx: 0, dashVy: 0, dashAngle: 0, rocketDashNext: 0, nextHitTime: 0, hitCooldownMs: 1200,
-                    goldenSummonNext: 0, goldTrapNext: 0, goldTrapUntil: 0, goldTrapStrikeTime: 0, goldTrapAngle: 0,
-                    amethystDrainUntil: 0, amethystDrainNext: 0, amethystDrainTickNext: 0, scytheSlashUntil: 0, scytheSlashNext: 0,
-                    scytheSlashHitTime: 0, scytheSlashAngle: 0, scytheSlashRange: 0, stunnedUntil: 0,
-                    celestialSwordUntil: 0, celestialSwordHitTime: 0, celestialSwordAngle: 0, angelSummonNext: 0,
-                    celestialPillarSequence: false, celestialPillarCount: 0, celestialPillarNext: 0, celestialBeamShakeNext: 0,
-                    celestialDashNext: 0, dashSlashAt: 0, weepingSummonNext: 0, starfallNext: 0, celestialAsteroidNext: 0,
-                    ...unitData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth,
-                    damage: Math.round(unitData.damage * linearStrengthMult), speed: unitData.speed * speedStrengthMult, lastAbility: entranceEnabled ? spawnNow : 0, abilityCooldown: 3000, phase: 1,
-                    lastPhaseChange: Date.now(), isBurning: false, burnTickTime: 0, dragonlingsSummoned: false,
-                    dousedUntil: 0, dousedMultiplier: 1.5, entityId: nextBossEntityId++, pedestalActive: false,
-                    introPlayed: true, introFacing: Math.PI * 1.5, phaseTransitioning: false,
-                    entranceUntil: entranceEnabled ? spawnNow + 1350 : 0,
-                    entranceStartedAt: spawnNow,
-                    entranceAccent: entranceAccent,
-                    nextEntrancePulseAt: spawnNow,
-                    introSignatureAbility: introSignatureAbility,
-                    introSignatureReadyAt: introSignatureAbility ? spawnNow + 1450 : 0,
-                    introSignatureUsed: false
-                });
-                if (entranceEnabled) {
-                    createParticles(spawnPoint.x, spawnPoint.y, entranceAccent, 24);
-                    particles.push({ x: spawnPoint.x, y: spawnPoint.y, radius: (unitData.radius || 18) + 20, maxRadius: (unitData.radius || 18) + 108, expandSpeed: 8, color: entranceAccent, life: 30, maxLife: 30, lineWidth: 5, type: 'wave' });
-                }
-            }
-            return true;
-        }
-
-        function applyAdminStackTarget(targetValue, stackCount) {
-            const [scope, key] = String(targetValue || '').split(':');
-            const targetConfig = ADMIN_STACK_TARGETS.find((target) => target.value === targetValue);
-            let count = Math.max(0, Math.floor(Number(stackCount) || 0));
-            if (targetConfig && typeof targetConfig.max === 'number') {
-                count = Math.min(count, targetConfig.max);
-            }
-            if (scope === 'weapon') {
-                if (count > 0) {
-                    player.weapons[key] = key === 'Homing Missiles' ? Math.min(count, MAX_HOMING_STACKS) : count;
-                    if (typeof player.lastShot[key] !== 'number') player.lastShot[key] = 0;
-                } else {
-                    delete player.weapons[key];
-                    delete player.lastShot[key];
-                }
-            } else if (scope === 'player') {
-                player[key] = key === 'deathGamble' ? (count > 0 ? 1 : 0) : count;
-            }
-            if (key === 'xpCollectionRangeStacks') {
-                player.xpCollectionRangeStacks = count;
-            }
-            refreshAdminAdjustedPlayerState();
-        }
-
-        function openAdminModal() {
-            refreshAdminPanelValues();
-            const modal = document.getElementById('adminModal');
-            if (modal) modal.style.display = 'block';
-            const content = document.querySelector('#adminModal .admin-content');
-            if (content) content.scrollTop = 0;
-            gamePaused = true;
-            setAdminStatus('Admin controls ready.');
-        }
-
-        function closeAdminModal() {
-            const modal = document.getElementById('adminModal');
-            if (modal) modal.style.display = 'none';
-            const recordsModal = document.getElementById('persistentStatsModal');
-            const modeSelectModal = document.getElementById('modeSelectModal');
-            const statsModal = document.getElementById('statsModal');
-            const recordsOpen = recordsModal && recordsModal.style.display === 'block';
-            const modeSelectOpen = modeSelectModal && modeSelectModal.style.display === 'block';
-            const statsOpen = statsModal && statsModal.style.display === 'block';
-            gamePaused = !!(bossCutscene.active || finalVictorySequence.active || classicEndlessChoicePending || recordsOpen || modeSelectOpen || statsOpen);
-        }
-
-        function applyAdminStats() {
-            const num = (id, fallback = 0) => {
-                const el = document.getElementById(id);
-                const value = Number(el ? el.value : undefined);
-                return Number.isFinite(value) ? value : fallback;
-            };
-
-            player.health = num('adminHealthInput', player.health);
-            player.maxHealth = num('adminMaxHealthInput', player.maxHealth);
-            player.level = num('adminLevelInput', player.level);
-            player.exp = num('adminExpInput', player.exp);
-            player.expToNext = num('adminExpToNextInput', player.expToNext);
-            player.baseDamage = num('adminBaseDamageInput', player.baseDamage);
-            player.baseSpeed = num('adminBaseSpeedInput', player.baseSpeed);
-            player.baseCritChance = num('adminBaseCritInput', player.baseCritChance * 100) / 100;
-            player.expGain = num('adminExpGainInput', player.expGain * 100) / 100;
-            player.healRate = num('adminHealRateInput', player.healRate);
-            player.vampirism = num('adminVampirismInput', player.vampirism * 100) / 100;
-            player.shield = num('adminShieldInput', player.shield);
-            refreshAdminAdjustedPlayerState();
-        }
-
-        function setAdminWave() {
-            const input = document.getElementById('adminWaveInput');
-            const requestedWave = Math.max(1, Math.floor(Number(input ? input.value : undefined) || 1));
-            const cappedWave = currentGameMode === 'hardcore' ? Math.min(requestedWave, getWaveLimit()) : requestedWave;
-            waveNumber = cappedWave;
-            gameTime = Math.max(gameTime, Math.max(0, cappedWave - 1) * getBossSpawnInterval());
-            nextBossTime = Math.min(nextBossTime, gameTime + 5);
-            updateUI();
-            setAdminStatus(`Wave set to ${waveNumber}. Boss timer accelerated.`);
-        }
-
-        function setAdminGameTime() {
-            const input = document.getElementById('adminGameTimeInput');
-            const requestedTime = Math.max(0, Math.floor(Number(input ? input.value : undefined) || 0));
-            gameTime = requestedTime;
-            currentDifficultyLevel = Math.floor(gameTime / 60);
-            if (!finalArenaState.active) {
-                nextBossTime = gameTime + Math.min(30, getBossSpawnInterval());
-            }
-            updateUI();
-            refreshAdminPanelValues();
-            setAdminStatus(`Game time set to ${requestedTime}s.`);
-        }
-
-        function getAdminPrimaryBoss() {
-            if (!bosses.length) return null;
-            return bosses.reduce((closest, boss) => {
-                if (!closest) return boss;
-                return Math.hypot(boss.x - player.x, boss.y - player.y) < Math.hypot(closest.x - player.x, closest.y - player.y) ? boss : closest;
-            }, null);
-        }
-
-        function spawnSelectedAdminBoss() {
-            const spawnTypeSelect = document.getElementById('adminSpawnType');
-            const unitValue = spawnTypeSelect ? spawnTypeSelect.value : '';
-            if (!String(unitValue || '').startsWith('boss|')) {
-                setAdminStatus('Select a boss entry first, then use Spawn Selected Boss.');
-                return;
-            }
-            if (spawnAdminUnit(unitValue)) {
-                setAdminStatus('Spawned the selected boss.');
-            } else {
-                setAdminStatus('Could not spawn that boss.');
-            }
-        }
-
-        function clearAdminProjectiles() {
-            projectiles = [];
-            lasers = [];
-            explosions = [];
-            poisonClouds = [];
-            shurikens = [];
-            fugaProjectiles = [];
-            blackHoles = [];
-            fizzStreams = [];
-            setAdminStatus('Projectiles and lingering attack effects cleared.');
-        }
-
-        function clearAdminParticles() {
-            particles = [];
-            damageNumbers = [];
-            criticalTexts = [];
-            setAdminStatus('Particles and floating combat text cleared.');
-        }
-
-        function clearAdminPlayerAttackState() {
-            projectiles = [];
-            lasers = [];
-            explosions = [];
-            poisonClouds = [];
-            shurikens = [];
-            fugaProjectiles = [];
-            blackHoles = [];
-            fizzStreams = [];
-            fireworks = [];
-            Object.keys(player.lastShot).forEach((key) => { player.lastShot[key] = Date.now(); });
-        }
-
-        function killAdminBoss() {
-            const boss = getAdminPrimaryBoss();
-            if (!boss) {
-                setAdminStatus('No boss is active.');
-                return;
-            }
-            if (boss.bossType === 'celestialGuardian' && boss.phase === 1 && !boss.phaseTransitioning) {
-                triggerCelestialPhaseTwo(boss);
-                setAdminStatus('Celestial Guardian pushed into phase 2.');
-                return;
-            }
-            boss.health = boss.bossType === 'celestialGuardian' && boss.phase >= 2 ? 1 : 0;
-            defeatBoss(boss, 'admin');
-            setAdminStatus(`${formatAdminLabel(boss.bossType)} defeated.`);
-        }
-
-        function forceAdminBossPhaseTwo() {
-            const boss = getAdminPrimaryBoss();
-            if (!boss) {
-                setAdminStatus('No boss is active.');
-                return;
-            }
-            if (boss.bossType === 'celestialGuardian') {
-                if (boss.phase === 1) {
-                    triggerCelestialPhaseTwo(boss);
-                    setAdminStatus('Celestial Guardian phase 2 triggered.');
-                } else {
-                    setAdminStatus('Celestial Guardian is already in phase 2 or beyond.');
-                }
-                return;
-            }
-            if ((boss.phase || 1) >= 3) {
-                setAdminStatus(`${formatAdminLabel(boss.bossType)} is already at max phase.`);
-                return;
-            }
-            boss.phase = (boss.phase || 1) + 1;
-            boss.lastPhaseChange = Date.now();
-            createParticles(boss.x, boss.y, boss.color || '#ffffff', 24);
-            setAdminStatus(`${formatAdminLabel(boss.bossType)} advanced to phase ${boss.phase}.`);
-        }
-
-        function unlockAllAdminAchievements() {
-            normalizeUserStats();
-            let changed = 0;
-            achievementDefs.forEach((def) => {
-                if (!(userStats.achievements[def.id] && userStats.achievements[def.id].unlocked)) changed++;
-                userStats.achievements[def.id] = { unlocked: true, unlockedAt: Date.now() };
-            });
-            persistUserStatsNow();
-            renderAchievements();
-            setAdminStatus(changed ? `Unlocked ${changed} achievement${changed === 1 ? '' : 's'}.` : 'All achievements were already unlocked.');
-        }
-
-        function giveAllAdminWeapons() {
-            Object.keys(weaponNameMap).forEach((weaponName) => {
-                player.weapons[weaponName] = Math.max(1, Math.floor(Number(player.weapons[weaponName] || 0)));
-                if (typeof player.lastShot[weaponName] !== 'number') player.lastShot[weaponName] = 0;
-            });
-            refreshAdminAdjustedPlayerState();
-            setAdminStatus('All weapons granted.');
-        }
-
-        function maxAllAdminStacks() {
-            Object.keys(weaponNameMap).forEach((weaponName) => {
-                player.weapons[weaponName] = weaponName === 'Homing Missiles' ? MAX_HOMING_STACKS : 10;
-                if (typeof player.lastShot[weaponName] !== 'number') player.lastShot[weaponName] = 0;
-            });
-            player.blackHole = 5;
-            player.fuga = 5;
-            player.soulHarvest = 5;
-            player.deathGamble = 1;
-            player.shield = 10;
-            player.xpCollectionRangeStacks = 15;
-            refreshAdminAdjustedPlayerState();
-            setAdminStatus('All stackable weapons and buffs maxed for testing.');
-        }
-
-        function fullHealAdminPlayer() {
-            player.health = player.maxHealth;
-            updateUI();
-            refreshAdminPanelValues();
-            setAdminStatus('Player fully healed.');
-        }
-
-        function toggleAdminInvincibility() {
-            adminGodMode = !adminGodMode;
-            if (adminGodMode) {
-                invincibleUntil = Date.now() + 1000 * 60 * 60 * 24 * 365 * 10;
-                player.invincible = true;
-            } else {
-                invincibleUntil = 0;
-                player.invincible = false;
-            }
-            refreshAdminControlStates();
-            updateUI();
-            setAdminStatus(`Invincibility ${adminGodMode ? 'enabled' : 'disabled'}.`);
-        }
-
-        function toggleAdminPlayerFire() {
-            adminPlayerFireBlocked = !adminPlayerFireBlocked;
-            if (adminPlayerFireBlocked) clearAdminPlayerAttackState();
-            refreshAdminControlStates();
-            setAdminStatus(`Player fire ${adminPlayerFireBlocked ? 'disabled' : 'enabled'}.`);
-        }
-
-        function resetAdminCooldowns() {
-            blackHoleCooldown = 0;
-            fugaCooldown = 0;
-            player.shieldCooldown = 0;
-            Object.keys(player.lastShot).forEach((key) => { player.lastShot[key] = 0; });
-            bosses.forEach((boss) => {
-                boss.lastAbility = 0;
-                boss.fireBeamNext = 0;
-                boss.rocketDashNext = 0;
-                boss.goldenSummonNext = 0;
-                boss.goldTrapNext = 0;
-                boss.amethystDrainNext = 0;
-                boss.scytheSlashNext = 0;
-                boss.worldSlashNext = 0;
-                boss.celestialSwordNext = 0;
-                boss.angelSummonNext = 0;
-                boss.celestialPillarCooldownUntil = 0;
-                boss.celestialDashNext = 0;
-                boss.weepingSummonNext = 0;
-                boss.starfallNext = 0;
-                boss.celestialAsteroidNext = 0;
-                boss.dragonlingsSummoned = false;
-            });
-            setAdminStatus('Player and boss cooldowns reset.');
-        }
-
-        function toggleAdminHudVisibility() {
-            adminHudHidden = !adminHudHidden;
-            applyCinematicHUDState();
-            syncMobileHudState();
-            refreshAdminControlStates();
-            setAdminStatus(`HUD ${adminHudHidden ? 'hidden' : 'shown'}.`);
-        }
-
-        function toggleAdminEnemyFreeze() {
-            adminEnemiesFrozen = !adminEnemiesFrozen;
-            if (adminEnemiesFrozen) {
-                bosses.forEach((boss) => {
-                    boss.dashUntil = 0;
-                    boss.fireBeamUntil = 0;
-                    boss.goldTrapUntil = 0;
-                    boss.amethystDrainUntil = 0;
-                    boss.scytheSlashUntil = 0;
-                    boss.worldSlashUntil = 0;
-                    boss.celestialSwordUntil = 0;
-                    boss.celestialPillarSequence = false;
-                });
-                clearAdminPlayerAttackState();
-            }
-            refreshAdminControlStates();
-            setAdminStatus(`Hostile pause ${adminEnemiesFrozen ? 'enabled' : 'disabled'}.`);
-        }
-
-        function replayAdminBossEntrance() {
-            const boss = getAdminPrimaryBoss();
-            if (!boss) {
-                setAdminStatus('No boss is active.');
-                return;
-            }
-            if (boss.bossType === 'celestialGuardian') {
-                setAdminStatus('Celestial Guardian keeps its dedicated cutscene intro.');
-                return;
-            }
-            const now = Date.now();
-            boss.entranceStartedAt = now;
-            boss.entranceUntil = now + 1400;
-            boss.entranceAccent = getBossEntranceAccentColor(boss.bossType, boss);
-            boss.nextEntrancePulseAt = now + 120;
-            boss.introSignatureAbility = getBossIntroSignatureAbility(boss.bossType);
-            boss.introSignatureReadyAt = boss.entranceUntil + 120;
-            boss.introSignatureUsed = false;
-            clearAdminParticles();
-            setAdminStatus(`${formatAdminLabel(boss.bossType)} entrance replayed.`);
-        }
-
-        function teleportToAdminRoadStart() {
-            currentGameMode = 'hardcore';
-            waveNumber = Math.max(waveNumber, getWaveLimit());
-            if (!finalArenaState.active) startFinalArenaSequence();
-            const layout = getFinalArenaLayout();
-            player.x = layout.road.right - 110;
-            player.y = (layout.road.top + layout.road.bottom) / 2;
-            currentWorldCameraX = getDesiredWorldCameraX();
-            closeAdminModal();
-            setAdminStatus('Teleported to the road start.');
-        }
-
-        function triggerAdminCutscene() {
-            const cutsceneSelect = document.getElementById('adminCutsceneSelect');
-            const selected = cutsceneSelect ? cutsceneSelect.value || 'realityShift' : 'realityShift';
-            if (selected === 'realityShift') {
-                startFinalArenaSequence();
-                closeAdminModal();
-                setAdminStatus('Reality Shift triggered.');
-                return;
-            }
-            if (!finalArenaState.active) startFinalArenaSequence();
-            let boss = bosses.find((entry) => entry && entry.bossType === 'celestialGuardian');
-            if (!boss) {
-                spawnFinalCelestialGuardian();
-                boss = bosses.find((entry) => entry && entry.bossType === 'celestialGuardian');
-            }
-            if (!boss) {
-                setAdminStatus('Could not prepare Celestial Guardian.');
-                return;
-            }
-            if (selected === 'celestialIntro') {
-                boss.introPlayed = false;
-                triggerCelestialIntro(boss);
-                closeAdminModal();
-                setAdminStatus('Celestial intro triggered.');
-                return;
-            }
-            if (selected === 'celestialPhaseTwo') {
-                if (boss.phase === 1) triggerCelestialPhaseTwo(boss);
-                closeAdminModal();
-                setAdminStatus('Celestial phase 2 sequence triggered.');
-                return;
-            }
-            if (selected === 'celestialCard') {
-                if (boss.phase === 1) triggerCelestialPhaseTwo(boss);
-                celestialCardCutscene.active = true;
-                celestialCardCutscene.triggered = true;
-                celestialCardCutscene.startTime = Date.now();
-                celestialCardCutscene.bossId = boss.entityId;
-                celestialCardCutscene.midShakeTriggered = false;
-                celestialCardCutscene.flashTriggered = false;
-                closeAdminModal();
-                setAdminStatus('Celestial card cutscene triggered.');
-                return;
-            }
-            if (selected === 'celestialDeath') {
-                if (boss.phase === 1) triggerCelestialPhaseTwo(boss);
-                startCelestialVictorySequence(boss, 'admin');
-                closeAdminModal();
-                setAdminStatus('Celestial death sequence triggered.');
-            }
-        }
-
-        function teleportToAdminBossRoom() {
-            currentGameMode = 'hardcore';
-            waveNumber = Math.max(waveNumber, getWaveLimit());
-            nextBossTime = Number.POSITIVE_INFINITY;
-            if (!finalArenaState.active) startFinalArenaSequence();
-            enemies = [];
-            bosses = [];
-            projectiles = [];
-            lasers = [];
-            shurikens = [];
-            explosions = [];
-            poisonClouds = [];
-            fugaProjectiles = [];
-            fizzStreams = [];
-            finalVictorySequence.active = false;
-            gamePaused = false;
-            finalArenaState.active = true;
-            finalArenaState.reachedBossArena = true;
-            finalArenaState.bossSpawned = false;
-            const layout = getFinalArenaLayout();
-            player.x = layout.bossArena.right - 84;
-            player.y = layout.bossArena.bottom - 96;
-            bossCutscene.active = false;
-            bossCutscene.bossId = null;
-            bossCutscene.lines = [];
-            bossCutscene.lineIndex = 0;
-            bossCutscene.onComplete = null;
-            updateBossDialogueUI();
-            applyCinematicHUDState();
-            currentWorldCameraX = getDesiredWorldCameraX();
-            spawnFinalCelestialGuardian();
-            closeAdminModal();
-        }
-
         const upgradeDatabase = [
             { name: 'Health Boost', rarity: 'rare', description: 'Increase maximum health by 50 points and fully heal.', effect: () => { player.maxHealth += 50; player.health = player.maxHealth; }, stats: '+50 HP' },
             { name: 'Speed Boost', rarity: 'common', description: 'Increase movement speed for better dodging.', effect: () => { player.speed += 1; player.baseSpeed += 1; }, stats: '+1 Speed' },
@@ -5852,70 +5455,8 @@
         document.getElementById('restartBtn').addEventListener('click', restartGame);
         document.getElementById('backToMenuBtn').addEventListener('click', backToMenu); // NEW
         document.getElementById('statsBtn').addEventListener('click', showStats);
-        document.getElementById('adminBtn').addEventListener('click', openAdminModal);
         document.getElementById('closeStatsBtn').addEventListener('click', hideStats);
         setMenuFunFact();
-        document.getElementById('closeAdminBtn').addEventListener('click', closeAdminModal);
-        document.getElementById('adminSpawnBtn').addEventListener('click', () => {
-            const unitValue = document.getElementById('adminSpawnType').value;
-            const count = Math.max(1, Math.min(25, Math.floor(Number(document.getElementById('adminSpawnCount').value) || 1)));
-            let spawned = 0;
-            for (let i = 0; i < count; i++) {
-                if (spawnAdminUnit(unitValue)) spawned++;
-            }
-            setAdminStatus(`Spawned ${spawned} unit${spawned === 1 ? '' : 's'}.`);
-        });
-        document.getElementById('adminSpawnSelectedBossBtn').addEventListener('click', spawnSelectedAdminBoss);
-        document.getElementById('adminClearEnemiesBtn').addEventListener('click', () => {
-            enemies = [];
-            setAdminStatus('All normal enemies cleared.');
-        });
-        document.getElementById('adminClearBossesBtn').addEventListener('click', () => {
-            bosses = [];
-            finalArenaState.bossSpawned = false;
-            finalVictorySequence.active = false;
-            bossCutscene.active = false;
-            bossCutscene.bossId = null;
-            bossCutscene.lines = [];
-            bossCutscene.lineIndex = 0;
-            bossCutscene.onComplete = null;
-            updateBossDialogueUI();
-            setAdminStatus('All bosses cleared.');
-        });
-        document.getElementById('adminSetWaveBtn').addEventListener('click', setAdminWave);
-        document.getElementById('adminSetGameTimeBtn').addEventListener('click', setAdminGameTime);
-        document.getElementById('adminSpawnBossBtn').addEventListener('click', () => {
-            spawnBoss();
-            setAdminStatus('Spawned a boss from the current mode pool.');
-        });
-        document.getElementById('adminTeleportRoadStartBtn').addEventListener('click', teleportToAdminRoadStart);
-        document.getElementById('adminTeleportBossRoomBtn').addEventListener('click', teleportToAdminBossRoom);
-        document.getElementById('adminKillBossBtn').addEventListener('click', killAdminBoss);
-        document.getElementById('adminForcePhaseTwoBtn').addEventListener('click', forceAdminBossPhaseTwo);
-        document.getElementById('adminReplayEntranceBtn').addEventListener('click', replayAdminBossEntrance);
-        document.getElementById('adminTriggerCutsceneBtn').addEventListener('click', triggerAdminCutscene);
-        document.getElementById('adminFreezeEnemiesBtn').addEventListener('click', toggleAdminEnemyFreeze);
-        document.getElementById('adminClearParticlesBtn').addEventListener('click', clearAdminParticles);
-        document.getElementById('adminClearProjectilesBtn').addEventListener('click', clearAdminProjectiles);
-        document.getElementById('adminApplyStackBtn').addEventListener('click', () => {
-            applyAdminStackTarget(
-                document.getElementById('adminStackTarget').value,
-                document.getElementById('adminStackValue').value
-            );
-            setAdminStatus('Stacks updated.');
-        });
-        document.getElementById('adminGiveAllWeaponsBtn').addEventListener('click', giveAllAdminWeapons);
-        document.getElementById('adminMaxAllStacksBtn').addEventListener('click', maxAllAdminStacks);
-        document.getElementById('adminUnlockAllAchievementsBtn').addEventListener('click', unlockAllAdminAchievements);
-        document.getElementById('adminApplyStatsBtn').addEventListener('click', () => {
-            applyAdminStats();
-            setAdminStatus('Player stats updated.');
-        });
-        document.getElementById('adminFullHealBtn').addEventListener('click', fullHealAdminPlayer);
-        document.getElementById('adminToggleInvincibilityBtn').addEventListener('click', toggleAdminInvincibility);
-        document.getElementById('adminTogglePlayerFireBtn').addEventListener('click', toggleAdminPlayerFire);
-        document.getElementById('adminResetCooldownsBtn').addEventListener('click', resetAdminCooldowns);
-        document.getElementById('adminToggleHudBtn').addEventListener('click', toggleAdminHudVisibility);
 
         // Theme Event Listeners
         const optionsBtnEl = document.getElementById('optionsBtn');
@@ -5950,8 +5491,7 @@
                     updateGameSpeedUI();
                     return;
                 }
-                gameSpeedMultiplier = clampGameSpeedSetting(e.target.value);
-                gameSpeedStepCarry = 0;
+                applyGameSpeedSetting(e.target.value, { resetFrameClock: gameRunning });
                 saveGameSpeedSettings();
                 updateGameSpeedUI();
             });
@@ -5969,25 +5509,6 @@
                     tab.classList.add('active');
                     const panel = document.getElementById(targetId);
                     if (panel) panel.classList.add('active');
-                });
-            });
-        }
-
-        function initAdminTabs() {
-            const tabs = document.querySelectorAll('#adminModal .admin-tab');
-            const panels = document.querySelectorAll('#adminModal .admin-panel');
-            if (!tabs.length || !panels.length) return;
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const targetId = tab.getAttribute('data-admin-tab');
-                    tabs.forEach(t => t.classList.remove('active'));
-                    panels.forEach(p => p.classList.remove('active'));
-                    tab.classList.add('active');
-                    const panel = document.getElementById(targetId);
-                    if (panel) panel.classList.add('active');
-                    const content = document.querySelector('#adminModal .admin-content');
-                    if (content) content.scrollTop = 0;
                 });
             });
         }
@@ -6026,6 +5547,7 @@
                 toggle.addEventListener('change', () => {
                     performanceSettings[key] = toggle.checked;
                     applyPerformanceSettings();
+                    syncPerformanceOptionsUI();
                     savePerformanceSettings();
                 });
             };
@@ -6043,12 +5565,14 @@
                 particleSlider.addEventListener('input', updateParticleDensity);
                 particleSlider.addEventListener('change', () => {
                     updateParticleDensity();
+                    syncPerformanceOptionsUI();
                     savePerformanceSettings();
                 });
 
                 updateParticleDensity();
             }
 
+            bindToggle('performanceAutoOptimizeToggle', 'autoOptimize');
             bindToggle('performanceThemeEffectsToggle', 'themeEffects');
             bindToggle('performanceScreenShakeToggle', 'screenShake');
             bindToggle('performanceGridToggle', 'showGrid');
@@ -6056,19 +5580,9 @@
             bindToggle('performanceWeaponsToggle', 'showWeaponsPanel');
         }
 
-        function initAdminPanel() {
-            populateAdminSelects();
-            refreshAdminPanelValues();
-            refreshAdminControlStates();
-            const stackTarget = document.getElementById('adminStackTarget');
-            if (stackTarget) stackTarget.addEventListener('change', syncAdminStackValueInput);
-        }
-
         initOptionsTabs();
-        initAdminTabs();
         initAudioOptionsUI();
         initPerformanceOptionsUI();
-        initAdminPanel();
         initRecordsTabs();
         document.getElementById('persistentStatsBtn').addEventListener('click', () => {
             openRecordsModal();
@@ -6409,11 +5923,17 @@
             finalArenaState.active = false;
             classicEndlessChoicePending = false;
             hideClassicEndlessChoice();
+            clearScreenShake();
             stopDeathGambleJackpotMusic({ resumeTheme: false });
             deathGambleState.active = false;
             deathGambleState.activeUntil = 0;
             deathGambleState.jackpotUntil = 0;
             deathGambleState.cooldownUntil = 0;
+            deathGambleState.expansionStartedAt = 0;
+            deathGambleState.expansionUntil = 0;
+            deathGambleState.barrierScale = 0;
+            deathGambleState.arenaCenterX = 0;
+            deathGambleState.arenaCenterY = 0;
             deathGambleState.noticeUntil = 0;
             deathGambleState.noticeText = '';
             const gameOverModal = document.getElementById('gameOver');
@@ -6806,6 +6326,33 @@
 
         function getDeathGambleDomainRemainingSeconds(now = Date.now()) {
             return Math.max(0, ((deathGambleState.activeUntil || 0) - now) / 1000);
+        }
+
+        function getDeathGambleArenaCenter() {
+            return {
+                x: deathGambleState.arenaCenterX || player.x,
+                y: deathGambleState.arenaCenterY || player.y
+            };
+        }
+
+        function getDeathGambleBarrierRadii() {
+            return {
+                radiusX: Math.max(280, canvas.width * DEATH_GAMBLE_DOMAIN_RADIUS_X_RATIO),
+                radiusY: Math.max(200, canvas.height * DEATH_GAMBLE_DOMAIN_RADIUS_Y_RATIO)
+            };
+        }
+
+        function getDeathGambleExpansionProgress(now = Date.now()) {
+            if (!deathGambleState.active) return 0;
+            if (!deathGambleState.expansionStartedAt || !deathGambleState.expansionUntil) return 1;
+            const duration = Math.max(1, deathGambleState.expansionUntil - deathGambleState.expansionStartedAt);
+            return Math.max(0, Math.min(1, (now - deathGambleState.expansionStartedAt) / duration));
+        }
+
+        function getDeathGambleBarrierScale(now = Date.now()) {
+            if (!deathGambleState.active) return 0;
+            const progress = getDeathGambleExpansionProgress(now);
+            return progress >= 1 ? 1 : 1 - Math.pow(1 - progress, 3);
         }
 
         function getDeathGambleJackpotChainCooldownMs() {
@@ -7500,6 +7047,8 @@
             const centerY = canvas.height / 2;
             const targets = [...bosses, ...enemies];
             const count = Math.max(1, targets.length);
+            deathGambleState.arenaCenterX = centerX;
+            deathGambleState.arenaCenterY = centerY;
             player.x = centerX;
             player.y = centerY;
             targets.forEach((target, index) => {
@@ -7515,10 +7064,60 @@
             projectiles = projectiles.filter((proj) => !proj.fromEnemy);
         }
 
+        function updateDeathGambleBarrierPush(now = Date.now()) {
+            if (!deathGambleState.active) {
+                deathGambleState.barrierScale = 0;
+                return;
+            }
+            const previousScale = deathGambleState.barrierScale || 0;
+            const currentScale = getDeathGambleBarrierScale(now);
+            deathGambleState.barrierScale = currentScale;
+            if (!deathGambleState.expansionStartedAt || !deathGambleState.expansionUntil || currentScale <= previousScale + 0.001) return;
+
+            const { x: centerX, y: centerY } = getDeathGambleArenaCenter();
+            const { radiusX, radiusY } = getDeathGambleBarrierRadii();
+            const minRadius = Math.min(radiusX, radiusY);
+            const worldLeft = getWorldCameraX();
+            const worldRight = worldLeft + canvas.width;
+            const targets = [...bosses, ...enemies];
+
+            targets.forEach((target) => {
+                if (!target || target.deathGambleBarrierWaveId === deathGambleState.expansionWaveId) return;
+
+                let dx = target.x - centerX;
+                let dy = target.y - centerY;
+                let distanceFactor = Math.hypot(dx / radiusX, dy / radiusY);
+                if (distanceFactor < 0.0001) {
+                    const randomAngle = Math.random() * Math.PI * 2;
+                    dx = Math.cos(randomAngle);
+                    dy = Math.sin(randomAngle);
+                    distanceFactor = 0.0001;
+                }
+
+                const targetRadius = target.radius || 24;
+                const targetPadding = targetRadius / Math.max(1, minRadius);
+                if (distanceFactor + targetPadding < previousScale || distanceFactor - targetPadding > currentScale + 0.05) return;
+
+                const pushFactor = target.bossType ? DEATH_GAMBLE_BARRIER_BOSS_PUSH_FACTOR : DEATH_GAMBLE_BARRIER_PUSH_FACTOR;
+                const desiredFactor = Math.min(1.18, Math.max(distanceFactor + pushFactor * 0.5, currentScale + pushFactor));
+                const pushMultiplier = desiredFactor / Math.max(distanceFactor, 0.0001);
+
+                target.x = Math.max(worldLeft + targetRadius + 42, Math.min(worldRight - targetRadius - 42, centerX + dx * pushMultiplier));
+                target.y = Math.max(targetRadius + 42, Math.min(canvas.height - targetRadius - 42, centerY + dy * pushMultiplier));
+                target.stunnedUntil = Math.max(target.stunnedUntil || 0, now + 320);
+                target.nextHitTime = Math.max(target.nextHitTime || 0, now + 280);
+                target.deathGambleBarrierWaveId = deathGambleState.expansionWaveId;
+                createParticles(target.x, target.y, '#ffffff', target.bossType ? 18 : 10);
+            });
+        }
+
         function endDeathGambleDomain(reason = '') {
             if (!deathGambleState.active) return;
             deathGambleState.active = false;
             deathGambleState.activeUntil = 0;
+            deathGambleState.expansionStartedAt = 0;
+            deathGambleState.expansionUntil = 0;
+            deathGambleState.barrierScale = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.domainKills = 0;
             const cleanedReason = reason ? String(reason).replace(/\s*[.!?]+$/, '') : 'The domain collapsed';
@@ -7532,6 +7131,9 @@
         function startDeathGambleJackpot() {
             deathGambleState.active = false;
             deathGambleState.activeUntil = 0;
+            deathGambleState.expansionStartedAt = 0;
+            deathGambleState.expansionUntil = 0;
+            deathGambleState.barrierScale = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.domainKills = 0;
             deathGambleState.cooldownUntil = 0;
@@ -7586,6 +7188,7 @@
                 });
             }
             if (!deathGambleState.active) return;
+            updateDeathGambleBarrierPush(now);
             if (now >= (deathGambleState.activeUntil || 0)) {
                 endDeathGambleDomain('The domain timed out');
                 return;
@@ -7616,8 +7219,13 @@
                 updateMobileAbilityButtons();
                 return;
             }
+            const activatedAt = Date.now();
             deathGambleState.active = true;
-            deathGambleState.activeUntil = Date.now() + DEATH_GAMBLE_DOMAIN_DURATION_MS;
+            deathGambleState.activeUntil = activatedAt + DEATH_GAMBLE_DOMAIN_DURATION_MS;
+            deathGambleState.expansionStartedAt = activatedAt;
+            deathGambleState.expansionUntil = activatedAt + DEATH_GAMBLE_EXPANSION_DURATION_MS;
+            deathGambleState.expansionWaveId += 1;
+            deathGambleState.barrierScale = 0;
             deathGambleState.domainKills = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.rollRevealUntil = 0;
@@ -7626,10 +7234,11 @@
             deathGambleState.noticeText = '';
             deathGambleState.noticeUntil = 0;
             repositionDeathGambleArena();
-            screenShake(14, 240);
-            createParticles(player.x, player.y, '#ffffff', 36);
+            showDeathGambleNotice('Domain Expansion: Death Gamble', 1500, 'active');
+            screenShake(18, 360);
+            createParticles(player.x, player.y, '#ffffff', 60);
             const targets = [...bosses, ...enemies];
-            targets.forEach((target) => createParticles(target.x, target.y, '#ffffff', target.bossType ? 24 : 12));
+            targets.forEach((target) => createParticles(target.x, target.y, '#ffffff', target.bossType ? 28 : 14));
             updateMobileAbilityButtons();
         }
 
@@ -9443,7 +9052,7 @@ function updateLasers() {
         }
 
         function updateSnowflakes() {
-            if (!performanceSettings.themeEffects) return;
+            if (!isThemeEffectsEnabled()) return;
             const activeSnowflakes = getActiveSnowflakeCount();
             for (let i = 0; i < activeSnowflakes; i++) {
                 const flake = snowflakes[i];
@@ -9453,7 +9062,7 @@ function updateLasers() {
         }
 
         function updateFireworks() {
-            if (!performanceSettings.themeEffects) {
+            if (!isThemeEffectsEnabled()) {
                 fireworks = [];
                 return;
             }
@@ -9894,7 +9503,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleDomainRemainingSeconds(now)),
-                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll • ${getDeathGambleActivationTargetCount()} targets in the white domain`,
+                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll â€¢ ${getDeathGambleActivationTargetCount()} targets in the white domain`,
                         state: 'active'
                     });
                 } else if (isDeathGambleJackpotActive(now)) {
@@ -9910,7 +9519,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleCooldownRemainingSeconds(now)),
-                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` • jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
+                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` â€¢ jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
                         state: 'cooldown'
                     });
                 } else {
@@ -9997,22 +9606,25 @@ function updateLasers() {
         function updateParticles() {
             const particleBudget = getParticleBudget();
             if (particles.length > particleBudget) particles.splice(0, particles.length - particleBudget);
-            particles.forEach((particle, index) => {
+            for (let index = particles.length - 1; index >= 0; index--) {
+                const particle = particles[index];
                 if (particle.type === 'lightning') {
-                    particle.life--; if (particle.life <= 0) particles.splice(index, 1);
+                    particle.life--;
+                    if (particle.life <= 0) particles.splice(index, 1);
                 } else if (particle.type === 'warning') {
-                    particle.life--; particle.radius *= 0.98; if (particle.life <= 0) particles.splice(index, 1);
+                    particle.life--;
+                    particle.radius *= 0.98;
+                    if (particle.life <= 0) particles.splice(index, 1);
                 } else if (particle.type === 'fireworkLine') {
-                    // Visuals for firework lines (drawn in draw loop)
-                    particle.life--; 
+                    particle.life--;
                     if (particle.life <= 0) particles.splice(index, 1);
                 } else if (particle.type === 'steam') {
-                     particle.life--;
-                     particle.x += (Math.random() - 0.5) * 2;
-                     particle.y += (Math.random() - 0.5) * 2;
-                     particle.radius *= 0.95;
-                     if (particle.life <= 0) particles.splice(index, 1);
-                                } else if (particle.type === 'steamBurst') {
+                    particle.life--;
+                    particle.x += (Math.random() - 0.5) * 2;
+                    particle.y += (Math.random() - 0.5) * 2;
+                    particle.radius *= 0.95;
+                    if (particle.life <= 0) particles.splice(index, 1);
+                } else if (particle.type === 'steamBurst') {
                     particle.life--;
                     particle.radius *= 0.9;
                     if (particle.life <= 0) particles.splice(index, 1);
@@ -10028,15 +9640,25 @@ function updateLasers() {
                     particle.x += particle.vx; particle.y += particle.vy; particle.life -= 0.02; particle.radius *= 0.98;
                     if (particle.life <= 0) particles.splice(index, 1);
                 }
-            });
+            }
         }
 
         function updateDamageNumbers() {
-            damageNumbers.forEach((num, index) => { num.life--; num.y -= 1; if (num.life <= 0) damageNumbers.splice(index, 1); });
+            for (let index = damageNumbers.length - 1; index >= 0; index--) {
+                const num = damageNumbers[index];
+                num.life--;
+                num.y -= 1;
+                if (num.life <= 0) damageNumbers.splice(index, 1);
+            }
         }
 
         function updateCriticalTexts() {
-            criticalTexts.forEach((text, index) => { text.life--; text.y -= 1; if (text.life <= 0) criticalTexts.splice(index, 1); });
+            for (let index = criticalTexts.length - 1; index >= 0; index--) {
+                const text = criticalTexts[index];
+                text.life--;
+                text.y -= 1;
+                if (text.life <= 0) criticalTexts.splice(index, 1);
+            }
         }
 
         function updateCombo(x, y) {
@@ -10055,21 +9677,41 @@ function updateLasers() {
 
         function showCritical(x, y) { criticalTexts.push({ x: x, y: y, life: 30 }); }
 
-        function screenShake() {
-            if (!performanceSettings.screenShake) return;
+        function clearScreenShake() {
+            const container = document.getElementById('gameStage') || document.getElementById('gameContainer');
+            screenShakeState.until = 0;
+            screenShakeState.startedAt = 0;
+            screenShakeState.durationMs = 0;
+            screenShakeState.intensity = 0;
+            if (!container) return;
+            container.style.setProperty('--shake-x', '0px');
+            container.style.setProperty('--shake-y', '0px');
+        }
+
+        function updateScreenShake(now = performance.now()) {
             const container = document.getElementById('gameStage') || document.getElementById('gameContainer');
             if (!container) return;
-            clearInterval(activeShakeInterval);
-            clearTimeout(activeShakeTimeout);
-            activeShakeInterval = setInterval(() => {
-                container.style.setProperty('--shake-x', `${(Math.random() - 0.5) * 10}px`);
-                container.style.setProperty('--shake-y', `${(Math.random() - 0.5) * 10}px`);
-            }, 34);
-            activeShakeTimeout = setTimeout(() => {
-                clearInterval(activeShakeInterval);
-                container.style.setProperty('--shake-x', '0px');
-                container.style.setProperty('--shake-y', '0px');
-            }, 220);
+            if (!performanceSettings.screenShake || now >= screenShakeState.until || screenShakeState.intensity <= 0) {
+                if (container.style.getPropertyValue('--shake-x') !== '0px') container.style.setProperty('--shake-x', '0px');
+                if (container.style.getPropertyValue('--shake-y') !== '0px') container.style.setProperty('--shake-y', '0px');
+                if (!performanceSettings.screenShake) container.classList.remove('shake');
+                screenShakeState.intensity = 0;
+                return;
+            }
+            const fade = Math.max(0, Math.min(1, (screenShakeState.until - now) / Math.max(1, screenShakeState.durationMs)));
+            const amount = Math.max(0.75, screenShakeState.intensity * fade);
+            container.style.setProperty('--shake-x', `${(Math.random() - 0.5) * amount}px`);
+            container.style.setProperty('--shake-y', `${(Math.random() - 0.5) * amount}px`);
+        }
+
+        function screenShake(intensity = 10, durationMs = 220) {
+            if (!performanceSettings.screenShake) return;
+            const now = performance.now();
+            const resolvedDuration = Math.max(80, durationMs);
+            screenShakeState.startedAt = now;
+            screenShakeState.durationMs = resolvedDuration;
+            screenShakeState.until = Math.max(screenShakeState.until, now + resolvedDuration);
+            screenShakeState.intensity = Math.max(screenShakeState.intensity * 0.85, intensity);
         }
 
         function showDamageNumber(x, y, damage) { damageNumbers.push({ x: x, y: y, damage: Math.round(damage), life: 60 }); }
@@ -10113,7 +9755,7 @@ function updateLasers() {
             ctx.rotate(angle);
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            if (performanceSettings.glowEffects) {
+            if (isGlowEffectsEnabled()) {
                 ctx.shadowBlur = 18;
                 ctx.shadowColor = outerColor;
             }
@@ -10143,7 +9785,7 @@ function updateLasers() {
             ctx.stroke();
 
             ctx.globalAlpha = 0.86;
-            ctx.shadowBlur = performanceSettings.glowEffects ? 16 : 0;
+            ctx.shadowBlur = isGlowEffectsEnabled() ? 16 : 0;
             ctx.strokeStyle = sparkColor;
             ctx.lineWidth = Math.max(8, lineWidth * 0.72);
             ctx.beginPath();
@@ -10152,7 +9794,7 @@ function updateLasers() {
             ctx.stroke();
 
             ctx.globalAlpha = 1;
-            ctx.shadowBlur = performanceSettings.glowEffects ? 10 : 0;
+            ctx.shadowBlur = isGlowEffectsEnabled() ? 10 : 0;
             ctx.fillStyle = metalColor;
             ctx.beginPath();
             ctx.moveTo(bladeTipX, bladeTipY);
@@ -10197,7 +9839,7 @@ function updateLasers() {
             const sideX = Math.cos(tipAngle + Math.PI / 2) * lineWidth * 0.45;
             const sideY = Math.sin(tipAngle + Math.PI / 2) * lineWidth * 0.45;
 
-            ctx.shadowBlur = performanceSettings.glowEffects ? 12 : 0;
+            ctx.shadowBlur = isGlowEffectsEnabled() ? 12 : 0;
             ctx.fillStyle = sparkColor;
             ctx.beginPath();
             ctx.moveTo(tipX, tipY);
@@ -10226,7 +9868,7 @@ function updateLasers() {
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(angle);
-            if (performanceSettings.glowEffects && colors.glow) {
+            if (isGlowEffectsEnabled() && colors.glow) {
                 ctx.shadowBlur = 12;
                 ctx.shadowColor = colors.glow;
             }
@@ -10372,7 +10014,7 @@ function updateLasers() {
             ctx.translate(originX, originY);
             ctx.rotate(angle);
             ctx.globalCompositeOperation = 'lighter';
-            ctx.shadowBlur = performanceSettings.glowEffects ? 22 : 0;
+            ctx.shadowBlur = isGlowEffectsEnabled() ? 22 : 0;
             ctx.shadowColor = outerColor;
 
             ctx.strokeStyle = trailColor;
@@ -10416,7 +10058,7 @@ function updateLasers() {
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(angle);
-            if (performanceSettings.glowEffects) {
+            if (isGlowEffectsEnabled()) {
                 ctx.shadowBlur = 14;
                 ctx.shadowColor = glowColor;
             }
@@ -10497,12 +10139,30 @@ function updateLasers() {
         function drawDeathGambleBackdrop(now, worldCameraX) {
             const left = worldCameraX;
             const right = worldCameraX + canvas.width;
+            const { x: centerX, y: centerY } = getDeathGambleArenaCenter();
+            const { radiusX: shellRadiusX, radiusY: shellRadiusY } = getDeathGambleBarrierRadii();
+            const barrierScale = deathGambleState.barrierScale || getDeathGambleBarrierScale(now);
+            const barrierRadiusX = Math.max(0, shellRadiusX * barrierScale);
+            const barrierRadiusY = Math.max(0, shellRadiusY * barrierScale);
+            const expansionProgress = getDeathGambleExpansionProgress(now);
+            const shellPulse = 0.5 + 0.5 * Math.sin(now / 210);
+            const arcSpin = now / 620;
             const gradient = ctx.createLinearGradient(left, 0, left, canvas.height);
             gradient.addColorStop(0, '#ffffff');
             gradient.addColorStop(0.55, '#f7f7f7');
             gradient.addColorStop(1, '#ececec');
             ctx.fillStyle = gradient;
             ctx.fillRect(left, 0, canvas.width, canvas.height);
+
+            const interiorGlow = ctx.createRadialGradient(centerX, centerY, shellRadiusY * 0.12, centerX, centerY, shellRadiusX * 1.08);
+            interiorGlow.addColorStop(0, 'rgba(255,255,255,0.54)');
+            interiorGlow.addColorStop(0.42, 'rgba(247,247,247,0.32)');
+            interiorGlow.addColorStop(0.78, 'rgba(232,232,232,0.1)');
+            interiorGlow.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = interiorGlow;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, shellRadiusX * 1.08, shellRadiusY * 1.04, 0, 0, Math.PI * 2);
+            ctx.fill();
 
             const haze = 0.08 + 0.03 * Math.sin(now / 260);
             for (let i = 0; i < 6; i++) {
@@ -10534,11 +10194,74 @@ function updateLasers() {
                 ctx.stroke();
             }
 
-            ctx.strokeStyle = 'rgba(60, 60, 60, 0.18)';
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            const shellGlow = ctx.createRadialGradient(centerX, centerY, shellRadiusY * 0.72, centerX, centerY, shellRadiusX * 1.16);
+            shellGlow.addColorStop(0, 'rgba(255,255,255,0)');
+            shellGlow.addColorStop(0.72, `rgba(255,255,255,${0.03 + shellPulse * 0.04})`);
+            shellGlow.addColorStop(0.88, `rgba(250,250,250,${0.1 + shellPulse * 0.08})`);
+            shellGlow.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = shellGlow;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, shellRadiusX * 1.16, shellRadiusY * 1.12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            ctx.strokeStyle = `rgba(90, 90, 90, ${0.18 + shellPulse * 0.08})`;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, shellRadiusX, shellRadiusY, 0, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.setLineDash([18, 12]);
+            ctx.lineDashOffset = -arcSpin * 30;
+            ctx.strokeStyle = `rgba(255,255,255,${0.16 + shellPulse * 0.1})`;
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.arc(left + canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) * 0.27, 0, Math.PI * 2);
+            ctx.ellipse(centerX, centerY, shellRadiusX - 12, shellRadiusY - 10, 0, arcSpin, arcSpin + Math.PI * 1.8);
             ctx.stroke();
+
+            ctx.setLineDash([8, 14]);
+            ctx.lineDashOffset = arcSpin * 34;
+            ctx.strokeStyle = `rgba(184,184,184,${0.14 + shellPulse * 0.06})`;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, shellRadiusX + 16, shellRadiusY + 12, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+
+            if (expansionProgress < 1 && barrierRadiusX > 6 && barrierRadiusY > 6) {
+                const flareAlpha = 1 - expansionProgress;
+
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const shockGlow = ctx.createRadialGradient(centerX, centerY, Math.max(0, barrierRadiusY * 0.4), centerX, centerY, barrierRadiusX + 90);
+                shockGlow.addColorStop(0, 'rgba(255,255,255,0)');
+                shockGlow.addColorStop(0.58, `rgba(255,255,255,${0.04 + flareAlpha * 0.08})`);
+                shockGlow.addColorStop(0.78, `rgba(255,255,255,${0.18 + flareAlpha * 0.18})`);
+                shockGlow.addColorStop(0.9, `rgba(236,236,236,${0.2 + flareAlpha * 0.16})`);
+                shockGlow.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = shockGlow;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, barrierRadiusX + 90, barrierRadiusY + 70, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = `rgba(255,255,255,${0.28 + flareAlpha * 0.52})`;
+                ctx.lineWidth = 8 + (1 - expansionProgress) * 18;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, barrierRadiusX, barrierRadiusY, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.setLineDash([32, 18]);
+                ctx.lineDashOffset = -now / 18;
+                ctx.strokeStyle = `rgba(180,180,180,${0.16 + flareAlpha * 0.28})`;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, barrierRadiusX + 12, barrierRadiusY + 10, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
         }
 
         function drawDeathGambleJackpotAura(now) {
@@ -10646,7 +10369,7 @@ function updateLasers() {
                 ctx.stroke();
             }
 
-            if (performanceSettings.glowEffects) {
+            if (isGlowEffectsEnabled()) {
                 for (let i = 0; i < 10; i++) {
                     const drift = now / 360 + i * 0.7;
                     const sparkX = player.x + Math.cos(drift * (1.05 + i * 0.04)) * (player.radius * (2.2 + (i % 3) * 0.7));
@@ -10837,7 +10560,7 @@ function updateLasers() {
 
             const now = Date.now();
             if (isChristmasEnabled) {
-                if (performanceSettings.themeEffects) {
+                if (isThemeEffectsEnabled()) {
                     const activeSnowflakes = getActiveSnowflakeCount();
                     for (let i = 0; i < activeSnowflakes; i++) {
                         const flake = snowflakes[i];
@@ -10845,14 +10568,14 @@ function updateLasers() {
                         ctx.beginPath(); ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2); ctx.fill();
                     }
                 }
-            } else if (performanceSettings.themeEffects) {
+            } else if (isThemeEffectsEnabled()) {
                 updateFireworks(); // New Years theme: Fireworks
             } else {
                 fireworks = [];
             }
 
             // Grid Lines
-            if (performanceSettings.showGrid) {
+            if (isGridOverlayEnabled()) {
                 ctx.strokeStyle = 'rgba(255,255,255, 0.05)'; ctx.lineWidth = 1;
                 const gridStartX = Math.floor(worldCameraX / 50) * 50;
                 const gridEndX = worldCameraX + canvas.width + 50;
@@ -10996,7 +10719,7 @@ function updateLasers() {
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 const pulseSpeed = 60000 / (celestialPhaseEffects.pulseBpm || 104);
                 const pulse = 0.5 + 0.5 * Math.sin(((now - celestialPhaseEffects.pulseStart) / pulseSpeed) * Math.PI * 2);
-                if (performanceSettings.glowEffects) {
+                if (isGlowEffectsEnabled()) {
                     const borderSize = 240;
                     const edgeAlpha = 0.16 + pulse * 0.14;
                     const leftGlow = ctx.createLinearGradient(0, 0, borderSize, 0);
@@ -11313,7 +11036,7 @@ function updateLasers() {
                 const gradient = ctx.createRadialGradient(proj.x, proj.y, 0, proj.x, proj.y, proj.radius * 3);
                 gradient.addColorStop(0, 'rgba(255, 100, 0, 0.8)'); gradient.addColorStop(1, 'rgba(255, 50, 0, 0)');
                 ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(proj.x, proj.y, proj.radius * 3, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = proj.color; ctx.shadowBlur = performanceSettings.glowEffects ? 10 : 0; ctx.shadowColor = proj.color; ctx.beginPath(); ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+                ctx.fillStyle = proj.color; ctx.shadowBlur = isGlowEffectsEnabled() ? 10 : 0; ctx.shadowColor = proj.color; ctx.beginPath(); ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
             });
 
             lasers.forEach(laser => {
@@ -11321,7 +11044,7 @@ function updateLasers() {
                 if (laser.isAccelerator) {
                     ctx.save();
                     ctx.lineCap = 'round';
-                    ctx.shadowBlur = performanceSettings.glowEffects ? 26 : 0;
+                    ctx.shadowBlur = isGlowEffectsEnabled() ? 26 : 0;
                     ctx.shadowColor = 'rgba(255,255,255,0.95)';
 
                     ctx.strokeStyle = 'rgba(255,255,255,0.18)';
@@ -11351,7 +11074,7 @@ function updateLasers() {
                 } else if (laser.isFreeze) {
                     ctx.save();
                     ctx.lineCap = 'round';
-                    ctx.shadowBlur = performanceSettings.glowEffects ? 16 : 0;
+                    ctx.shadowBlur = isGlowEffectsEnabled() ? 16 : 0;
                     ctx.shadowColor = 'rgba(184, 236, 255, 0.95)';
 
                     ctx.strokeStyle = 'rgba(132, 221, 255, 0.35)';
@@ -11385,7 +11108,7 @@ function updateLasers() {
                 } else {
                     ctx.save();
                     ctx.lineCap = 'round';
-                    ctx.shadowBlur = performanceSettings.glowEffects ? 20 : 0;
+                    ctx.shadowBlur = isGlowEffectsEnabled() ? 20 : 0;
                     ctx.shadowColor = laser.color;
 
                     ctx.strokeStyle = 'rgba(102, 231, 255, 0.22)';
@@ -11465,7 +11188,7 @@ function updateLasers() {
                     ctx.globalAlpha = Math.max(0, Math.min(1, particle.life / denom));
                     ctx.strokeStyle = particle.color || '#66ff66';
                     ctx.lineWidth = particle.lineWidth || 6;
-                    ctx.shadowBlur = performanceSettings.glowEffects ? 18 : 0;
+                    ctx.shadowBlur = isGlowEffectsEnabled() ? 18 : 0;
                     ctx.shadowColor = particle.color || '#66ff66';
                     ctx.beginPath(); ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2); ctx.stroke();
                     ctx.restore();
@@ -11487,7 +11210,7 @@ function updateLasers() {
             ctx.globalAlpha = 1;
 
             xpGems.forEach(gem => {
-                ctx.fillStyle = '#66ccff'; ctx.shadowBlur = performanceSettings.glowEffects ? 10 : 0; ctx.shadowColor = '#66ccff';
+                ctx.fillStyle = '#66ccff'; ctx.shadowBlur = isGlowEffectsEnabled() ? 10 : 0; ctx.shadowColor = '#66ccff';
                 ctx.beginPath(); ctx.arc(gem.x, gem.y, gem.radius, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
             });
 
@@ -11997,7 +11720,7 @@ function updateLasers() {
             }
 
             projectiles.forEach(proj => {
-                ctx.fillStyle = proj.color; ctx.shadowBlur = performanceSettings.glowEffects ? 5 : 0; ctx.shadowColor = proj.color;
+                    ctx.fillStyle = proj.color; ctx.shadowBlur = isGlowEffectsEnabled() ? 5 : 0; ctx.shadowColor = proj.color;
                 if (proj.type === 'plasma') {
                     ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(proj.x, proj.y); ctx.lineTo(proj.x - proj.vx * 2, proj.y - proj.vy * 2); ctx.strokeStyle = proj.color; ctx.lineWidth = proj.radius * 0.8; ctx.stroke(); ctx.globalAlpha = 1;
                 } else if (proj.type === 'meteor') {
@@ -12129,7 +11852,7 @@ function updateLasers() {
                     ctx.restore();
                 }
                 ctx.save(); ctx.translate(shuriken.x, shuriken.y); ctx.rotate(shuriken.rotation);
-                ctx.shadowBlur = performanceSettings.glowEffects ? 16 : 0; ctx.shadowColor = shuriken.color;
+            ctx.shadowBlur = isGlowEffectsEnabled() ? 16 : 0; ctx.shadowColor = shuriken.color;
 
                 const armLength = shuriken.size * 0.82;
                 const armWidth = shuriken.size * 0.34;
@@ -12271,6 +11994,37 @@ function updateLasers() {
             });
             drawCelestialCardCutscene();
             drawDeathGambleOverlay();
+        }
+
+        function getCachedUiElements() {
+            if (cachedUiElements) return cachedUiElements;
+            cachedUiElements = {
+                startScreen: document.getElementById('startScreen'),
+                healthFill: document.getElementById('healthFill'),
+                healthText: document.getElementById('healthText'),
+                level: document.getElementById('level'),
+                expFill: document.getElementById('expFill'),
+                expText: document.getElementById('expText'),
+                timer: document.getElementById('timer'),
+                kills: document.getElementById('kills'),
+                wave: document.getElementById('wave'),
+                score: document.getElementById('score'),
+                enemyCountDisplay: document.getElementById('enemyCountDisplay'),
+                bossTimer: document.getElementById('bossTimer'),
+                bossCountdown: document.getElementById('bossCountdown')
+            };
+            return cachedUiElements;
+        }
+
+        function setTextIfChanged(el, value) {
+            if (!el) return;
+            const next = String(value);
+            if (el.textContent !== next) el.textContent = next;
+        }
+
+        function setStyleIfChanged(el, property, value) {
+            if (!el) return;
+            if (el.style[property] !== value) el.style[property] = value;
         }
 
         function drawCelestialCardCutscene() {
@@ -12527,25 +12281,30 @@ function updateLasers() {
         }
 
         function updateUI() {
+            const ui = getCachedUiElements();
             applyCinematicHUDState();
             syncMobileHudState();
             updateBuffsDisplay();
+            if (ui.startScreen && ui.startScreen.style.display !== 'none') renderStPatricksEventPromo();
             const healthPercent = (player.health / player.maxHealth) * 100;
-            document.getElementById('healthFill').style.width = `${healthPercent}%`;
-            document.getElementById('healthText').textContent = `${Math.ceil(player.health)}/${player.maxHealth}`;
-            document.getElementById('level').textContent = player.level;
+            setStyleIfChanged(ui.healthFill, 'width', `${healthPercent}%`);
+            setTextIfChanged(ui.healthText, `${Math.ceil(player.health)}/${player.maxHealth}`);
+            setTextIfChanged(ui.level, player.level);
             const expPercent = (player.exp / player.expToNext) * 100;
-            document.getElementById('expFill').style.width = `${expPercent}%`;
-            document.getElementById('expText').textContent = `${Math.floor(player.exp)}/${player.expToNext}`;
+            setStyleIfChanged(ui.expFill, 'width', `${expPercent}%`);
+            setTextIfChanged(ui.expText, `${Math.floor(player.exp)}/${player.expToNext}`);
             const minutes = Math.floor(gameTime / 60); const seconds = Math.floor(gameTime % 60);
-            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            document.getElementById('kills').textContent = kills; document.getElementById('wave').textContent = waveNumber;
-            document.getElementById('score').textContent = score.toLocaleString();
-            document.getElementById('enemyCountDisplay').textContent = enemies.length;
+            setTextIfChanged(ui.timer, `${minutes}:${seconds.toString().padStart(2, '0')}`);
+            setTextIfChanged(ui.kills, kills);
+            setTextIfChanged(ui.wave, waveNumber);
+            setTextIfChanged(ui.score, score.toLocaleString());
+            setTextIfChanged(ui.enemyCountDisplay, enemies.length);
             if (nextBossTime - gameTime > 0 && nextBossTime - gameTime < 30) {
-                document.getElementById('bossTimer').style.display = 'block';
-                document.getElementById('bossCountdown').textContent = Math.ceil(nextBossTime - gameTime);
-            } else { document.getElementById('bossTimer').style.display = 'none'; }
+                setStyleIfChanged(ui.bossTimer, 'display', 'block');
+                setTextIfChanged(ui.bossCountdown, Math.ceil(nextBossTime - gameTime));
+            } else {
+                setStyleIfChanged(ui.bossTimer, 'display', 'none');
+            }
         }
 
         function checkGameOver() {
@@ -12577,11 +12336,15 @@ function updateLasers() {
 
         let lastSpawn = 0; let lastTime = 0; let spawnClockMs = 0;
 
-                function gameLoop(timestamp) {
+        function gameLoop(timestamp) {
             if (!gameRunning) return;
-            const deltaTime = Math.max(0, (timestamp - lastTime) / 1000); lastTime = timestamp;
-            const effectiveDeltaTime = deltaTime * clampGameSpeedSetting(gameSpeedMultiplier);
-            updateWorldCamera(effectiveDeltaTime);
+            const rawFrameMs = lastTime > 0 ? Math.max(0, timestamp - lastTime) : 16.67;
+            lastTime = timestamp;
+            updateAdaptivePerformance(rawFrameMs);
+            updateScreenShake(timestamp);
+            const deltaTime = Math.min(MAX_FRAME_DELTA_SECONDS, Math.max(0, rawFrameMs / 1000));
+            const simulationSteps = getGameSimulationStepCount();
+            updateWorldCamera(deltaTime * simulationSteps);
             syncMouseWorldPosition();
             updateBossCutscene();
             maybeTriggerCelestialCardCutscene();
@@ -12589,8 +12352,7 @@ function updateLasers() {
             updateFinalVictorySequence();
             if (!gamePaused) updateFinalArenaApproachDialogue();
             if (!gamePaused) {
-                const simulationSteps = getGameSimulationStepCount();
-                const simulationDeltaTime = effectiveDeltaTime / simulationSteps;
+                const simulationDeltaTime = deltaTime;
 
                 if (Date.now() - lastAutoSaveTime > 5000) {
                     saveUserStats();
@@ -12637,7 +12399,7 @@ function updateLasers() {
                     updateXPGems(); updateParticles(); updateDamageNumbers(); updateCriticalTexts(); checkGameOver();
                     if (!gameRunning) break;
                 }
-                updateUI();
+                if (shouldRefreshPerformanceUi(timestamp)) updateUI();
             }
             draw(); drawUI(); requestAnimationFrame(gameLoop);
         }
@@ -12790,7 +12552,7 @@ function updateLasers() {
             const top = active[0];
             banner.hidden = false;
             bannerTitle.textContent = top.title;
-            bannerSubtitle.textContent = `${top.senderName} â€¢ ${top.body}`.trim();
+            bannerSubtitle.textContent = `${top.senderName} Ã¢â‚¬Â¢ ${top.body}`.trim();
 
             active.forEach((entry) => {
                 const item = document.createElement('div');
