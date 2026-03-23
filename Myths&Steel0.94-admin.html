@@ -2604,7 +2604,7 @@
                     </label>
                 </div>
 
-                <p id="performanceStatusNote" class="performance-note performance-status-note">Runtime status: Full Fidelity â€¢ 60 FPS</p>
+                <p id="performanceStatusNote" class="performance-note performance-status-note">Runtime status: Full Fidelity Ã¢â‚¬Â¢ 60 FPS</p>
                 <p class="performance-note">Auto Optimize only trims visuals and HUD refresh frequency when the game gets stressed. It never changes damage, movement, spawn rates, timers, or any other gameplay behavior.</p>
             </div>
 
@@ -3022,6 +3022,7 @@
         const DEATH_GAMBLE_JACKPOT_CHANCE = 7;
         const DEATH_GAMBLE_DOMAIN_DURATION_MS = 35 * 1000;
         const DEATH_GAMBLE_EXPANSION_DURATION_MS = 900;
+        const DEATH_GAMBLE_SHATTER_DURATION_MS = 850;
         const DEATH_GAMBLE_DOMAIN_RADIUS_X_RATIO = 0.47;
         const DEATH_GAMBLE_DOMAIN_RADIUS_Y_RATIO = 0.43;
         const DEATH_GAMBLE_JACKPOT_DURATION_MS = ((4 * 60) + 11) * 1000;
@@ -3211,27 +3212,27 @@
                 ? 'Lucky Theme secured. Triple shiny rates are still live.'
                 : `Triple shiny rates live. ${remaining} more ${remaining === 1 ? 'event shiny' : 'event shinies'} for Lucky Theme.`;
             progressEl.textContent = unlocked
-                ? `Shinies: ${kills} / 35 Ã¢â‚¬Â¢ COMPLETE`
+                ? `Shinies: ${kills} / 35 ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ COMPLETE`
                 : `Shinies: ${kills} / 35`;
             secretEl.textContent = mythicUnlocked
                 ? 'Secret Mythic: Death Gamble ready. Press G for the white domain.'
                 : 'Secret Mythic: Death Gamble. White domain, 1-in-7 jackpot every 5 kills.';
             requirementsEl.textContent = mythicUnlocked
-                ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens Ã¢â‚¬Â¢ READY`
-                : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
+                ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ READY`
+                : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             rewardEl.textContent = unlocked ? 'Reward: Lucky Theme Unlocked' : 'Reward: Lucky Theme';
             modalIntro.textContent = unlocked
                 ? 'You already claimed the Lucky Theme. The St. Patrick\'s event is still active on the hosted build while more polish lands.'
                 : 'The St. Patrick\'s event is active on the hosted build. Shiny rates are tripled right now, and more event polish is still on the way before full rollout.';
             modalProgress.textContent = unlocked
-                ? `Shinies Defeated During Event: ${kills} / 35 Ã¢â‚¬Â¢ Reward unlocked`
+                ? `Shinies Defeated During Event: ${kills} / 35 ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Reward unlocked`
                 : `Shinies Defeated During Event: ${kills} / 35`;
             modalProgressState.textContent = unlocked ? 'Complete' : 'Live';
             modalProgressWrap.classList.toggle('complete', unlocked);
             modalProgressFill.style.width = `${(eventRatio * 100).toFixed(1)}%`;
             modalMythic.textContent = mythicUnlocked
-                ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens Ã¢â‚¬Â¢ UNLOCKED`
-                : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies Ã¢â‚¬Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
+                ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ UNLOCKED`
+                : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             modalMythicState.textContent = mythicUnlocked ? 'Unlocked' : 'Locked';
             modalMythicWrap.classList.toggle('complete', mythicUnlocked);
             modalMythicShinyValue.textContent = `${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ}`;
@@ -3615,8 +3616,8 @@
 
         function getPerformanceStatusText() {
             const fps = Math.max(1, Math.round(performanceRuntime.fps || 60));
-            if (!performanceSettings.autoOptimize) return `Runtime status: Manual Visuals â€¢ ${fps} FPS`;
-            return `Runtime status: ${getPerformanceProfile().label} â€¢ ${fps} FPS`;
+            if (!performanceSettings.autoOptimize) return `Runtime status: Manual Visuals Ã¢â‚¬Â¢ ${fps} FPS`;
+            return `Runtime status: ${getPerformanceProfile().label} Ã¢â‚¬Â¢ ${fps} FPS`;
         }
 
         function markPerformanceUiDirty() {
@@ -4420,6 +4421,9 @@
             expansionUntil: 0,
             expansionWaveId: 0,
             barrierScale: 0,
+            shatterStartedAt: 0,
+            shatterUntil: 0,
+            shatterBarrierScale: 0,
             arenaCenterX: 0,
             arenaCenterY: 0,
             domainKills: 0,
@@ -4712,7 +4716,7 @@
 
             blackHoleCooldown = 0; fugaCooldown = 0; bloodMoonActive = false; bloodMoonTimer = 0;
             invincibleUntil = 0; soulHarvestKills = 0; blackHoles = []; soulHarvestActive = false; lastHealTime = 0;
-            deathGambleState.active = false; deathGambleState.activeUntil = 0; deathGambleState.jackpotUntil = 0; deathGambleState.cooldownUntil = 0; deathGambleState.expansionStartedAt = 0; deathGambleState.expansionUntil = 0; deathGambleState.expansionWaveId = 0; deathGambleState.barrierScale = 0; deathGambleState.arenaCenterX = 0; deathGambleState.arenaCenterY = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.consecutiveJackpots = 0; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
+            deathGambleState.active = false; deathGambleState.activeUntil = 0; deathGambleState.jackpotUntil = 0; deathGambleState.cooldownUntil = 0; deathGambleState.expansionStartedAt = 0; deathGambleState.expansionUntil = 0; deathGambleState.expansionWaveId = 0; deathGambleState.barrierScale = 0; deathGambleState.shatterStartedAt = 0; deathGambleState.shatterUntil = 0; deathGambleState.shatterBarrierScale = 0; deathGambleState.arenaCenterX = 0; deathGambleState.arenaCenterY = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.consecutiveJackpots = 0; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
             bossCutscene.active = false; bossCutscene.bossId = null; bossCutscene.lines = []; bossCutscene.lineIndex = 0; bossCutscene.nextLineAt = 0; bossCutscene.onComplete = null;
             celestialPhaseEffects.pulseActive = false; celestialPhaseEffects.pulseStart = 0; celestialPhaseEffects.collapseStart = 0;
             celestialCardCutscene.active = false; celestialCardCutscene.triggered = false; celestialCardCutscene.startTime = 0; celestialCardCutscene.bossId = null; celestialCardCutscene.midShakeTriggered = false; celestialCardCutscene.flashTriggered = false;
@@ -5932,6 +5936,9 @@
             deathGambleState.expansionStartedAt = 0;
             deathGambleState.expansionUntil = 0;
             deathGambleState.barrierScale = 0;
+            deathGambleState.shatterStartedAt = 0;
+            deathGambleState.shatterUntil = 0;
+            deathGambleState.shatterBarrierScale = 0;
             deathGambleState.arenaCenterX = 0;
             deathGambleState.arenaCenterY = 0;
             deathGambleState.noticeUntil = 0;
@@ -6353,6 +6360,16 @@
             if (!deathGambleState.active) return 0;
             const progress = getDeathGambleExpansionProgress(now);
             return progress >= 1 ? 1 : 1 - Math.pow(1 - progress, 3);
+        }
+
+        function isDeathGambleShatterActive(now = Date.now()) {
+            return !!deathGambleState.shatterUntil && now < deathGambleState.shatterUntil;
+        }
+
+        function getDeathGambleShatterProgress(now = Date.now()) {
+            if (!isDeathGambleShatterActive(now) || !deathGambleState.shatterStartedAt) return 1;
+            const duration = Math.max(1, (deathGambleState.shatterUntil || 0) - deathGambleState.shatterStartedAt);
+            return Math.max(0, Math.min(1, (now - deathGambleState.shatterStartedAt) / duration));
         }
 
         function getDeathGambleJackpotChainCooldownMs() {
@@ -7113,13 +7130,28 @@
 
         function endDeathGambleDomain(reason = '') {
             if (!deathGambleState.active) return;
+            const collapseAt = Date.now();
+            const collapseScale = Math.max(deathGambleState.barrierScale || getDeathGambleBarrierScale(collapseAt), 0.82);
             deathGambleState.active = false;
             deathGambleState.activeUntil = 0;
             deathGambleState.expansionStartedAt = 0;
             deathGambleState.expansionUntil = 0;
             deathGambleState.barrierScale = 0;
+            deathGambleState.shatterStartedAt = collapseAt;
+            deathGambleState.shatterUntil = collapseAt + DEATH_GAMBLE_SHATTER_DURATION_MS;
+            deathGambleState.shatterBarrierScale = collapseScale;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.domainKills = 0;
+            screenShake(11, 240);
+            createParticles(player.x, player.y, '#ffffff', 34);
+            const { x: centerX, y: centerY } = getDeathGambleArenaCenter();
+            const { radiusX, radiusY } = getDeathGambleBarrierRadii();
+            for (let i = 0; i < 14; i++) {
+                const angle = (Math.PI * 2 / 14) * i + Math.random() * 0.12;
+                const shardX = centerX + Math.cos(angle) * radiusX * collapseScale;
+                const shardY = centerY + Math.sin(angle) * radiusY * collapseScale;
+                createParticles(shardX, shardY, i % 2 === 0 ? '#ffffff' : '#d8d8d8', 8);
+            }
             const cleanedReason = reason ? String(reason).replace(/\s*[.!?]+$/, '') : 'The domain collapsed';
             const cooldownText = formatBuffCountdown(DEATH_GAMBLE_FAIL_COOLDOWN_MS / 1000);
             setDeathGambleCooldown(DEATH_GAMBLE_FAIL_COOLDOWN_MS, {
@@ -7134,6 +7166,9 @@
             deathGambleState.expansionStartedAt = 0;
             deathGambleState.expansionUntil = 0;
             deathGambleState.barrierScale = 0;
+            deathGambleState.shatterStartedAt = 0;
+            deathGambleState.shatterUntil = 0;
+            deathGambleState.shatterBarrierScale = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.domainKills = 0;
             deathGambleState.cooldownUntil = 0;
@@ -7187,6 +7222,11 @@
                     noticeText: `Jackpot faded. Cooldown ${formatBuffCountdown(cooldownMs / 1000)}.`
                 });
             }
+            if (deathGambleState.shatterUntil && now >= deathGambleState.shatterUntil) {
+                deathGambleState.shatterStartedAt = 0;
+                deathGambleState.shatterUntil = 0;
+                deathGambleState.shatterBarrierScale = 0;
+            }
             if (!deathGambleState.active) return;
             updateDeathGambleBarrierPush(now);
             if (now >= (deathGambleState.activeUntil || 0)) {
@@ -7226,6 +7266,9 @@
             deathGambleState.expansionUntil = activatedAt + DEATH_GAMBLE_EXPANSION_DURATION_MS;
             deathGambleState.expansionWaveId += 1;
             deathGambleState.barrierScale = 0;
+            deathGambleState.shatterStartedAt = 0;
+            deathGambleState.shatterUntil = 0;
+            deathGambleState.shatterBarrierScale = 0;
             deathGambleState.domainKills = 0;
             deathGambleState.killsSinceRoll = 0;
             deathGambleState.rollRevealUntil = 0;
@@ -9503,7 +9546,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleDomainRemainingSeconds(now)),
-                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll â€¢ ${getDeathGambleActivationTargetCount()} targets in the white domain`,
+                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll Ã¢â‚¬Â¢ ${getDeathGambleActivationTargetCount()} targets in the white domain`,
                         state: 'active'
                     });
                 } else if (isDeathGambleJackpotActive(now)) {
@@ -9519,7 +9562,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleCooldownRemainingSeconds(now)),
-                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` â€¢ jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
+                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` Ã¢â‚¬Â¢ jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
                         state: 'cooldown'
                     });
                 } else {
@@ -10141,12 +10184,17 @@ function updateLasers() {
             const right = worldCameraX + canvas.width;
             const { x: centerX, y: centerY } = getDeathGambleArenaCenter();
             const { radiusX: shellRadiusX, radiusY: shellRadiusY } = getDeathGambleBarrierRadii();
-            const barrierScale = deathGambleState.barrierScale || getDeathGambleBarrierScale(now);
+            const shatterActive = isDeathGambleShatterActive(now) && !deathGambleState.active;
+            const shatterProgress = shatterActive ? getDeathGambleShatterProgress(now) : 1;
+            const barrierScale = shatterActive ? (deathGambleState.shatterBarrierScale || 1) : (deathGambleState.barrierScale || getDeathGambleBarrierScale(now));
             const barrierRadiusX = Math.max(0, shellRadiusX * barrierScale);
             const barrierRadiusY = Math.max(0, shellRadiusY * barrierScale);
             const expansionProgress = getDeathGambleExpansionProgress(now);
             const shellPulse = 0.5 + 0.5 * Math.sin(now / 210);
             const arcSpin = now / 620;
+            const sceneAlpha = shatterActive ? Math.max(0, 1 - shatterProgress * 0.94) : 1;
+            ctx.save();
+            ctx.globalAlpha = sceneAlpha;
             const gradient = ctx.createLinearGradient(left, 0, left, canvas.height);
             gradient.addColorStop(0, '#ffffff');
             gradient.addColorStop(0.55, '#f7f7f7');
@@ -10262,6 +10310,54 @@ function updateLasers() {
                 ctx.stroke();
                 ctx.restore();
             }
+
+            if (shatterActive && barrierRadiusX > 10 && barrierRadiusY > 10) {
+                const collapseAlpha = Math.max(0, 1 - shatterProgress);
+                const fragmentTravel = 24 + shatterProgress * 140;
+
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                for (let i = 0; i < 10; i++) {
+                    const angle = (Math.PI * 2 / 10) * i + Math.sin(now / 180 + i) * 0.08;
+                    const offsetX = Math.cos(angle) * fragmentTravel * (0.85 + (i % 3) * 0.18);
+                    const offsetY = Math.sin(angle) * fragmentTravel * (0.72 + (i % 2) * 0.14);
+                    const shardCx = centerX + offsetX;
+                    const shardCy = centerY + offsetY;
+                    ctx.strokeStyle = `rgba(255,255,255,${0.22 + collapseAlpha * 0.3})`;
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        shardCx,
+                        shardCy,
+                        barrierRadiusX * 0.16,
+                        barrierRadiusY * 0.11,
+                        angle,
+                        angle - 0.52,
+                        angle + 0.52
+                    );
+                    ctx.stroke();
+                }
+
+                ctx.strokeStyle = `rgba(120, 120, 120, ${0.18 + collapseAlpha * 0.26})`;
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 12; i++) {
+                    const angle = (Math.PI * 2 / 12) * i + Math.cos(now / 210 + i) * 0.04;
+                    const innerX = centerX + Math.cos(angle) * barrierRadiusX * 0.22;
+                    const innerY = centerY + Math.sin(angle) * barrierRadiusY * 0.22;
+                    const midX = centerX + Math.cos(angle + (i % 2 === 0 ? 0.12 : -0.12)) * barrierRadiusX * (0.58 + shatterProgress * 0.12);
+                    const midY = centerY + Math.sin(angle + (i % 2 === 0 ? 0.12 : -0.12)) * barrierRadiusY * (0.58 + shatterProgress * 0.12);
+                    const outerX = centerX + Math.cos(angle) * (barrierRadiusX + fragmentTravel * 0.6);
+                    const outerY = centerY + Math.sin(angle) * (barrierRadiusY + fragmentTravel * 0.46);
+                    ctx.beginPath();
+                    ctx.moveTo(innerX, innerY);
+                    ctx.lineTo(midX, midY);
+                    ctx.lineTo(outerX, outerY);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            ctx.restore();
         }
 
         function drawDeathGambleJackpotAura(now) {
@@ -12552,7 +12648,7 @@ function updateLasers() {
             const top = active[0];
             banner.hidden = false;
             bannerTitle.textContent = top.title;
-            bannerSubtitle.textContent = `${top.senderName} Ã¢â‚¬Â¢ ${top.body}`.trim();
+            bannerSubtitle.textContent = `${top.senderName} ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ ${top.body}`.trim();
 
             active.forEach((entry) => {
                 const item = document.createElement('div');
