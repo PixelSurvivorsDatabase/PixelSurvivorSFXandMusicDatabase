@@ -1079,39 +1079,172 @@
         body.christmas-mode .achievement-progress {
             color: #66ccff;
         }
+        .codex-summary {
+            margin-bottom: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(30, 16, 52, 0.96) 0%, rgba(12, 8, 24, 0.94) 100%);
+            text-align: left;
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.24);
+        }
+        .codex-summary-title {
+            font-size: 18px;
+            color: #fff3c8;
+            margin-bottom: 4px;
+        }
+        .codex-summary-copy {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #cbc4e4;
+            margin-bottom: 12px;
+        }
+        .codex-summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .codex-summary-stat {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .codex-summary-stat-label {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #a99fcb;
+            margin-bottom: 4px;
+        }
+        .codex-summary-stat-value {
+            display: block;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff7dc;
+        }
         .codex-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             max-height: 360px;
             overflow-y: auto;
             padding-right: 4px;
         }
         .codex-item {
-            background: rgba(18, 10, 34, 0.92);
-            border: 1px solid rgba(122, 52, 173, 0.42);
-            border-radius: 12px;
-            padding: 12px 14px;
+            background: linear-gradient(180deg, rgba(20, 12, 36, 0.96) 0%, rgba(12, 9, 22, 0.94) 100%);
+            border: 1px solid rgba(122, 52, 173, 0.28);
+            border-radius: 16px;
+            padding: 14px 15px;
             text-align: left;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
         }
         .codex-item.seen {
-            border-color: rgba(255, 214, 120, 0.4);
-            box-shadow: 0 0 18px rgba(126, 70, 197, 0.16);
+            box-shadow: 0 0 20px rgba(126, 70, 197, 0.14), inset 0 1px 0 rgba(255,255,255,0.05);
         }
-        .codex-title {
-            font-size: 18px;
-            color: #f8f2ff;
+        .codex-item.locked {
+            opacity: 0.9;
+        }
+        .codex-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .codex-kicker {
+            font-size: 10px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: #b9afd8;
             margin-bottom: 4px;
         }
-        .codex-meta {
+        .codex-title {
+            font-size: 20px;
+            color: #f8f2ff;
+            margin-bottom: 3px;
+        }
+        .codex-subtitle {
             font-size: 12px;
-            color: #d2c0f1;
-            margin-bottom: 6px;
+            color: #d6ccee;
+        }
+        .codex-badge {
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+            color: #120b08;
+            white-space: nowrap;
+        }
+        .codex-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .codex-chip {
+            padding: 4px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.05);
+            font-size: 10px;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #ded6f5;
         }
         .codex-desc {
             font-size: 13px;
-            color: #c9d6ff;
-            line-height: 1.45;
+            color: #d3dcff;
+            line-height: 1.55;
+            margin-bottom: 12px;
+        }
+        .codex-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .codex-stat {
+            padding: 10px 11px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .codex-stat-label {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+            color: #aba0cd;
+            margin-bottom: 4px;
+        }
+        .codex-stat-value {
+            display: block;
+            font-size: 14px;
+            color: #fff1bf;
+            line-height: 1.4;
+        }
+        .codex-patterns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .codex-pattern {
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #efe7ff;
+            font-size: 11px;
+        }
+        .codex-note {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #c2bdd8;
         }
         .achievement-toast {
             position: fixed;
@@ -2680,6 +2813,7 @@
             </div>
 
             <div id="recordsPanelBosses" class="records-panel">
+                <div id="bossCodexSummary" class="codex-summary"></div>
                 <div id="bossCodexList" class="codex-list"></div>
             </div>
 
@@ -4207,13 +4341,97 @@
         ];
 
         const bossCodexDefs = [
-            { id: 'dragon', name: 'Dragon', desc: 'A fire-forged tyrant that sweeps the arena with flame, meteors, and crushing momentum.' },
-            { id: 'demon', name: 'Demon', desc: 'An infernal warlord whose hellfire spreads fast and punishes anyone who lets it close in.' },
-            { id: 'lich', name: 'Lich', desc: 'A corpse-king of attrition that fills the field with necrotic pressure and summoned dead.' },
-            { id: 'soulReaver', name: 'Soul Reaver', desc: 'A spectral executioner that harvests the fallen and turns the arena into a ghost march.' },
-            { id: 'goldTitan', name: 'Gold Titan', desc: 'A colossal golden judge whose summons and traps try to lock the fight into its favor.' },
-            { id: 'amethystReaper', name: 'Amethyst Reaper', desc: 'A distant scythe wielder that bleeds the player from afar before going in for the finish.' },
-            { id: 'celestialGuardian', name: 'Celestial Guardian', desc: 'A white final sentinel waiting beyond the broken arena, where judgment stops feeling mortal.' }
+            {
+                id: 'dragon',
+                name: 'Dragon',
+                subtitle: 'Skyfire Sovereign',
+                mode: 'Classic Route',
+                encounter: 'Core boss pool',
+                threat: 'High',
+                signature: 'Fire Beam',
+                patterns: ['Meteor Rain', 'Sweep Charge', 'Dragonlings'],
+                desc: 'A fire-forged tyrant that floods the arena with flame, pressure, and sudden burst lanes.',
+                note: 'Keep changing angles. Straight retreats make the beam, meteors, and charges stack on top of each other.',
+                accent: '#ff9b3d'
+            },
+            {
+                id: 'demon',
+                name: 'Demon',
+                subtitle: 'Infernal Warlord',
+                mode: 'Classic Route',
+                encounter: 'Core boss pool',
+                threat: 'Medium',
+                signature: 'Hellfire Barrage',
+                patterns: ['Summon Pressure', 'Rage Burst', 'Fireball Spread'],
+                desc: 'An infernal warlord that turns messy spacing into a losing trade with fast hellfire and swarm pressure.',
+                note: 'Clear space before it snowballs. The Demon gets nastier when you let the arena clog up around you.',
+                accent: '#ff5b3a'
+            },
+            {
+                id: 'lich',
+                name: 'Lich',
+                subtitle: 'Corpse-King of Attrition',
+                mode: 'Classic Route',
+                encounter: 'Core boss pool',
+                threat: 'High',
+                signature: 'Zombie Horde',
+                patterns: ['Teleport', 'Curse Pressure', 'Soul Steal'],
+                desc: 'A patient deathlord that wins by dragging the run into a war of attrition and arena denial.',
+                note: 'Treat adds like part of the boss. If the horde stays alive too long, the whole fight tilts against you.',
+                accent: '#8f6cff'
+            },
+            {
+                id: 'soulReaver',
+                name: 'Soul Reaver',
+                subtitle: 'Harvester Beyond the Gate',
+                mode: 'Classic / Endless',
+                encounter: 'Wave 20 in Classic, later in Endless',
+                threat: 'Mythic',
+                signature: 'World Slash',
+                patterns: ['Scythe Slash', 'Soul Drain', 'Ghost March'],
+                desc: 'A spectral executioner that turns the arena into a death march once the scythe starts dictating the pace.',
+                note: 'Respect the windup. Soul Reaver punishes panic movement harder than almost any other boss in the game.',
+                accent: '#e4dcff'
+            },
+            {
+                id: 'goldTitan',
+                name: 'Gold Titan',
+                subtitle: 'Golden Judge',
+                mode: 'Hardcore Route',
+                encounter: 'Hardcore boss pool',
+                threat: 'High',
+                signature: 'Golden Summon',
+                patterns: ['Gold Trap', 'Arena Control', 'Add Pressure'],
+                desc: 'A towering judge that forces you to fight on its terms with traps, summons, and brutal crowd control.',
+                note: 'Break the trap rhythm early. If you keep drifting into its setup, the arena stops feeling safe fast.',
+                accent: '#f2c14e'
+            },
+            {
+                id: 'amethystReaper',
+                name: 'Amethyst Reaper',
+                subtitle: 'Distant Executioner',
+                mode: 'Hardcore Route',
+                encounter: 'Hardcore boss pool',
+                threat: 'High',
+                signature: 'Amethyst Drain',
+                patterns: ['Scythe Slash', 'Ranged Bleed', 'Repositioning'],
+                desc: 'A relentless scythe wielder that pokes from range, bleeds you out, then closes in when you are off-balance.',
+                note: 'Do not let the spacing lull you. The safe lane changes constantly once the drain starts lining up.',
+                accent: '#b784ff'
+            },
+            {
+                id: 'celestialGuardian',
+                name: 'Celestial Guardian',
+                subtitle: 'Final White Sentinel',
+                mode: 'Hardcore Finale',
+                encounter: 'End of Hardcore',
+                threat: 'Final',
+                signature: 'Celestial Sword',
+                patterns: ['Celestial Beam', 'Starfall', 'Phase Shift'],
+                desc: 'A final white sentinel that turns the last stretch of Hardcore into a pure judgment check.',
+                note: 'Save your composure for phase shifts. This fight is won by reading the tempo, not by forcing damage.',
+                accent: '#ffffff'
+            }
         ];
 
         function normalizeUserStats() {
@@ -4371,6 +4589,13 @@
             let updatedStats = false;
             const remainingBosses = bosses.filter((entry) => entry && entry !== boss);
 
+            if (boss.bossType) {
+                if (!userStats.bossCodex[boss.bossType]) userStats.bossCodex[boss.bossType] = { seen: false, kills: 0 };
+                userStats.bossCodex[boss.bossType].seen = true;
+                userStats.bossCodex[boss.bossType].kills = (userStats.bossCodex[boss.bossType].kills || 0) + 1;
+                updatedStats = true;
+            }
+
             if (boss.bossType === 'dragon') {
                 userStats.dragonBossKills = (userStats.dragonBossKills || 0) + 1;
                 if (userStats.dragonBossKills >= 5) {
@@ -4436,19 +4661,114 @@
 
 
         function renderBossCodex() {
+            const summaryEl = document.getElementById('bossCodexSummary');
             const listEl = document.getElementById('bossCodexList');
             if (!listEl) return;
             normalizeUserStats();
+
+            const seenCount = bossCodexDefs.filter(def => userStats.bossCodex[def.id] && userStats.bossCodex[def.id].seen).length;
+            const totalBossKills = bossCodexDefs.reduce((sum, def) => sum + Math.max(0, Math.floor((userStats.bossCodex[def.id] && userStats.bossCodex[def.id].kills) || 0)), 0);
+            const completionPercent = bossCodexDefs.length ? Math.round((seenCount / bossCodexDefs.length) * 100) : 0;
+            const remainingCount = Math.max(0, bossCodexDefs.length - seenCount);
+            const summaryCopy = remainingCount > 0
+                ? `${remainingCount} dossier${remainingCount === 1 ? '' : 's'} still sealed. Keep pushing deeper to reveal the rest of the arena's worst residents.`
+                : 'Every boss dossier is open. The codex is complete, but the arena still wants more blood from every rematch.';
+
+            if (summaryEl) {
+                summaryEl.innerHTML = `
+                    <div class="codex-summary-title">Encounter Log</div>
+                    <div class="codex-summary-copy">${summaryCopy}</div>
+                    <div class="codex-summary-stats">
+                        <div class="codex-summary-stat">
+                            <div class="codex-summary-stat-label">Bosses Logged</div>
+                            <div class="codex-summary-stat-value">${seenCount}/${bossCodexDefs.length}</div>
+                        </div>
+                        <div class="codex-summary-stat">
+                            <div class="codex-summary-stat-label">Completion</div>
+                            <div class="codex-summary-stat-value">${completionPercent}%</div>
+                        </div>
+                        <div class="codex-summary-stat">
+                            <div class="codex-summary-stat-label">Total Boss Kills</div>
+                            <div class="codex-summary-stat-value">${totalBossKills}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
             listEl.innerHTML = bossCodexDefs.map(def => {
                 const entry = userStats.bossCodex[def.id] || { seen: false, kills: 0 };
-                const title = entry.seen ? def.name : 'Unknown Boss';
-                const desc = entry.seen ? def.desc : 'Encounter this boss to reveal its codex entry.';
-                const seenText = entry.seen ? 'Seen' : 'Unseen';
+                const recorded = !!entry.seen;
+                if (!recorded) {
+                    return `
+                        <div class="codex-item locked">
+                            <div class="codex-header">
+                                <div>
+                                    <div class="codex-kicker">Sealed Record</div>
+                                    <div class="codex-title">Unknown Boss</div>
+                                    <div class="codex-subtitle">Entry Sealed</div>
+                                </div>
+                                <div class="codex-badge">Unseen</div>
+                            </div>
+                            <div class="codex-meta">
+                                <span class="codex-chip">Threat Unknown</span>
+                                <span class="codex-chip">Route Hidden</span>
+                                <span class="codex-chip">Encounter Pending</span>
+                            </div>
+                            <div class="codex-desc">Encounter this boss once to crack open its dossier and reveal how it hunts.</div>
+                            <div class="codex-stat-grid">
+                                <div class="codex-stat">
+                                    <div class="codex-stat-label">Kills</div>
+                                    <div class="codex-stat-value">0</div>
+                                </div>
+                                <div class="codex-stat">
+                                    <div class="codex-stat-label">Signature</div>
+                                    <div class="codex-stat-value">Unknown</div>
+                                </div>
+                                <div class="codex-stat">
+                                    <div class="codex-stat-label">Status</div>
+                                    <div class="codex-stat-value">Locked</div>
+                                </div>
+                            </div>
+                            <div class="codex-note">Get through the encounter once and the codex will stop speaking in riddles.</div>
+                        </div>
+                    `;
+                }
+
+                const patternHtml = Array.isArray(def.patterns) ? def.patterns.map(pattern => `<span class="codex-pattern">${pattern}</span>`).join('') : '';
+                const accentStyle = def.accent ? `style="border-color:${def.accent}; box-shadow: 0 0 0 1px ${def.accent}22 inset, 0 14px 28px rgba(0,0,0,0.28);"` : '';
+
                 return `
-                    <div class="codex-item ${entry.seen ? 'seen' : ''}">
-                        <div class="codex-title">${title}</div>
-                        <div class="codex-meta">${seenText} | Kills: ${entry.kills || 0}</div>
-                        <div class="codex-desc">${desc}</div>
+                    <div class="codex-item seen" ${accentStyle}>
+                        <div class="codex-header">
+                            <div>
+                                <div class="codex-kicker">${def.mode}</div>
+                                <div class="codex-title">${def.name}</div>
+                                <div class="codex-subtitle">${def.subtitle}</div>
+                            </div>
+                            <div class="codex-badge">Recorded</div>
+                        </div>
+                        <div class="codex-meta">
+                            <span class="codex-chip">Threat: ${def.threat}</span>
+                            <span class="codex-chip">${def.mode}</span>
+                            <span class="codex-chip">${def.encounter}</span>
+                        </div>
+                        <div class="codex-desc">${def.desc}</div>
+                        <div class="codex-stat-grid">
+                            <div class="codex-stat">
+                                <div class="codex-stat-label">Kills</div>
+                                <div class="codex-stat-value">${Math.max(0, Math.floor(entry.kills || 0))}</div>
+                            </div>
+                            <div class="codex-stat">
+                                <div class="codex-stat-label">Signature</div>
+                                <div class="codex-stat-value">${def.signature}</div>
+                            </div>
+                            <div class="codex-stat">
+                                <div class="codex-stat-label">Status</div>
+                                <div class="codex-stat-value">Seen</div>
+                            </div>
+                        </div>
+                        <div class="codex-patterns">${patternHtml}</div>
+                        <div class="codex-note">${def.note}</div>
                     </div>
                 `;
             }).join('');
