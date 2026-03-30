@@ -2000,7 +2000,10 @@
         .pause-menu-shell {
             width: min(98vw, 1200px);
             max-height: min(94vh, 820px);
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             padding: 18px 20px 16px;
             border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.12);
@@ -2010,6 +2013,10 @@
                 linear-gradient(180deg, rgba(18, 12, 34, 0.98) 0%, rgba(7, 5, 15, 0.98) 100%);
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
             text-align: left;
+        }
+
+        .pause-menu-shell::-webkit-scrollbar {
+            display: none;
         }
 
         .pause-menu-topbar {
@@ -2689,30 +2696,59 @@
 
         body.lucky-mode .player-presence-card {
             border-color: rgba(155, 255, 117, 0.2);
-            background: rgba(12, 30, 16, 0.52);
+            background:
+                linear-gradient(145deg, rgba(10, 32, 16, 0.78), rgba(18, 52, 24, 0.74) 54%, rgba(94, 77, 18, 0.62));
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 22px rgba(160, 255, 126, 0.08);
         }
         body.lucky-mode {
-            background: linear-gradient(135deg, #071b0e 0%, #12351d 35%, #1f5b2d 70%, #0b2414 100%);
+            background: linear-gradient(135deg, #041208 0%, #0f2d17 26%, #1d5c2d 58%, #6a5818 100%);
         }
         body.lucky-mode::before {
             background:
-                radial-gradient(circle at 20% 20%, rgba(175, 255, 120, 0.08) 0%, transparent 35%),
-                radial-gradient(circle at 78% 26%, rgba(255, 229, 120, 0.09) 0%, transparent 38%),
-                radial-gradient(circle at 52% 78%, rgba(120, 255, 170, 0.05) 0%, transparent 34%);
+                radial-gradient(circle at 18% 18%, rgba(175, 255, 120, 0.12) 0%, transparent 36%),
+                radial-gradient(circle at 78% 22%, rgba(255, 229, 120, 0.13) 0%, transparent 38%),
+                radial-gradient(circle at 52% 78%, rgba(120, 255, 170, 0.08) 0%, transparent 34%),
+                linear-gradient(115deg, rgba(255, 233, 129, 0.05) 0%, transparent 32%, rgba(123, 255, 147, 0.05) 68%, transparent 100%);
         }
 
         body.lucky-mode #startScreen h1 {
-            color: #9bff75;
-            text-shadow: 0 0 15px rgba(120, 255, 150, 0.45);
+            color: #eaff97;
+            text-shadow: 0 0 18px rgba(120, 255, 150, 0.38), 0 0 36px rgba(255, 214, 87, 0.18);
+        }
+
+        body.lucky-mode #startScreen {
+            border-color: rgba(188, 255, 129, 0.2);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.04),
+                0 34px 82px rgba(0, 0, 0, 0.42),
+                0 0 42px rgba(120, 255, 140, 0.12);
         }
 
         body.lucky-mode .start-screen-sidebar {
-            border-color: rgba(155, 255, 117, 0.28);
-            background: rgba(10, 32, 16, 0.56);
+            border-color: rgba(188, 255, 129, 0.28);
+            background:
+                linear-gradient(180deg, rgba(8, 26, 14, 0.72), rgba(14, 38, 20, 0.6));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 26px rgba(112, 255, 132, 0.08);
+        }
+
+        body.lucky-mode .start-screen-main {
+            background:
+                linear-gradient(145deg, rgba(10, 22, 16, 0.62), rgba(24, 44, 28, 0.34) 58%, rgba(94, 77, 18, 0.18));
+            border-radius: 28px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
         }
 
         body.lucky-mode .start-screen-sidebar h2 {
             color: #ffe89a;
+        }
+
+        body.lucky-mode .start-screen-notes li::marker {
+            color: #dfff8d;
+        }
+
+        body.lucky-mode #gameSubtitle,
+        body.lucky-mode .controls p {
+            color: #f2ffd5;
         }
 
         body.lucky-mode #optionsBtn:hover {
@@ -2725,35 +2761,108 @@
         }
 
         body.lucky-mode .player-count-label {
-            color: #f3ffcb;
-            border-color: rgba(155, 255, 117, 0.24);
-            background: rgba(16, 36, 20, 0.42);
+            color: #f8ffd8;
+            border-color: rgba(207, 255, 146, 0.28);
+            background:
+                linear-gradient(145deg, rgba(16, 36, 20, 0.72), rgba(24, 48, 27, 0.5));
+            box-shadow: 0 0 24px rgba(114, 255, 119, 0.12);
         }
 
         body.lucky-mode .menu-version-tag {
-            border-color: rgba(155, 255, 117, 0.36);
-            background: rgba(160, 255, 140, 0.08);
-            color: #f5ffbf;
-            box-shadow: 0 0 18px rgba(155, 255, 117, 0.12);
+            border-color: rgba(207, 255, 146, 0.36);
+            background: linear-gradient(135deg, rgba(160, 255, 140, 0.12), rgba(255, 221, 110, 0.08));
+            color: #fff5bf;
+            box-shadow: 0 0 18px rgba(155, 255, 117, 0.16);
         }
 
         body.lucky-mode .modal {
-            background: linear-gradient(135deg, #102515 0%, #183a22 50%, #0f2818 100%);
-            border-color: #2f8a43;
-            box-shadow: 0 0 40px rgba(50, 160, 80, 0.28);
+            background: linear-gradient(135deg, #102515 0%, #183a22 45%, #3a5c25 78%, #0f2818 100%);
+            border-color: #58a34a;
+            box-shadow: 0 0 44px rgba(50, 160, 80, 0.24), 0 18px 42px rgba(0, 0, 0, 0.34);
+        }
+
+        body.lucky-mode .btn-primary,
+        body.lucky-mode .btn-secondary,
+        body.lucky-mode #optionsBtn {
+            border-color: rgba(214, 255, 148, 0.34);
+            background:
+                linear-gradient(135deg, rgba(26, 74, 34, 0.96), rgba(78, 134, 54, 0.92) 62%, rgba(188, 153, 52, 0.88));
+            color: #fffbe8;
+            box-shadow: 0 14px 28px rgba(18, 48, 18, 0.24), 0 0 24px rgba(150, 255, 118, 0.1);
+        }
+
+        body.lucky-mode .btn-primary:hover,
+        body.lucky-mode .btn-secondary:hover,
+        body.lucky-mode #optionsBtn:hover {
+            box-shadow: 0 18px 34px rgba(18, 48, 18, 0.3), 0 0 26px rgba(186, 255, 124, 0.18);
+        }
+
+        body.lucky-mode .announcement-banner {
+            border-color: rgba(198, 255, 138, 0.32);
+            background:
+                linear-gradient(135deg, rgba(24, 56, 26, 0.86), rgba(48, 92, 40, 0.84) 54%, rgba(112, 87, 24, 0.82));
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28), 0 0 26px rgba(132, 255, 124, 0.12);
+        }
+
+        body.lucky-mode .announcement-badge {
+            background: linear-gradient(135deg, #b7ff66, #ffe46b);
+            color: #17310f;
+        }
+
+        body.lucky-mode .pause-menu-shell,
+        body.lucky-mode .speed-modal-content {
+            border-color: rgba(198, 255, 138, 0.24);
+            background:
+                radial-gradient(circle at top left, rgba(255, 230, 128, 0.12), rgba(0,0,0,0) 32%),
+                radial-gradient(circle at bottom right, rgba(127, 255, 148, 0.12), rgba(0,0,0,0) 36%),
+                linear-gradient(180deg, rgba(13, 31, 18, 0.98) 0%, rgba(9, 23, 14, 0.98) 100%);
+        }
+
+        body.lucky-mode .pause-panel,
+        body.lucky-mode .speed-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            border-color: rgba(206, 255, 146, 0.12);
+        }
+
+        body.lucky-mode .speed-card.active {
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 0 28px rgba(192, 255, 126, 0.16);
         }
 
         .lucky-decoration::before {
-            content: '??';
+            content: '';
             top: 8%;
             right: 11%;
-            font-size: 68px;
+            width: 164px;
+            height: 164px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 50% 24%, rgba(184, 255, 109, 0.9) 0%, rgba(184, 255, 109, 0.16) 22%, transparent 48%),
+                radial-gradient(circle at 24% 58%, rgba(126, 255, 146, 0.8) 0%, rgba(126, 255, 146, 0.12) 24%, transparent 48%),
+                radial-gradient(circle at 76% 58%, rgba(255, 233, 124, 0.78) 0%, rgba(255, 233, 124, 0.12) 24%, transparent 48%);
+            filter: blur(2px);
+            box-shadow: 0 0 48px rgba(155, 255, 117, 0.18);
+            animation: luckyPulse 3.6s ease-in-out infinite;
         }
 
         .lucky-decoration::after {
-            content: '??';
+            content: '';
             bottom: 11%;
             left: 13%;
+            width: 128px;
+            height: 128px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 50% 22%, rgba(214, 255, 136, 0.72) 0%, rgba(214, 255, 136, 0.12) 20%, transparent 46%),
+                radial-gradient(circle at 24% 58%, rgba(102, 255, 160, 0.68) 0%, rgba(102, 255, 160, 0.1) 22%, transparent 46%),
+                radial-gradient(circle at 76% 58%, rgba(255, 219, 110, 0.68) 0%, rgba(255, 219, 110, 0.1) 22%, transparent 46%);
+            filter: blur(2px);
+            box-shadow: 0 0 36px rgba(155, 255, 117, 0.14);
+            animation: luckyPulse 4.2s ease-in-out infinite reverse;
+        }
+
+        @keyframes luckyPulse {
+            0%, 100% { transform: scale(0.96) rotate(-3deg); opacity: 0.7; }
+            50% { transform: scale(1.08) rotate(3deg); opacity: 1; }
         }
 
         .event-side-card {
@@ -3205,10 +3314,10 @@
                         <span class="event-side-kicker">LIMITED EVENT</span>
                         <span class="event-side-title">ST. PATRICK'S LUCK</span>
                         <span id="stPatricksEventBody" class="event-side-body">Triple shiny rates are live.</span>
-                        <span id="stPatricksEventProgress" class="event-side-progress">Shinies: 0 / 35</span>
-                        <span id="stPatricksEventSecret" class="event-side-secret">Secret Mythic: Death Gamble</span>
+                        <span id="stPatricksEventProgress" class="event-side-progress">Event Shinies: 0 / 60</span>
+                        <span id="stPatricksEventSecret" class="event-side-secret">Legendary Unlock: Clover Burst</span>
                         <span id="stPatricksEventRequirements" class="event-side-requirements">Req: 150 total shinies • 50 total goldens</span>
-                        <span id="stPatricksEventReward" class="event-side-reward">Reward: Lucky Theme</span>
+                        <span id="stPatricksEventReward" class="event-side-reward">Rewards: Lucky Theme • Clover Burst</span>
                     </button>
                     <h1 id="gameTitle">&#x2694;&#xFE0F; Myths &amp; Steel &#x1F6E1;&#xFE0F;</h1>
                     <div id="menuVersionTag" class="menu-version-tag">v0.94.5</div>
@@ -3243,7 +3352,7 @@
                 <ul class="release-notes-list">
                     <li>Added the Boss Codex / Encounter Log to Records.</li>
                     <li>Added live announcements, the release notes popup, and a live player count in the main menu.</li>
-                    <li>Added the St. Patrick's event preview, Lucky Theme unlock, and theme selector.</li>
+                    <li>Added the St. Patrick's event preview, Lucky Theme unlock, Clover Burst, and theme selector.</li>
                     <li>Added weapon masteries at 5 stacks for Freeze Ray, Black Hole, Shuriken, Homing Missiles, and Accelerator.</li>
                     <li>Reworked Freeze Ray, Black Hole, Laser Beam, Shuriken, Soul Reaver, and Hazmat-related combat polish.</li>
                     <li>Expanded the admin panel and separated the admin build into its own save database.</li>
@@ -3257,17 +3366,28 @@
             <div class="event-modal-content">
                 <h2>ST. PATRICK'S LUCK</h2>
                 <p class="event-modal-kicker">Limited-Time Event</p>
-                <p id="stPatricksEventModalIntro" class="event-modal-copy">Shiny rates are tripled in the game right now, and the event still has a little more luck to spill.</p>
+                <p id="stPatricksEventModalIntro" class="event-modal-copy">Shiny rates are tripled in the game right now, and the event now has a full reward ladder to chase.</p>
                 <div id="stPatricksEventModalProgressWrap" class="event-modal-progress-wrap">
                     <div class="event-modal-progress-head">
-                        <div class="event-modal-progress-label">Event Progress</div>
+                        <div class="event-modal-progress-label">Lucky Theme Progress</div>
                         <div id="stPatricksEventModalProgressState" class="event-modal-progress-state">Live</div>
                     </div>
-                    <div id="stPatricksEventModalProgress" class="event-modal-progress">Shinies Defeated During Event: 0 / 35</div>
+                    <div id="stPatricksEventModalProgress" class="event-modal-progress">Lucky Theme: 0 / 35 event shinies</div>
                     <div class="event-modal-progress-bar">
                         <div id="stPatricksEventModalProgressFill" class="event-modal-progress-fill"></div>
                     </div>
                 </div>
+                <div id="stPatricksEventModalCloverWrap" class="event-modal-progress-wrap">
+                    <div class="event-modal-progress-head">
+                        <div class="event-modal-progress-label">Legendary Unlock Progress</div>
+                        <div id="stPatricksEventModalCloverState" class="event-modal-progress-state">Locked</div>
+                    </div>
+                    <div id="stPatricksEventModalClover" class="event-modal-progress">Clover Burst: 0 / 60 event shinies</div>
+                    <div class="event-modal-progress-bar">
+                        <div id="stPatricksEventModalCloverFill" class="event-modal-progress-fill"></div>
+                    </div>
+                </div>
+                <p id="stPatricksEventModalCloverCopy" class="event-modal-copy">Clover Burst joins your legendary level-up pool at 60 event shinies. Once you draft it, green-gold novas erupt from your body, stun enemies, and vacuum nearby XP.</p>
                 <div id="stPatricksEventModalMythicWrap" class="event-modal-progress-wrap">
                     <div class="event-modal-progress-head">
                         <div class="event-modal-progress-label">Secret Mythic Progress</div>
@@ -3299,6 +3419,7 @@
                 <ul class="release-notes-list">
                     <li>Shiny spawn rate is tripled for the duration of the event.</li>
                     <li>Defeat 35 shiny enemies during the event to unlock the Lucky Theme.</li>
+                    <li>Defeat 60 shiny enemies during the event to add Clover Burst to the legendary upgrade pool.</li>
                     <li>Hidden mythic requirement: 150 total shinies and 50 total golden kills unlock Death Gamble.</li>
                     <li>Death Gamble lets you press G to open a white domain and roll a 1-in-7 jackpot every 5 kills.</li>
                     <li>This event is still being expanded, so more polish and extras may arrive before full rollout.</li>
@@ -3986,6 +4107,16 @@
         const ST_PATRICK_EVENT_START_MS = Date.parse('2026-03-20T00:00:00Z');
         const ST_PATRICK_EVENT_END_MS = Date.parse('2026-04-03T00:00:00Z');
         const ST_PATRICK_SHINY_MULTIPLIER = 3;
+        const LUCKY_THEME_EVENT_SHINY_REQ = 35;
+        const CLOVER_BURST_EVENT_SHINY_REQ = 60;
+        const CLOVER_BURST_BASE_KILL_INTERVAL = 40;
+        const CLOVER_BURST_STACK_INTERVAL_REDUCTION = 2;
+        const CLOVER_BURST_MIN_KILL_INTERVAL = 20;
+        const CLOVER_BURST_BASE_DAMAGE = 45;
+        const CLOVER_BURST_DAMAGE_PER_STACK = 5;
+        const CLOVER_BURST_BASE_RADIUS = 244;
+        const CLOVER_BURST_STUN_MS = 1400;
+        const CLOVER_BURST_VFX_DURATION_MS = 820;
 
                 async function loadTheme() {
             const result = await loadData('settings', 'theme');
@@ -4001,6 +4132,10 @@
             return !!(userStats && userStats.luckyThemeUnlocked);
         }
 
+        function canUseCloverBurst() {
+            return !!(userStats && userStats.cloverBurstUnlocked);
+        }
+
         function normalizeThemeMode(mode) {
             if (mode === true || mode === 'christmas') return 'christmas';
             if (mode === 'lucky' && canUseLuckyTheme()) return 'lucky';
@@ -4012,7 +4147,7 @@
                 case 'christmas':
                     return 'linear-gradient(135deg, #0a2847 0%, #1a3a52 50%, #2d5a7b 100%)';
                 case 'lucky':
-                    return 'linear-gradient(135deg, #08160b 0%, #12351b 50%, #2f642f 100%)';
+                    return 'linear-gradient(135deg, #07190d 0%, #10351b 34%, #1a612d 68%, #6c5b18 100%)';
                 case 'newyear':
                 default:
                     return 'linear-gradient(135deg, #050510 0%, #1a0b2e 50%, #2d1b4e 100%)';
@@ -4080,11 +4215,15 @@
             if (select) select.value = selectedThemeMode;
             if (pauseSelect) pauseSelect.value = selectedThemeMode;
             if (note) note.textContent = luckyUnlocked
-                ? 'Lucky Theme unlocked and ready to use.'
-                : 'Lucky Theme unlock: defeat 35 event shinies.';
+                ? (canUseCloverBurst()
+                    ? 'Lucky Theme and Clover Burst are both unlocked for the event.'
+                    : `Lucky Theme unlocked. Clover Burst joins the legendary pool at ${CLOVER_BURST_EVENT_SHINY_REQ} event shinies.`)
+                : `Lucky Theme unlock: defeat ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies. Clover Burst unlocks at ${CLOVER_BURST_EVENT_SHINY_REQ}.`;
             if (pauseNote) pauseNote.textContent = luckyUnlocked
-                ? 'Lucky Theme unlocked and ready to use.'
-                : 'Lucky Theme unlock: defeat 35 event shinies.';
+                ? (canUseCloverBurst()
+                    ? 'Lucky Theme and Clover Burst are both unlocked for the event.'
+                    : `Lucky Theme unlocked. Clover Burst joins the legendary pool at ${CLOVER_BURST_EVENT_SHINY_REQ} event shinies.`)
+                : `Lucky Theme unlock: defeat ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies. Clover Burst unlocks at ${CLOVER_BURST_EVENT_SHINY_REQ}.`;
         }
 
         function updateGameSpeedUI() {
@@ -4410,15 +4549,26 @@
             });
         }
 
-                function maybeUnlockLuckyTheme() {
+        function maybeUnlockLuckyTheme() {
             normalizeUserStats();
             if (!isStPatricksEventActive()) return;
             if (userStats.luckyThemeUnlocked) return;
-            if ((userStats.eventShinyKills || 0) < 35) return;
+            if ((userStats.eventShinyKills || 0) < LUCKY_THEME_EVENT_SHINY_REQ) return;
             userStats.luckyThemeUnlocked = true;
             persistUserStatsNow();
-            queueAchievementToast({ name: 'Lucky Theme Unlocked', desc: 'Defeat 35 shinies during the event to unlock the St. Patrick menu theme.' });
+            queueAchievementToast({ name: 'Lucky Theme Unlocked', desc: 'Defeat 35 shinies during the event to unlock the premium St. Patrick theme.' });
             applyTheme();
+        }
+
+        function maybeUnlockCloverBurst() {
+            normalizeUserStats();
+            if (!isStPatricksEventActive()) return;
+            if (userStats.cloverBurstUnlocked) return;
+            if ((userStats.eventShinyKills || 0) < CLOVER_BURST_EVENT_SHINY_REQ) return;
+            userStats.cloverBurstUnlocked = true;
+            persistUserStatsNow();
+            queueAchievementToast({ name: 'Clover Burst Ready', desc: 'Defeat 60 event shinies to add Clover Burst to the legendary upgrade pool.' });
+            renderStPatricksEventPromo();
         }
 
         function syncSecretMythicUnlock() {
@@ -4436,9 +4586,11 @@
         function getStPatricksEventStatus() {
             normalizeUserStats();
             const kills = userStats.eventShinyKills || 0;
-            const unlocked = !!userStats.luckyThemeUnlocked;
-            const remaining = Math.max(0, 35 - kills);
-            return { kills, unlocked, remaining };
+            const luckyUnlocked = !!userStats.luckyThemeUnlocked;
+            const cloverUnlocked = !!userStats.cloverBurstUnlocked;
+            const remainingLucky = Math.max(0, LUCKY_THEME_EVENT_SHINY_REQ - kills);
+            const remainingClover = Math.max(0, CLOVER_BURST_EVENT_SHINY_REQ - kills);
+            return { kills, luckyUnlocked, cloverUnlocked, remainingLucky, remainingClover };
         }
 
         function renderStPatricksEventPromo() {
@@ -4454,6 +4606,11 @@
             const modalProgress = document.getElementById('stPatricksEventModalProgress');
             const modalProgressState = document.getElementById('stPatricksEventModalProgressState');
             const modalProgressFill = document.getElementById('stPatricksEventModalProgressFill');
+            const modalCloverWrap = document.getElementById('stPatricksEventModalCloverWrap');
+            const modalClover = document.getElementById('stPatricksEventModalClover');
+            const modalCloverState = document.getElementById('stPatricksEventModalCloverState');
+            const modalCloverFill = document.getElementById('stPatricksEventModalCloverFill');
+            const modalCloverCopy = document.getElementById('stPatricksEventModalCloverCopy');
             const modalMythicWrap = document.getElementById('stPatricksEventModalMythicWrap');
             const modalMythic = document.getElementById('stPatricksEventModalMythic');
             const modalMythicState = document.getElementById('stPatricksEventModalMythicState');
@@ -4462,7 +4619,7 @@
             const modalMythicGoldenValue = document.getElementById('stPatricksEventModalMythicGoldenValue');
             const modalMythicGoldenFill = document.getElementById('stPatricksEventModalMythicGoldenFill');
             const modalMythicCopy = document.getElementById('stPatricksEventModalMythicCopy');
-            if (!card || !bodyEl || !progressEl || !secretEl || !requirementsEl || !rewardEl || !modalIntro || !modalProgressWrap || !modalProgress || !modalProgressState || !modalProgressFill || !modalMythicWrap || !modalMythic || !modalMythicState || !modalMythicShinyValue || !modalMythicShinyFill || !modalMythicGoldenValue || !modalMythicGoldenFill || !modalMythicCopy) return;
+            if (!card || !bodyEl || !progressEl || !secretEl || !requirementsEl || !rewardEl || !modalIntro || !modalProgressWrap || !modalProgress || !modalProgressState || !modalProgressFill || !modalCloverWrap || !modalClover || !modalCloverState || !modalCloverFill || !modalCloverCopy || !modalMythicWrap || !modalMythic || !modalMythicState || !modalMythicShinyValue || !modalMythicShinyFill || !modalMythicGoldenValue || !modalMythicGoldenFill || !modalMythicCopy) return;
 
             if (!isStPatricksEventActive()) {
                 card.hidden = true;
@@ -4470,36 +4627,52 @@
                 return;
             }
 
-            const { kills, unlocked, remaining } = getStPatricksEventStatus();
+            const { kills, luckyUnlocked, cloverUnlocked, remainingLucky, remainingClover } = getStPatricksEventStatus();
             const shinyKills = userStats.shinyKills || 0;
             const goldenKills = userStats.goldenKills || 0;
             const mythicUnlocked = !!userStats.secretMythicUnlocked;
-            const eventRatio = Math.max(0, Math.min(1, kills / 35));
+            const luckyRatio = Math.max(0, Math.min(1, kills / LUCKY_THEME_EVENT_SHINY_REQ));
+            const cloverRatio = Math.max(0, Math.min(1, kills / CLOVER_BURST_EVENT_SHINY_REQ));
             const shinyRatio = Math.max(0, Math.min(1, shinyKills / SECRET_MYTHIC_SHINY_REQ));
             const goldenRatio = Math.max(0, Math.min(1, goldenKills / SECRET_MYTHIC_GOLDEN_REQ));
             card.hidden = false;
-            bodyEl.textContent = unlocked
-                ? 'Lucky Theme secured. The shiny rush is still on.'
-                : `Triple shiny rates are live right now. ${remaining} more ${remaining === 1 ? 'event shiny' : 'event shinies'} for Lucky Theme.`;
-            progressEl.textContent = unlocked
-                ? `Shinies: ${kills} / 35 • COMPLETE`
-                : `Shinies: ${kills} / 35`;
-            secretEl.textContent = mythicUnlocked
-                ? 'Secret Mythic: Death Gamble ready. Press G to open the white domain.'
-                : 'Secret Mythic: Death Gamble. Open the white domain and chase a 1-in-7 jackpot every 5 kills.';
+            bodyEl.textContent = !luckyUnlocked
+                ? `Triple shiny rates are live right now. ${remainingLucky} more ${remainingLucky === 1 ? 'event shiny' : 'event shinies'} for Lucky Theme.`
+                : !cloverUnlocked
+                    ? `${remainingClover} more ${remainingClover === 1 ? 'event shiny' : 'event shinies'} until Clover Burst enters the legendary pool.`
+                    : 'Lucky Theme and Clover Burst are secured. The secret mythic still waits beyond the shiny rush.';
+            progressEl.textContent = cloverUnlocked
+                ? `Event Shinies: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} • COMPLETE`
+                : `Event Shinies: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ}`;
+            secretEl.textContent = cloverUnlocked
+                ? 'Legendary Unlock: Clover Burst ready. Draft it from a legendary level-up to unleash green-gold novas.'
+                : 'Legendary Unlock: Clover Burst. Green-gold novas erupt from your body, stun enemies, and vacuum nearby XP.';
             requirementsEl.textContent = mythicUnlocked
                 ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens • READY`
                 : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
-            rewardEl.textContent = unlocked ? 'Reward: Lucky Theme Unlocked' : 'Reward: Lucky Theme';
-            modalIntro.textContent = unlocked
-                ? 'You already claimed the Lucky Theme. The St. Patrick\'s event is still rolling, and the extra shiny luck is still in play.'
-                : 'The St. Patrick\'s event is live in the game right now. Shiny rates are tripled, and a few more touches are still on the way.';
-            modalProgress.textContent = unlocked
-                ? `Shinies Defeated During Event: ${kills} / 35 • Reward unlocked`
-                : `Shinies Defeated During Event: ${kills} / 35`;
-            modalProgressState.textContent = unlocked ? 'Complete' : 'Live';
-            modalProgressWrap.classList.toggle('complete', unlocked);
-            modalProgressFill.style.width = `${(eventRatio * 100).toFixed(1)}%`;
+            rewardEl.textContent = cloverUnlocked
+                ? 'Rewards: Lucky Theme • Clover Burst • Death Gamble'
+                : luckyUnlocked
+                    ? 'Rewards: Lucky Theme secured • Clover Burst next'
+                    : 'Rewards: Lucky Theme • Clover Burst';
+            modalIntro.textContent = cloverUnlocked
+                ? 'The event reward ladder is fully active now: the premium Lucky Theme is yours, Clover Burst is unlocked, and the secret mythic is still waiting above it.'
+                : 'The St. Patrick\'s event is live in the game right now. Shiny rates are tripled, and the reward ladder now climbs from Lucky Theme into Clover Burst before the hidden mythic.';
+            modalProgress.textContent = luckyUnlocked
+                ? `Lucky Theme: ${kills} / ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies • Reward unlocked`
+                : `Lucky Theme: ${kills} / ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies`;
+            modalProgressState.textContent = luckyUnlocked ? 'Complete' : 'Live';
+            modalProgressWrap.classList.toggle('complete', luckyUnlocked);
+            modalProgressFill.style.width = `${(luckyRatio * 100).toFixed(1)}%`;
+            modalClover.textContent = cloverUnlocked
+                ? `Clover Burst: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} event shinies • Unlocked`
+                : `Clover Burst: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} event shinies`;
+            modalCloverState.textContent = cloverUnlocked ? 'Unlocked' : 'Locked';
+            modalCloverWrap.classList.toggle('complete', cloverUnlocked);
+            modalCloverFill.style.width = `${(cloverRatio * 100).toFixed(1)}%`;
+            modalCloverCopy.textContent = cloverUnlocked
+                ? 'Clover Burst is now in your legendary level-up pool. Once drafted, it erupts from your body, stuns everything it catches, and hoovers up XP in a huge radius.'
+                : 'Reach 60 event shinies to unlock Clover Burst. After that, it can appear as a legendary upgrade and fire green-gold novas every few kills.';
             modalMythic.textContent = mythicUnlocked
                 ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens • UNLOCKED`
                 : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
@@ -4566,7 +4739,7 @@
                 deco.classList.remove('newyear-decoration');
                 deco.classList.add('lucky-decoration');
                 title.textContent = 'Myths & Steel';
-                subtitle.textContent = 'Luck favors the steel.';
+                subtitle.textContent = 'Strike rich, glow gold, and let luck run wild.';
                 document.title = 'Myths & Steel - Lucky Edition';
             } else {
                 body.classList.remove('christmas-mode');
@@ -5172,6 +5345,9 @@
             goldenKills: 0,
             shinyEncounters: 0,
             shinyKills: 0,
+            eventShinyKills: 0,
+            luckyThemeUnlocked: false,
+            cloverBurstUnlocked: false,
             secretMythicUnlocked: false,
             achievements: {}
         };
@@ -5304,6 +5480,7 @@
             if (typeof userStats.shinyKills !== 'number') userStats.shinyKills = 0;
             if (typeof userStats.eventShinyKills !== 'number') userStats.eventShinyKills = 0;
             if (typeof userStats.luckyThemeUnlocked !== 'boolean') userStats.luckyThemeUnlocked = false;
+            if (typeof userStats.cloverBurstUnlocked !== 'boolean') userStats.cloverBurstUnlocked = false;
             if (typeof userStats.secretMythicUnlocked !== 'boolean') userStats.secretMythicUnlocked = false;
             if (!userStats.bossCodex || typeof userStats.bossCodex !== 'object') userStats.bossCodex = {};
             if (!userStats.achievements || typeof userStats.achievements !== 'object') userStats.achievements = {};
@@ -5765,6 +5942,7 @@
             const states = [];
             if (player.blackHole) states.push(`Black Hole x${player.blackHole}`);
             if (player.fuga) states.push(`Fuga x${player.fuga}`);
+            if (player.cloverBurst) states.push(`Clover Burst x${player.cloverBurst} • ${cloverBurstState.killsSinceNova || 0}/${getCloverBurstKillInterval() || CLOVER_BURST_BASE_KILL_INTERVAL} kills`);
             if (player.deathGamble) {
                 if (isDeathGambleJackpotActive()) states.push('Death Gamble: Jackpot Live');
                 else if (deathGambleState.active) states.push('Death Gamble: Domain Open');
@@ -5775,7 +5953,7 @@
             else if (player.bloodMoon) states.push('Blood Moon Primed');
             if (soulHarvestActive) states.push('Soul Harvest Active');
             else if (player.soulHarvest) states.push(`Soul Harvest x${player.soulHarvest}`);
-            return states.length ? states.join(' • ') : 'No mythic effects are active right now.';
+            return states.length ? states.join(' • ') : 'No special abilities are active right now.';
         }
 
         function updatePauseMenuUI() {
@@ -6037,6 +6215,7 @@
             soulHarvest: 0,
             blackHole: 0,
             fuga: 0,
+            cloverBurst: 0,
             deathGamble: false,
             invincible: false,
             baseSpeed: 4,
@@ -6091,6 +6270,10 @@
             noticeUntil: 0,
             noticeText: '',
             noticeTone: 'ready'
+        };
+        let cloverBurstState = {
+            killsSinceNova: 0,
+            bursts: []
         };
 
         // Input handling
@@ -6360,7 +6543,7 @@
             player.damage = 10; player.baseDamage = 10; player.baseCritChance = 0.1; player.baseSpeed = 4; player.speed = 4;
             player.fireRate = 1; player.critChance = 0.1; player.expGain = 1; player.healRate = 0; player.vampirism = 0;
             player.shield = 0; player.shieldRadius = 25; player.shieldKnockback = 5; player.shieldCooldown = 0;
-            player.bloodMoon = false; player.soulHarvest = 0; player.blackHole = 0; player.fuga = 0; player.deathGamble = false; player.invincible = false;
+            player.bloodMoon = false; player.soulHarvest = 0; player.blackHole = 0; player.fuga = 0; player.cloverBurst = 0; player.deathGamble = false; player.invincible = false;
             player.homingSpeedMult = 0;
             player.xpCollectionRange = 100; player.xpCollectionRangeStacks = 0;
             player.isBurning = false; player.burnTickTime = 0; player.burnUntil = 0; player.burnDamage = 0;
@@ -6369,6 +6552,7 @@
             blackHoleCooldown = 0; fugaCooldown = 0; bloodMoonActive = false; bloodMoonTimer = 0;
             invincibleUntil = 0; soulHarvestKills = 0; blackHoles = []; soulHarvestActive = false; lastHealTime = 0;
             deathGambleState.active = false; deathGambleState.activeUntil = 0; deathGambleState.jackpotUntil = 0; deathGambleState.cooldownUntil = 0; deathGambleState.expansionStartedAt = 0; deathGambleState.expansionUntil = 0; deathGambleState.expansionWaveId = 0; deathGambleState.barrierScale = 0; deathGambleState.shatterStartedAt = 0; deathGambleState.shatterUntil = 0; deathGambleState.shatterBarrierScale = 0; deathGambleState.arenaCenterX = 0; deathGambleState.arenaCenterY = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.consecutiveJackpots = 0; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
+            cloverBurstState.killsSinceNova = 0; cloverBurstState.bursts = [];
             bossCutscene.active = false; bossCutscene.bossId = null; bossCutscene.lines = []; bossCutscene.lineIndex = 0; bossCutscene.nextLineAt = 0; bossCutscene.onComplete = null;
             celestialPhaseEffects.pulseActive = false; celestialPhaseEffects.pulseStart = 0; celestialPhaseEffects.collapseStart = 0;
             celestialCardCutscene.active = false; celestialCardCutscene.triggered = false; celestialCardCutscene.startTime = 0; celestialCardCutscene.bossId = null; celestialCardCutscene.midShakeTriggered = false; celestialCardCutscene.flashTriggered = false;
@@ -6894,6 +7078,7 @@
             { name: 'Soul Harvest', rarity: 'mythical', description: 'Gain temporary invincibility for 8 seconds after every 25 kills. Each stack increases duration by 1s and boosts damage/speed by 1%.', effect: () => { player.soulHarvest = (player.soulHarvest || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Black Hole', rarity: 'mythical', description: 'Create a black hole that pulls in and destroys all enemies on screen. Press 2 to activate. At 5 stacks, it ends with an implosion.', effect: () => { player.blackHole = (player.blackHole || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Fuga', rarity: 'mythical', description: 'Launch a devastating fire arrow that deals 125 damage, creates a massive explosion, and ignites enemies!', effect: () => { player.fuga = (player.fuga || 0) + 1; }, stats: 'Mythical Ability' },
+            { name: 'Clover Burst', rarity: 'legendary', description: 'Event legendary. After every 40 kills, reduced by 2 per extra stack to a minimum of 20, unleash a green-gold nova from your body. The nova deals 45 damage plus 5 per extra stack, stuns for 1.4s, and vacuums XP in a huge radius.', effect: () => { player.cloverBurst = (player.cloverBurst || 0) + 1; }, stats: 'Legendary Ability' },
             { name: 'Death Gamble', rarity: 'mythical', description: 'Hidden mythic. Press G to open a 35-second white domain. Every 5 kills rolls 3 cards for a 1-in-7 jackpot. Misses put it on a 1:30 cooldown. Jackpot grants +50 HP/s, x3 damage, 50% damage reduction, and x2.5 move speed for 4:11, with cooldowns chaining down to 10 seconds on consecutive wins.', effect: () => { player.deathGamble = true; }, stats: 'Secret Mythical Ability' },
             { name: 'Add Firework Blaster', rarity: 'epic', description: 'Blasts 5 colorful explosives that deal 8 damage in a spread. Large AOE explosion ignites enemies!', effect: () => { player.weapons['Firework Blaster'] = (player.weapons['Firework Blaster'] || 0) + 1; if (!player.lastShot['Firework Blaster']) player.lastShot['Firework Blaster'] = 0; recordFireworkStacks(player.weapons['Firework Blaster'] || 0); }, stats: 'Firework Weapon' },
             { name: 'XP Collection Range Increase', rarity: 'rare', description: 'Increase the distance at which you collect XP Gems by 10%.', effect: () => { player.xpCollectionRangeStacks++; player.xpCollectionRange = Math.round(player.xpCollectionRange * 1.1); }, stats: '+10% XP Range' },
@@ -7793,6 +7978,7 @@
             xpGems.push({ x: enemy.x, y: enemy.y, value: enemy.expValue, radius: 8 });
             if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
             registerDeathGambleKill();
+            registerCloverBurstKill();
             kills++;
             updateCombo(enemy.x, enemy.y);
             normalizeUserStats();
@@ -7806,6 +7992,7 @@
                 if (isStPatricksEventActive()) userStats.eventShinyKills = (userStats.eventShinyKills || 0) + 1;
                 updatedStats = true;
                 maybeUnlockLuckyTheme();
+                maybeUnlockCloverBurst();
             }
             if (updatedStats) {
                 const milestoneUnlocked = syncMilestoneAchievements();
@@ -8234,6 +8421,105 @@
         function getWeaponStackCount(name) {
             if (!player || !player.weapons) return 0;
             return player.weapons[name] || 0;
+        }
+
+        function getCloverBurstStacks() {
+            return Math.max(0, Math.floor(Number(player.cloverBurst) || 0));
+        }
+
+        function getCloverBurstKillInterval(stacks = getCloverBurstStacks()) {
+            if (stacks <= 0) return 0;
+            return Math.max(CLOVER_BURST_MIN_KILL_INTERVAL, CLOVER_BURST_BASE_KILL_INTERVAL - Math.max(0, stacks - 1) * CLOVER_BURST_STACK_INTERVAL_REDUCTION);
+        }
+
+        function getCloverBurstBaseDamage(stacks = getCloverBurstStacks()) {
+            if (stacks <= 0) return 0;
+            return CLOVER_BURST_BASE_DAMAGE + Math.max(0, stacks - 1) * CLOVER_BURST_DAMAGE_PER_STACK;
+        }
+
+        function getCloverBurstRadius() {
+            return player.xpCollectionRange > CLOVER_BURST_BASE_RADIUS
+                ? Math.round(player.xpCollectionRange * 1.5)
+                : CLOVER_BURST_BASE_RADIUS;
+        }
+
+        function updateCloverBurstEffects(now = Date.now()) {
+            if (!cloverBurstState.bursts.length) return;
+            cloverBurstState.bursts = cloverBurstState.bursts.filter((burst) => now < burst.startedAt + burst.duration);
+        }
+
+        function collectXpGemAt(index, gem, particleColor = '#66ccff') {
+            if (!gem) return false;
+            player.exp += gem.value;
+            score += gem.value;
+            createParticles(gem.x, gem.y, particleColor, 8);
+            xpGems.splice(index, 1);
+            if (player.exp >= player.expToNext) levelUp();
+            return true;
+        }
+
+        function triggerCloverBurst() {
+            const stacks = getCloverBurstStacks();
+            if (stacks <= 0) return false;
+            const now = Date.now();
+            const radius = getCloverBurstRadius();
+            const burstDamage = getCloverBurstBaseDamage(stacks);
+            cloverBurstState.bursts.push({
+                x: player.x,
+                y: player.y,
+                startedAt: now,
+                duration: CLOVER_BURST_VFX_DURATION_MS,
+                radius,
+                sparkAngles: Array.from({ length: 10 }, (_, index) => (Math.PI * 2 / 10) * index + Math.random() * 0.18),
+                bloomSeed: Math.random() * Math.PI * 2
+            });
+
+            particles.push({ x: player.x, y: player.y, radius: 28, maxRadius: radius, expandSpeed: 15, color: '#9dff75', life: 20, maxLife: 20, lineWidth: 7, type: 'wave' });
+            particles.push({ x: player.x, y: player.y, radius: 20, maxRadius: Math.max(96, radius * 0.72), expandSpeed: 11, color: '#ffe88f', life: 18, maxLife: 18, lineWidth: 5, type: 'wave' });
+            createParticles(player.x, player.y, '#9dff75', 28);
+            createParticles(player.x, player.y, '#ffe88f', 22);
+            screenShake(10, 180);
+
+            [...enemies, ...bosses].forEach((target) => {
+                if (!target) return;
+                const dist = Math.hypot(target.x - player.x, target.y - player.y);
+                if (dist > radius + (target.radius || 0)) return;
+                const damage = applyPlayerAttackDamageModifiers(target, burstDamage);
+                if (damage <= 0) return;
+                target.health -= damage;
+                showDamageNumber(target.x, target.y, damage);
+                createParticles(target.x, target.y, target.bossType ? '#fff2a8' : '#93ff9b', 10);
+                if (!isStatusImmuneTarget(target)) {
+                    target.stunnedUntil = Math.max(target.stunnedUntil || 0, now + CLOVER_BURST_STUN_MS);
+                }
+                if (isBossDefeatThresholdReached(target)) {
+                    const enemyIndex = enemies.indexOf(target);
+                    if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
+                    const bossIndex = bosses.indexOf(target);
+                    if (bossIndex > -1) defeatBoss(target, 'cloverBurst');
+                }
+            });
+
+            for (let index = xpGems.length - 1; index >= 0; index--) {
+                const gem = xpGems[index];
+                if (!gem) continue;
+                const dist = Math.hypot(player.x - gem.x, player.y - gem.y);
+                if (dist <= radius + (gem.radius || 0)) {
+                    collectXpGemAt(index, gem, '#baff90');
+                }
+            }
+            return true;
+        }
+
+        function registerCloverBurstKill() {
+            const stacks = getCloverBurstStacks();
+            if (stacks <= 0) return;
+            const interval = getCloverBurstKillInterval(stacks);
+            cloverBurstState.killsSinceNova = Math.max(0, (cloverBurstState.killsSinceNova || 0) + 1);
+            if (cloverBurstState.killsSinceNova >= interval) {
+                cloverBurstState.killsSinceNova = 0;
+                triggerCloverBurst();
+            }
         }
 
         function hasWeaponMastery(name, requiredStacks = 5) {
@@ -10927,18 +11213,19 @@ function updateLasers() {
         }
 
         function updateXPGems() {
-            xpGems.forEach((gem, index) => {
-                // Use player.xpCollectionRange instead of hard-coded 100
+            for (let index = xpGems.length - 1; index >= 0; index--) {
+                const gem = xpGems[index];
+                if (!gem) continue;
                 const dist = Math.hypot(player.x - gem.x, player.y - gem.y);
                 if (dist < player.radius + player.xpCollectionRange) {
                     const angle = Math.atan2(player.y - gem.y, player.x - gem.x);
-                    gem.x += Math.cos(angle) * 5; gem.y += Math.sin(angle) * 5;
+                    gem.x += Math.cos(angle) * 5;
+                    gem.y += Math.sin(angle) * 5;
                 }
                 if (dist < player.radius + gem.radius) {
-                    player.exp += gem.value; score += gem.value; createParticles(gem.x, gem.y, '#66ccff', 8); xpGems.splice(index, 1);
-                    if (player.exp >= player.expToNext) levelUp();
+                    collectXpGemAt(index, gem);
                 }
-            });
+            }
         }
 
         function levelUp() {
@@ -11019,6 +11306,7 @@ function updateLasers() {
                 
                 let availableUpgrades = upgradeDatabase.filter(u => u.rarity === selectedRarity);
                 availableUpgrades = availableUpgrades.filter((upgrade) => {
+                    if (upgrade.name === 'Clover Burst') return !!userStats.cloverBurstUnlocked;
                     if (upgrade.name === 'Death Gamble') return !!userStats.secretMythicUnlocked && !player.deathGamble;
                     return true;
                 });
@@ -11337,6 +11625,16 @@ function updateLasers() {
                         state: getDeathGambleActivationTargetCount() >= DEATH_GAMBLE_MIN_TARGETS ? 'ready' : 'cooldown'
                     });
                 }
+            }
+            if (player.cloverBurst) {
+                const interval = getCloverBurstKillInterval();
+                addBuffCard(buffsList, {
+                    icon: '[CLV]',
+                    name: 'Clover Burst',
+                    timer: `${cloverBurstState.killsSinceNova || 0}/${interval || CLOVER_BURST_BASE_KILL_INTERVAL} kills`,
+                    detail: `${getCloverBurstBaseDamage()} base • ${getCloverBurstRadius()}px nova • ${Math.round(CLOVER_BURST_STUN_MS / 100) / 10}s stun`,
+                    state: 'passive'
+                });
             }
             if (player.soulHarvest) {
                 const killsNeeded = Math.max(0, 25 - (kills - soulHarvestKills));
@@ -12124,6 +12422,141 @@ function updateLasers() {
             ctx.restore();
         }
 
+        function drawLuckyThemeBackdrop(now, worldCameraX) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#07140b');
+            gradient.addColorStop(0.34, '#0f3519');
+            gradient.addColorStop(0.7, '#1d6530');
+            gradient.addColorStop(1, '#6d5a1d');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const horizonGlow = ctx.createRadialGradient(canvas.width * 0.52, canvas.height * 0.7, 50, canvas.width * 0.52, canvas.height * 0.7, canvas.width * 0.65);
+            horizonGlow.addColorStop(0, 'rgba(255, 241, 153, 0.18)');
+            horizonGlow.addColorStop(0.38, 'rgba(129, 255, 142, 0.12)');
+            horizonGlow.addColorStop(1, 'rgba(20, 46, 22, 0)');
+            ctx.fillStyle = horizonGlow;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!isThemeEffectsEnabled()) return;
+
+            const visibleLeft = worldCameraX - 120;
+            const visibleRight = worldCameraX + canvas.width + 120;
+            const rainbowY = canvas.height * 0.84;
+            ctx.save();
+            ctx.globalAlpha = 0.16;
+            const rainbowColors = ['#ff6c6c', '#ffb84d', '#f9ff77', '#82ff7b', '#76f4ff', '#8e86ff'];
+            rainbowColors.forEach((color, index) => {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 18 - index * 2;
+                ctx.beginPath();
+                ctx.arc((visibleLeft + visibleRight) / 2, rainbowY, canvas.width * (0.18 + index * 0.015), Math.PI, Math.PI * 2);
+                ctx.stroke();
+            });
+            ctx.restore();
+
+            for (let i = 0; i < 20; i++) {
+                const phase = now / 1100 + i * 0.63;
+                const driftX = visibleLeft + ((i * 260 + now * (0.03 + (i % 3) * 0.008)) % Math.max(320, visibleRight - visibleLeft + 260));
+                const driftY = canvas.height * (0.18 + (i % 5) * 0.12) + Math.sin(phase * 1.2) * 14;
+                const radius = 8 + (i % 4) * 4 + Math.sin(phase) * 2;
+                const leafGlow = ctx.createRadialGradient(driftX, driftY, 0, driftX, driftY, radius * 3.8);
+                leafGlow.addColorStop(0, `rgba(230,255,188,${0.22 + (i % 3) * 0.03})`);
+                leafGlow.addColorStop(0.4, `rgba(${i % 2 === 0 ? '136,255,150' : '255,230,126'},${0.12 + (i % 4) * 0.02})`);
+                leafGlow.addColorStop(1, 'rgba(80,255,160,0)');
+                ctx.fillStyle = leafGlow;
+                ctx.beginPath();
+                ctx.arc(driftX, driftY, radius * 3.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.save();
+            ctx.globalAlpha = 0.68;
+            for (let i = 0; i < 14; i++) {
+                const phase = now / 420 + i;
+                const cx = visibleLeft + ((i * 340 + now * (0.028 + (i % 4) * 0.01)) % Math.max(320, visibleRight - visibleLeft + 240));
+                const cy = canvas.height * (0.16 + (i % 6) * 0.115) + Math.sin(phase * 0.8) * 8;
+                const size = 7 + (i % 3) * 2.5;
+                const petalColor = i % 3 === 0 ? 'rgba(255, 236, 146, 0.18)' : 'rgba(134, 255, 148, 0.18)';
+                ctx.fillStyle = petalColor;
+                for (let leaf = 0; leaf < 3; leaf++) {
+                    const angle = leaf * (Math.PI * 2 / 3) + Math.sin(phase + leaf) * 0.08;
+                    ctx.beginPath();
+                    ctx.ellipse(cx + Math.cos(angle) * size * 0.8, cy + Math.sin(angle) * size * 0.55, size, size * 0.72, angle, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = 'rgba(255, 249, 210, 0.2)';
+                ctx.beginPath();
+                ctx.arc(cx, cy, size * 0.32, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function drawCloverBurstEffects(now) {
+            if (!cloverBurstState.bursts.length) return;
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            cloverBurstState.bursts.forEach((burst) => {
+                const rawProgress = Math.max(0, Math.min(1, (now - burst.startedAt) / burst.duration));
+                const bloom = 1 - Math.pow(1 - rawProgress, 3);
+                const fade = 1 - rawProgress;
+                const radius = burst.radius * bloom;
+
+                const core = ctx.createRadialGradient(burst.x, burst.y, 0, burst.x, burst.y, radius);
+                core.addColorStop(0, `rgba(255, 252, 220, ${0.38 + fade * 0.24})`);
+                core.addColorStop(0.28, `rgba(196, 255, 128, ${0.18 + fade * 0.16})`);
+                core.addColorStop(0.62, `rgba(90, 255, 165, ${0.12 + fade * 0.08})`);
+                core.addColorStop(1, 'rgba(90, 255, 165, 0)');
+                ctx.fillStyle = core;
+                ctx.beginPath();
+                ctx.arc(burst.x, burst.y, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = `rgba(240, 255, 176, ${0.42 * fade})`;
+                ctx.lineWidth = 8 - rawProgress * 5;
+                ctx.beginPath();
+                ctx.arc(burst.x, burst.y, radius * 0.92, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.strokeStyle = `rgba(112, 255, 146, ${0.34 * fade})`;
+                ctx.lineWidth = 4 - rawProgress * 2.2;
+                ctx.beginPath();
+                ctx.arc(burst.x, burst.y, radius * 0.66, 0, Math.PI * 2);
+                ctx.stroke();
+
+                for (let leaf = 0; leaf < 3; leaf++) {
+                    const angle = leaf * (Math.PI * 2 / 3) + burst.bloomSeed * 0.12;
+                    ctx.fillStyle = `rgba(${leaf === 1 ? '255, 238, 146' : '134, 255, 148'}, ${0.16 * fade})`;
+                    ctx.beginPath();
+                    ctx.ellipse(
+                        burst.x + Math.cos(angle) * radius * 0.22,
+                        burst.y + Math.sin(angle) * radius * 0.16,
+                        radius * 0.34,
+                        radius * 0.25,
+                        angle,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+
+                burst.sparkAngles.forEach((angle, index) => {
+                    const start = radius * (0.16 + (index % 3) * 0.03);
+                    const end = radius * (0.72 + (index % 4) * 0.08);
+                    ctx.strokeStyle = index % 2 === 0
+                        ? `rgba(255, 238, 146, ${0.46 * fade})`
+                        : `rgba(120, 255, 164, ${0.42 * fade})`;
+                    ctx.lineWidth = Math.max(1.4, 3.8 - rawProgress * 2.2);
+                    ctx.beginPath();
+                    ctx.moveTo(burst.x + Math.cos(angle) * start, burst.y + Math.sin(angle) * start);
+                    ctx.lineTo(burst.x + Math.cos(angle) * end, burst.y + Math.sin(angle) * end);
+                    ctx.stroke();
+                });
+            });
+            ctx.restore();
+        }
+
         function drawDeathGambleJackpotAura(now) {
             if (!isDeathGambleJackpotActive(now)) return;
 
@@ -12414,6 +12847,8 @@ function updateLasers() {
                 const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 gradient.addColorStop(0, '#0a1929'); gradient.addColorStop(0.5, '#0f2940'); gradient.addColorStop(1, '#1a3a52');
                 ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (selectedThemeMode === 'lucky') {
+                drawLuckyThemeBackdrop(now, worldCameraX);
             } else {
                 const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 gradient.addColorStop(0, '#050510'); gradient.addColorStop(0.5, '#0a0515'); gradient.addColorStop(1, '#100a20');
@@ -12433,6 +12868,8 @@ function updateLasers() {
                         ctx.beginPath(); ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2); ctx.fill();
                     }
                 }
+            } else if (selectedThemeMode === 'lucky') {
+                fireworks = [];
             } else if (isThemeEffectsEnabled()) {
                 updateFireworks(); // New Years theme: Fireworks
             } else {
@@ -13781,6 +14218,7 @@ function updateLasers() {
                 ctx.shadowBlur = 0; ctx.restore();
             });
 
+            drawCloverBurstEffects(now);
             drawDeathGambleJackpotAura(now);
             ctx.fillStyle = '#4ecdc4'; ctx.strokeStyle = '#2a7f7e'; ctx.lineWidth = 3;
             ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -14261,7 +14699,7 @@ function updateLasers() {
 
                     if (selectedThemeMode === 'christmas') updateSnowflakes();
 
-                    updateXPGems(); updateParticles(); updateDamageNumbers(); updateCriticalTexts(); checkGameOver();
+                    updateXPGems(); updateParticles(); updateCloverBurstEffects(); updateDamageNumbers(); updateCriticalTexts(); checkGameOver();
                     if (!gameRunning) break;
                 }
                 if (shouldRefreshPerformanceUi(timestamp)) updateUI();
