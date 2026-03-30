@@ -2620,6 +2620,51 @@
                 linear-gradient(115deg, rgba(255, 233, 129, 0.05) 0%, transparent 32%, rgba(123, 255, 147, 0.05) 68%, transparent 100%);
         }
 
+        body.lucky-mode::after {
+            content: '';
+            position: fixed;
+            inset: -14%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.48;
+            background:
+                radial-gradient(circle at 50% 20%, rgba(196, 255, 138, 0.18) 0 16%, transparent 17%),
+                radial-gradient(circle at 28% 44%, rgba(125, 255, 158, 0.16) 0 17%, transparent 18%),
+                radial-gradient(circle at 72% 44%, rgba(247, 231, 139, 0.15) 0 17%, transparent 18%),
+                radial-gradient(circle at 50% 62%, rgba(151, 255, 171, 0.13) 0 16%, transparent 17%),
+                linear-gradient(140deg, transparent 60%, rgba(171, 255, 146, 0.16) 60% 63%, transparent 63%),
+                radial-gradient(circle at 50% 18%, rgba(210, 255, 154, 0.14) 0 14%, transparent 15%),
+                radial-gradient(circle at 22% 42%, rgba(124, 255, 165, 0.12) 0 16%, transparent 17%),
+                radial-gradient(circle at 78% 42%, rgba(255, 232, 140, 0.12) 0 16%, transparent 17%),
+                radial-gradient(circle at 50% 61%, rgba(158, 255, 168, 0.1) 0 15%, transparent 16%),
+                linear-gradient(146deg, transparent 60%, rgba(168, 255, 157, 0.12) 60% 63%, transparent 63%);
+            background-repeat: no-repeat;
+            background-size:
+                520px 520px,
+                520px 520px,
+                520px 520px,
+                520px 520px,
+                520px 520px,
+                720px 720px,
+                720px 720px,
+                720px 720px,
+                720px 720px,
+                720px 720px;
+            background-position:
+                10% 16%,
+                10% 16%,
+                10% 16%,
+                10% 16%,
+                10% 16%,
+                76% 58%,
+                76% 58%,
+                76% 58%,
+                76% 58%,
+                76% 58%;
+            filter: blur(2px) saturate(1.15);
+            animation: luckySkyDrift 34s linear infinite;
+        }
+
         body.lucky-mode #startScreen h1 {
             color: #eaff97;
             text-shadow: 0 0 18px rgba(120, 255, 150, 0.38), 0 0 36px rgba(255, 214, 87, 0.18);
@@ -2739,39 +2784,63 @@
 
         .lucky-decoration::before {
             content: '';
-            top: 8%;
-            right: 11%;
-            width: 164px;
-            height: 164px;
-            border-radius: 50%;
+            position: absolute;
+            top: -6%;
+            right: -4%;
+            width: 430px;
+            height: 430px;
             background:
-                radial-gradient(circle at 50% 24%, rgba(184, 255, 109, 0.9) 0%, rgba(184, 255, 109, 0.16) 22%, transparent 48%),
-                radial-gradient(circle at 24% 58%, rgba(126, 255, 146, 0.8) 0%, rgba(126, 255, 146, 0.12) 24%, transparent 48%),
-                radial-gradient(circle at 76% 58%, rgba(255, 233, 124, 0.78) 0%, rgba(255, 233, 124, 0.12) 24%, transparent 48%);
+                radial-gradient(circle at 50% 20%, rgba(207, 255, 154, 0.34) 0 18%, transparent 19%),
+                radial-gradient(circle at 28% 42%, rgba(123, 255, 168, 0.3) 0 19%, transparent 20%),
+                radial-gradient(circle at 72% 42%, rgba(255, 232, 145, 0.28) 0 19%, transparent 20%),
+                radial-gradient(circle at 50% 63%, rgba(146, 255, 176, 0.24) 0 17%, transparent 18%),
+                linear-gradient(145deg, transparent 60%, rgba(173, 255, 152, 0.24) 60% 63%, transparent 63%);
             filter: blur(2px);
-            box-shadow: 0 0 48px rgba(155, 255, 117, 0.18);
-            animation: luckyPulse 3.6s ease-in-out infinite;
+            box-shadow: 0 0 90px rgba(155, 255, 117, 0.16);
+            transform: rotate(-14deg);
+            animation: luckyFloatNorth 28s linear infinite;
         }
 
         .lucky-decoration::after {
             content: '';
-            bottom: 11%;
-            left: 13%;
-            width: 128px;
-            height: 128px;
-            border-radius: 50%;
+            position: absolute;
+            bottom: -18%;
+            left: -10%;
+            width: 610px;
+            height: 610px;
             background:
-                radial-gradient(circle at 50% 22%, rgba(214, 255, 136, 0.72) 0%, rgba(214, 255, 136, 0.12) 20%, transparent 46%),
-                radial-gradient(circle at 24% 58%, rgba(102, 255, 160, 0.68) 0%, rgba(102, 255, 160, 0.1) 22%, transparent 46%),
-                radial-gradient(circle at 76% 58%, rgba(255, 219, 110, 0.68) 0%, rgba(255, 219, 110, 0.1) 22%, transparent 46%);
-            filter: blur(2px);
-            box-shadow: 0 0 36px rgba(155, 255, 117, 0.14);
-            animation: luckyPulse 4.2s ease-in-out infinite reverse;
+                radial-gradient(circle at 50% 20%, rgba(208, 255, 156, 0.26) 0 18%, transparent 19%),
+                radial-gradient(circle at 27% 42%, rgba(118, 255, 172, 0.24) 0 19%, transparent 20%),
+                radial-gradient(circle at 73% 42%, rgba(255, 230, 141, 0.24) 0 19%, transparent 20%),
+                radial-gradient(circle at 50% 63%, rgba(147, 255, 182, 0.2) 0 17%, transparent 18%),
+                linear-gradient(147deg, transparent 60%, rgba(167, 255, 160, 0.2) 60% 63%, transparent 63%);
+            filter: blur(3px);
+            box-shadow: 0 0 110px rgba(155, 255, 117, 0.14);
+            transform: rotate(11deg);
+            animation: luckyFloatSouth 36s linear infinite;
         }
 
         @keyframes luckyPulse {
             0%, 100% { transform: scale(0.96) rotate(-3deg); opacity: 0.7; }
             50% { transform: scale(1.08) rotate(3deg); opacity: 1; }
+        }
+
+        @keyframes luckySkyDrift {
+            0% { transform: translate3d(-3vw, 2vh, 0) rotate(0deg) scale(1); }
+            50% { transform: translate3d(2vw, -1vh, 0) rotate(5deg) scale(1.04); }
+            100% { transform: translate3d(5vw, -3vh, 0) rotate(10deg) scale(1.08); }
+        }
+
+        @keyframes luckyFloatNorth {
+            0% { transform: translate3d(0, 0, 0) rotate(-14deg) scale(0.94); opacity: 0.5; }
+            50% { transform: translate3d(-8vw, 4vh, 0) rotate(2deg) scale(1.02); opacity: 0.66; }
+            100% { transform: translate3d(-16vw, 11vh, 0) rotate(14deg) scale(1.08); opacity: 0.44; }
+        }
+
+        @keyframes luckyFloatSouth {
+            0% { transform: translate3d(0, 0, 0) rotate(11deg) scale(0.96); opacity: 0.44; }
+            50% { transform: translate3d(7vw, -6vh, 0) rotate(-1deg) scale(1.04); opacity: 0.62; }
+            100% { transform: translate3d(15vw, -14vh, 0) rotate(-13deg) scale(1.1); opacity: 0.38; }
         }
 
         .event-side-card {
