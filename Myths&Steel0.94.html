@@ -1452,6 +1452,210 @@
             color: #d7e7ff;
         }
 
+        .option-row-stack {
+            align-items: flex-start;
+        }
+
+        .speed-open-btn {
+            min-width: 180px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid rgba(212, 175, 55, 0.35);
+            background: linear-gradient(180deg, rgba(34, 20, 58, 0.92) 0%, rgba(12, 8, 24, 0.94) 100%);
+            color: #fff1c7;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: 0.18s ease;
+        }
+
+        .speed-open-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            border-color: rgba(212, 175, 55, 0.72);
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.22);
+        }
+
+        .speed-open-btn:disabled {
+            opacity: 0.52;
+            cursor: not-allowed;
+        }
+
+        .speed-setting-summary {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #d7d0eb;
+            margin-top: 10px;
+        }
+
+        body.christmas-mode .speed-open-btn {
+            border-color: rgba(102, 204, 255, 0.35);
+            background: linear-gradient(180deg, rgba(16, 42, 78, 0.94) 0%, rgba(8, 16, 30, 0.94) 100%);
+            color: #dff6ff;
+        }
+
+        body.christmas-mode .speed-open-btn:hover:not(:disabled) {
+            border-color: rgba(102, 204, 255, 0.72);
+            box-shadow: 0 0 18px rgba(102, 204, 255, 0.22);
+        }
+
+        #gameSpeedModal {
+            z-index: 92;
+        }
+
+        .speed-modal-content {
+            width: min(92vw, 760px);
+            max-height: min(88vh, 760px);
+            overflow-y: auto;
+            padding: 22px 22px 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background:
+                radial-gradient(circle at top right, rgba(214, 170, 74, 0.16), rgba(0,0,0,0) 34%),
+                radial-gradient(circle at bottom left, rgba(124, 96, 215, 0.18), rgba(0,0,0,0) 36%),
+                linear-gradient(180deg, rgba(18, 12, 34, 0.98) 0%, rgba(8, 6, 18, 0.98) 100%);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+            text-align: left;
+        }
+
+        .speed-modal-kicker {
+            font-size: 11px;
+            letter-spacing: 1.7px;
+            text-transform: uppercase;
+            color: #ccb88f;
+            margin-bottom: 6px;
+        }
+
+        .speed-modal-content h2 {
+            margin: 0 0 8px;
+            color: #fff3ce;
+        }
+
+        .speed-modal-copy {
+            margin: 0 0 16px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #d7d0eb;
+        }
+
+        .speed-modal-status-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .speed-modal-chip {
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #f5ecff;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .speed-card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .speed-card {
+            padding: 16px 15px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            cursor: pointer;
+            transition: 0.18s ease;
+            text-align: left;
+        }
+
+        .speed-card:hover:not(.locked) {
+            transform: translateY(-2px);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 0 24px rgba(212, 175, 55, 0.16);
+        }
+
+        .speed-card.active {
+            border-color: rgba(212, 175, 55, 0.82);
+            box-shadow: 0 0 28px rgba(212, 175, 55, 0.24);
+            background: linear-gradient(180deg, rgba(66, 48, 20, 0.32) 0%, rgba(20, 12, 36, 0.96) 100%);
+        }
+
+        .speed-card.locked {
+            opacity: 0.52;
+            cursor: not-allowed;
+        }
+
+        .speed-card-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .speed-card-title {
+            font-size: 21px;
+            color: #fff5d9;
+        }
+
+        .speed-card-tag {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            color: #e2d9ff;
+            font-size: 10px;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .speed-card-desc {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #d9d2ed;
+            margin-bottom: 10px;
+        }
+
+        .speed-card-note {
+            font-size: 11px;
+            line-height: 1.45;
+            color: #b8afcf;
+        }
+
+        .speed-modal-note {
+            padding: 13px 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            font-size: 12px;
+            line-height: 1.55;
+            color: #d8d1eb;
+            margin-bottom: 16px;
+        }
+
+        body.christmas-mode .speed-modal-content {
+            background:
+                radial-gradient(circle at top right, rgba(102, 204, 255, 0.14), rgba(0,0,0,0) 34%),
+                radial-gradient(circle at bottom left, rgba(34, 104, 170, 0.16), rgba(0,0,0,0) 36%),
+                linear-gradient(180deg, rgba(12, 26, 46, 0.98) 0%, rgba(8, 12, 24, 0.98) 100%);
+        }
+
+        body.christmas-mode .speed-card:hover:not(.locked),
+        body.christmas-mode .speed-card.active {
+            border-color: rgba(102, 204, 255, 0.74);
+            box-shadow: 0 0 24px rgba(102, 204, 255, 0.18);
+        }
+
+        @media (max-width: 760px) {
+            .speed-card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         #mobileHud {
             position: absolute;
             inset: 0;
@@ -1597,6 +1801,20 @@
 
             #optionsModal {
                 min-width: min(92vw, 520px);
+            }
+
+            #pauseMenuModal {
+                min-width: min(98vw, 1220px);
+                width: min(98vw, 1220px);
+                max-height: 96vh;
+                overflow: visible;
+            }
+
+            #gameSpeedModal {
+                min-width: min(94vw, 760px);
+                width: min(94vw, 760px);
+                max-height: 92vh;
+                overflow: visible;
             }
         }
 
@@ -1767,13 +1985,21 @@
 
         #pauseMenuModal {
             z-index: 82;
+            width: min(98vw, 1220px);
+            max-width: 1220px;
+            max-height: 96vh;
+            padding: 0;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            overflow: visible;
         }
 
         .pause-menu-shell {
-            width: min(96vw, 1040px);
-            max-height: min(90vh, 760px);
-            overflow-y: auto;
-            padding: 22px;
+            width: min(98vw, 1200px);
+            max-height: min(94vh, 820px);
+            overflow: hidden;
+            padding: 18px 20px 16px;
             border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.12);
             background:
@@ -1788,7 +2014,7 @@
             display: flex;
             justify-content: space-between;
             gap: 18px;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .pause-menu-kicker {
@@ -1808,8 +2034,8 @@
         .pause-menu-copy {
             margin: 0;
             max-width: 720px;
-            font-size: 13px;
-            line-height: 1.55;
+            font-size: 12px;
+            line-height: 1.45;
             color: #d1cae5;
         }
 
@@ -1834,12 +2060,12 @@
 
         .pause-menu-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
-            gap: 18px;
+            grid-template-columns: minmax(0, 1.32fr) minmax(360px, 0.88fr);
+            gap: 14px;
         }
 
         .pause-panel {
-            padding: 18px;
+            padding: 14px;
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.08);
             background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
@@ -1847,23 +2073,23 @@
         }
 
         .pause-panel h3 {
-            margin: 0 0 14px;
-            font-size: 16px;
+            margin: 0 0 10px;
+            font-size: 15px;
             color: #fff1c3;
             letter-spacing: 0.4px;
         }
 
         .pause-summary-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .pause-summary-card,
         .pause-stat-pill {
-            padding: 12px 13px;
-            border-radius: 16px;
+            padding: 10px 11px;
+            border-radius: 14px;
             border: 1px solid rgba(255,255,255,0.08);
             background: rgba(7, 9, 20, 0.42);
         }
@@ -1872,53 +2098,53 @@
         .pause-stat-pill-label,
         .pause-detail-label {
             display: block;
-            font-size: 10px;
+            font-size: 9px;
             letter-spacing: 1.2px;
             text-transform: uppercase;
             color: #ac9fcf;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .pause-summary-value,
         .pause-stat-pill-value {
             display: block;
-            font-size: 22px;
+            font-size: 18px;
             color: #fff8df;
             font-weight: 800;
         }
 
         .pause-stat-pill-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .pause-detail-block {
-            padding: 14px 15px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.03);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 9px;
             margin-bottom: 12px;
         }
 
+        .pause-detail-block {
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 8px;
+        }
+
         .pause-detail-copy {
-            font-size: 13px;
-            line-height: 1.55;
+            font-size: 12px;
+            line-height: 1.42;
             color: #e4dcf7;
         }
 
         .pause-menu-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 18px;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .pause-menu-actions .btn-primary,
         .pause-menu-actions .btn-secondary {
-            font-size: 14px;
-            padding: 12px 18px;
+            font-size: 13px;
+            padding: 10px 14px;
         }
 
         .pause-danger {
@@ -1928,7 +2154,7 @@
         }
 
         .pause-settings-group {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .pause-settings-group:last-child {
@@ -1940,16 +2166,16 @@
             text-transform: uppercase;
             letter-spacing: 1.1px;
             color: #d2c5f0;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .pause-setting-row,
         .pause-slider-row,
         .pause-toggle-row {
             display: grid;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .pause-setting-row {
@@ -1982,13 +2208,13 @@
 
         .pause-settings-note,
         .pause-menu-footer {
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 11px;
+            line-height: 1.42;
             color: #bcb4d8;
         }
 
         .pause-menu-footer {
-            margin-top: 12px;
+            margin-top: 8px;
             text-align: center;
         }
 
@@ -1998,6 +2224,10 @@
             }
 
             .pause-summary-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .pause-stat-pill-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
@@ -2715,14 +2945,11 @@
                     </select>
                 </div>
                 <p id="themeModeNote" style="font-size: 12px; color: #aaa; margin-top:10px;">Lucky Theme unlock: defeat 35 event shinies.</p>
-                <div class="option-row">
+                <div class="option-row option-row-stack">
                     <span>Game Speed</span>
-                    <select id="gameSpeedSelect">
-                        <option value="1">1x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="2">2x</option>
-                    </select>
+                    <button id="gameSpeedModalBtn" class="speed-open-btn" type="button">OPEN SPEED MENU</button>
                 </div>
+                <p id="gameSpeedSummary" class="speed-setting-summary">Current: 1x. Standard action pace.</p>
                 <p id="gameSpeedUnlockNote" style="font-size: 12px; color: #aaa; margin-top:10px;">Unlock at 6 achievements (0/6).</p>
                 <div class="option-row">
                     <span>Device Layout</span>
@@ -2811,7 +3038,7 @@
                     </label>
                 </div>
 
-                <p id="performanceStatusNote" class="performance-note performance-status-note">Runtime status: Full Fidelity ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ 60 FPS</p>
+                <p id="performanceStatusNote" class="performance-note performance-status-note">Runtime status: Full Fidelity • 60 FPS</p>
                 <p class="performance-note">Auto Optimize only trims visuals and HUD refresh frequency when the game gets stressed. It never changes damage, movement, spawn rates, timers, or any other gameplay behavior.</p>
             </div>
 
@@ -2956,13 +3183,10 @@
                             </div>
                             <div id="pauseThemeModeNote" class="pause-settings-note">Lucky Theme unlock: defeat 35 event shinies.</div>
                             <div class="pause-setting-row" style="margin-top: 12px;">
-                                <label class="pause-setting-label" for="pauseGameSpeedSelect">Game Speed</label>
-                                <select id="pauseGameSpeedSelect">
-                                    <option value="1">1x (Normal)</option>
-                                    <option value="2">2x</option>
-                                    <option value="4">4x</option>
-                                </select>
+                                <label class="pause-setting-label" for="pauseGameSpeedModalBtn">Game Speed</label>
+                                <button id="pauseGameSpeedModalBtn" class="speed-open-btn" type="button">OPEN SPEED MENU</button>
                             </div>
+                            <div id="pauseGameSpeedSummary" class="speed-setting-summary">Current: 1x. Standard action pace.</div>
                             <div id="pauseGameSpeedUnlockNote" class="pause-settings-note">Unlock at 6 achievements.</div>
                         </div>
 
@@ -3022,6 +3246,46 @@
                 </div>
 
                 <div class="pause-menu-footer">Esc or P closes this menu. Quick settings apply instantly while the run stays paused.</div>
+            </div>
+        </div>
+
+        <div id="gameSpeedModal" class="modal">
+            <div class="speed-modal-content">
+                <div class="speed-modal-kicker">Run Pacing</div>
+                <h2>Game Speed</h2>
+                <p class="speed-modal-copy">Choose how fast the action updates. Speed control now changes combat pace without permanently burning your run timer forward.</p>
+                <div class="speed-modal-status-row">
+                    <span id="gameSpeedModalCurrent" class="speed-modal-chip">Current: 1x</span>
+                    <span id="gameSpeedModalUnlock" class="speed-modal-chip">Unlock at 6 achievements</span>
+                </div>
+                <div class="speed-card-grid">
+                    <button id="gameSpeedCard1" class="speed-card" type="button" data-speed="1">
+                        <div class="speed-card-top">
+                            <span class="speed-card-title">1x</span>
+                            <span class="speed-card-tag">Standard</span>
+                        </div>
+                        <div class="speed-card-desc">The intended baseline. Best for reading fights, boss tells, and the overall arena rhythm.</div>
+                        <div class="speed-card-note">No acceleration. Everything runs at the normal action pace.</div>
+                    </button>
+                    <button id="gameSpeedCard15" class="speed-card" type="button" data-speed="1.5">
+                        <div class="speed-card-top">
+                            <span class="speed-card-title">1.5x</span>
+                            <span class="speed-card-tag">Sharper</span>
+                        </div>
+                        <div class="speed-card-desc">A cleaner fast-forward that still feels readable. Good for farming or replaying steady runs.</div>
+                        <div class="speed-card-note">Speeds up action updates while keeping run pacing systems grounded.</div>
+                    </button>
+                    <button id="gameSpeedCard2" class="speed-card" type="button" data-speed="2">
+                        <div class="speed-card-top">
+                            <span class="speed-card-title">2x</span>
+                            <span class="speed-card-tag">Turbo</span>
+                        </div>
+                        <div class="speed-card-desc">Maximum pace for chaos runs and quick cleanup once you already know what the build can handle.</div>
+                        <div class="speed-card-note">Fastest action speed available once you unlock the system.</div>
+                    </button>
+                </div>
+                <div class="speed-modal-note">You need 6 achievements to unlock speed control. Changing speed takes effect immediately, and returning to 1x now clears leftover action-speed carry cleanly.</div>
+                <button id="closeGameSpeedModalBtn" class="btn-primary">CLOSE</button>
             </div>
         </div>
 
@@ -3205,6 +3469,7 @@
         let selectedThemeMode = 'newyear';
         let gameSpeedMultiplier = 1;
         let gameSpeedStepCarry = 0;
+        let gameSpeedModalSource = 'options';
         const GAME_SPEED_UNLOCK_ACHIEVEMENTS = 6;
         const SECRET_MYTHIC_SHINY_REQ = 150;
         const SECRET_MYTHIC_GOLDEN_REQ = 50;
@@ -3270,7 +3535,10 @@
         function applyGameSpeedSetting(value, { resetFrameClock = false } = {}) {
             gameSpeedMultiplier = clampGameSpeedSetting(value);
             gameSpeedStepCarry = 0;
-            if (resetFrameClock && typeof performance !== 'undefined') lastTime = performance.now();
+            if (resetFrameClock && typeof performance !== 'undefined') {
+                lastTime = performance.now();
+                spawnClockMs = 0;
+            }
             return gameSpeedMultiplier;
         }
 
@@ -3282,6 +3550,20 @@
 
         async function saveGameSpeedSettings() {
             await saveData('settings', 'gameSpeed', clampGameSpeedSetting(gameSpeedMultiplier));
+        }
+
+        function getGameSpeedLabel(value = gameSpeedMultiplier) {
+            const speed = clampGameSpeedSetting(value);
+            if (speed >= 2) return '2x Turbo';
+            if (speed >= 1.5) return '1.5x Sharper';
+            return '1x Standard';
+        }
+
+        function getGameSpeedSummaryText(value = gameSpeedMultiplier) {
+            const speed = clampGameSpeedSetting(value);
+            if (speed >= 2) return 'Current: 2x. Maximum action speed for high-tempo runs.';
+            if (speed >= 1.5) return 'Current: 1.5x. Faster action pace without going full turbo.';
+            return 'Current: 1x. Standard action pace.';
         }
 
         function updateThemeModeUI() {
@@ -3312,30 +3594,46 @@
         }
 
         function updateGameSpeedUI() {
-            const select = document.getElementById('gameSpeedSelect');
-            const pauseSelect = document.getElementById('pauseGameSpeedSelect');
+            const summary = document.getElementById('gameSpeedSummary');
+            const pauseSummary = document.getElementById('pauseGameSpeedSummary');
+            const openBtn = document.getElementById('gameSpeedModalBtn');
+            const pauseOpenBtn = document.getElementById('pauseGameSpeedModalBtn');
             const note = document.getElementById('gameSpeedUnlockNote');
             const pauseNote = document.getElementById('pauseGameSpeedUnlockNote');
+            const modalCurrent = document.getElementById('gameSpeedModalCurrent');
+            const modalUnlock = document.getElementById('gameSpeedModalUnlock');
             const unlockedCount = Math.min(typeof getUnlockedAchievementCount === 'function' ? getUnlockedAchievementCount() : 0, GAME_SPEED_UNLOCK_ACHIEVEMENTS);
             const unlocked = unlockedCount >= GAME_SPEED_UNLOCK_ACHIEVEMENTS;
             if (!unlocked) {
-                gameSpeedMultiplier = 1;
-                gameSpeedStepCarry = 0;
+                applyGameSpeedSetting(1);
             }
-            if (select) {
-                select.disabled = !unlocked;
-                select.value = String(unlocked ? clampGameSpeedSetting(gameSpeedMultiplier) : 1);
-            }
-            if (pauseSelect) {
-                pauseSelect.disabled = !unlocked;
-                pauseSelect.value = String(unlocked ? clampGameSpeedSetting(gameSpeedMultiplier) : 1);
-            }
+            if (summary) summary.textContent = getGameSpeedSummaryText();
+            if (pauseSummary) pauseSummary.textContent = getGameSpeedSummaryText();
+            if (openBtn) openBtn.disabled = !unlocked;
+            if (pauseOpenBtn) pauseOpenBtn.disabled = !unlocked;
             if (note) note.textContent = unlocked
-                ? 'Unlocked: choose how fast the run advances.'
+                ? 'Unlocked: choose how fast the action updates.'
                 : `Unlock at ${GAME_SPEED_UNLOCK_ACHIEVEMENTS} achievements (${unlockedCount}/${GAME_SPEED_UNLOCK_ACHIEVEMENTS}).`;
             if (pauseNote) pauseNote.textContent = unlocked
-                ? 'Unlocked: choose how fast the run advances.'
+                ? 'Unlocked: choose how fast the action updates.'
                 : `Unlock at ${GAME_SPEED_UNLOCK_ACHIEVEMENTS} achievements (${unlockedCount}/${GAME_SPEED_UNLOCK_ACHIEVEMENTS}).`;
+            if (modalCurrent) modalCurrent.textContent = `Current: ${getGameSpeedLabel()}`;
+            if (modalUnlock) modalUnlock.textContent = unlocked
+                ? `Unlocked ${unlockedCount}/${GAME_SPEED_UNLOCK_ACHIEVEMENTS}`
+                : `Unlock ${unlockedCount}/${GAME_SPEED_UNLOCK_ACHIEVEMENTS}`;
+
+            [
+                ['gameSpeedCard1', 1],
+                ['gameSpeedCard15', 1.5],
+                ['gameSpeedCard2', 2]
+            ].forEach(([id, speedValue]) => {
+                const card = document.getElementById(id);
+                if (!card) return;
+                const active = clampGameSpeedSetting(gameSpeedMultiplier) === clampGameSpeedSetting(speedValue);
+                card.classList.toggle('active', active);
+                card.classList.toggle('locked', !unlocked);
+                card.disabled = !unlocked;
+            });
         }
 
         function getGameSimulationStepCount() {
@@ -3348,6 +3646,36 @@
             const steps = Math.max(1, Math.floor(gameSpeedStepCarry));
             gameSpeedStepCarry -= steps;
             return Math.min(steps, 3);
+        }
+
+        function openGameSpeedModal(source = 'options') {
+            const modal = document.getElementById('gameSpeedModal');
+            if (!modal) return;
+            gameSpeedModalSource = source;
+            if (source === 'pause' && pauseMenuState.active) pauseMenuState.nested = 'speed';
+            updateGameSpeedUI();
+            modal.style.display = 'block';
+        }
+
+        function closeGameSpeedModal() {
+            const modal = document.getElementById('gameSpeedModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+            if (pauseMenuState.active && pauseMenuState.nested === 'speed') {
+                pauseMenuState.nested = null;
+            }
+        }
+
+        function selectGameSpeed(value) {
+            if (getUnlockedAchievementCount() < GAME_SPEED_UNLOCK_ACHIEVEMENTS) {
+                updateGameSpeedUI();
+                return;
+            }
+            applyGameSpeedSetting(value, { resetFrameClock: gameRunning });
+            saveGameSpeedSettings();
+            updateGameSpeedUI();
+            if (pauseMenuState.active) updatePauseMenuUI();
+            closeGameSpeedModal();
         }
 
         function isStPatricksEventActive(now = Date.now()) {
@@ -4686,7 +5014,7 @@
                 const bossName = getBossDisplayName(boss);
                 return `${bossName} is active right now. You are on wave ${waveNumber} with ${healthPct}% HP and ${enemies.length} other enemies still on the field.`;
             }
-            const bossEta = Math.max(0, Math.ceil(nextBossTime - gameTime));
+            const bossEta = Math.max(0, Math.ceil(nextBossTime - runClockTime));
             return bossEta > 0
                 ? `No boss is active. Next boss arrives in ${bossEta}s, and ${enemies.length} enemies are still pressuring the arena.`
                 : `The arena is between spikes right now. ${enemies.length} enemies remain and the next boss trigger is ready.`;
@@ -4780,7 +5108,7 @@
             if (!gameRunning) return false;
             if (bossCutscene.active || celestialCardCutscene.active || finalVictorySequence.active) return false;
             if (isModalVisible('levelUpModal') || isModalVisible('gameOver') || isModalVisible('classicEndlessModal')) return false;
-            if (isModalVisible('statsModal') || isModalVisible('persistentStatsModal') || isModalVisible('optionsModal')) return false;
+            if (isModalVisible('statsModal') || isModalVisible('persistentStatsModal') || isModalVisible('optionsModal') || isModalVisible('gameSpeedModal')) return false;
             return true;
         }
 
@@ -4936,13 +5264,13 @@
 
         // Helper function for Difficulty Calculation
         function getDifficultyMultiplier() {
-            const difficultyMinutes = Math.floor(gameTime / 60);
+            const difficultyMinutes = Math.floor(runClockTime / 60);
             const perMinuteScale = currentGameMode === 'hardcore' ? 0.30 : 0.20;
             const multiplier = 1 + (difficultyMinutes * perMinuteScale);
             return currentGameMode === 'hardcore' ? multiplier : Math.min(multiplier, 36.0);
         }
         function getDifficultySpeedMultiplier() {
-            const difficultyMinutes = Math.floor(gameTime / 60);
+            const difficultyMinutes = Math.floor(runClockTime / 60);
             return 1 + (difficultyMinutes * 0.01);
         }
         function getNextLevelExpRequirement() {
@@ -5325,7 +5653,7 @@
             bosses = []; damageNumbers = []; criticalTexts = []; poisonClouds = []; shurikens = [];
             fugaProjectiles = []; fireworks = []; fizzStreams = [];
 
-            gameTime = 0; kills = 0; waveNumber = 1; bossSpawnTimer = getBossSpawnInterval(); nextBossTime = getBossSpawnInterval(); score = 0; combo = 0;
+            gameTime = 0; runClockTime = 0; kills = 0; waveNumber = 1; bossSpawnTimer = getBossSpawnInterval(); nextBossTime = getBossSpawnInterval(); score = 0; combo = 0;
             lastKillTime = 0; currentDifficultyLevel = 0; lastAutoSaveTime = 0;
 
             gameRunning = false;
@@ -5841,6 +6169,11 @@
 
         document.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
+            if (key === 'escape' && isModalVisible('gameSpeedModal')) {
+                e.preventDefault();
+                closeGameSpeedModal();
+                return;
+            }
             if (key === 'escape' || key === 'p') {
                 if (pauseMenuState.active && !pauseMenuState.nested) {
                     e.preventDefault();
@@ -6076,7 +6409,7 @@
         const optionsBtnEl = document.getElementById('optionsBtn');
         const closeOptionsBtnEl = document.getElementById('closeOptionsBtn');
         const themeModeSelectEl = document.getElementById('themeModeSelect');
-        const gameSpeedSelectEl = document.getElementById('gameSpeedSelect');
+        const gameSpeedModalBtnEl = document.getElementById('gameSpeedModalBtn');
 
         if (optionsBtnEl) {
             optionsBtnEl.addEventListener('click', () => {
@@ -6099,16 +6432,8 @@
             });
         }
 
-        if (gameSpeedSelectEl) {
-            gameSpeedSelectEl.addEventListener('change', (e) => {
-                if (getUnlockedAchievementCount() < GAME_SPEED_UNLOCK_ACHIEVEMENTS) {
-                    updateGameSpeedUI();
-                    return;
-                }
-                applyGameSpeedSetting(e.target.value, { resetFrameClock: gameRunning });
-                saveGameSpeedSettings();
-                updateGameSpeedUI();
-            });
+        if (gameSpeedModalBtnEl) {
+            gameSpeedModalBtnEl.addEventListener('click', () => openGameSpeedModal('options'));
         }
         function initOptionsTabs() {
             const tabs = document.querySelectorAll('#optionsModal .options-tab');
@@ -6196,7 +6521,7 @@
 
         function initPauseMenuUI() {
             const pauseThemeSelect = document.getElementById('pauseThemeModeSelect');
-            const pauseGameSpeedSelect = document.getElementById('pauseGameSpeedSelect');
+            const pauseGameSpeedModalBtn = document.getElementById('pauseGameSpeedModalBtn');
             const bindPauseSlider = (sliderId, valueId, key) => {
                 const slider = document.getElementById(sliderId);
                 const valueEl = document.getElementById(valueId);
@@ -6235,17 +6560,8 @@
                 });
             }
 
-            if (pauseGameSpeedSelect) {
-                pauseGameSpeedSelect.addEventListener('change', (e) => {
-                    if (getUnlockedAchievementCount() < GAME_SPEED_UNLOCK_ACHIEVEMENTS) {
-                        updateGameSpeedUI();
-                        return;
-                    }
-                    applyGameSpeedSetting(e.target.value, { resetFrameClock: gameRunning });
-                    saveGameSpeedSettings();
-                    updateGameSpeedUI();
-                    updatePauseMenuUI();
-                });
+            if (pauseGameSpeedModalBtn) {
+                pauseGameSpeedModalBtn.addEventListener('click', () => openGameSpeedModal('pause'));
             }
 
             bindPauseSlider('pauseMasterVolumeSlider', 'pauseMasterVolumeValue', 'master');
@@ -6276,6 +6592,18 @@
         initPerformanceOptionsUI();
         initPauseMenuUI();
         initRecordsTabs();
+        ['1', '1.5', '2'].forEach((speedValue) => {
+            const card = document.querySelector(`#gameSpeedModal .speed-card[data-speed="${speedValue}"]`);
+            if (card) card.addEventListener('click', () => selectGameSpeed(speedValue));
+        });
+        const closeGameSpeedModalBtn = document.getElementById('closeGameSpeedModalBtn');
+        if (closeGameSpeedModalBtn) closeGameSpeedModalBtn.addEventListener('click', closeGameSpeedModal);
+        const gameSpeedModal = document.getElementById('gameSpeedModal');
+        if (gameSpeedModal) {
+            gameSpeedModal.addEventListener('click', (event) => {
+                if (event.target === gameSpeedModal) closeGameSpeedModal();
+            });
+        }
         document.getElementById('persistentStatsBtn').addEventListener('click', () => {
             openRecordsModal();
         });
@@ -8348,16 +8676,16 @@
             const linearStrengthMult = getDifficultyMultiplier();
             const speedStrengthMult = getDifficultySpeedMultiplier();
             if (currentGameMode === 'hardcore') {
-                if (gameTime > 45 && Math.random() < 0.24 * linearStrengthMult) type = 'lapis';
+                if (runClockTime > 45 && Math.random() < 0.24 * linearStrengthMult) type = 'lapis';
                 if (waveNumber >= 10 && Math.random() < 0.16 * linearStrengthMult) type = 'emeraldFallout';
-                if (gameTime > 110 && Math.random() < 0.16 * linearStrengthMult) type = 'diamondRusher';
-                if (gameTime > 170 && Math.random() < 0.12 * linearStrengthMult) type = 'amethyst';
+                if (runClockTime > 110 && Math.random() < 0.16 * linearStrengthMult) type = 'diamondRusher';
+                if (runClockTime > 170 && Math.random() < 0.12 * linearStrengthMult) type = 'amethyst';
             } else {
-                if (gameTime > 60 && Math.random() < 0.2 * linearStrengthMult) type = 'fast';
+                if (runClockTime > 60 && Math.random() < 0.2 * linearStrengthMult) type = 'fast';
                 if (waveNumber >= 10 && Math.random() < 0.14 * linearStrengthMult) type = 'hazmat';
-                if (gameTime > 120 && Math.random() < 0.15 * linearStrengthMult) type = 'tank';
-                if (gameTime > 180 && Math.random() < 0.1 * linearStrengthMult) type = 'elite';
-                if (gameTime > 240 && Math.random() < 0.15 * linearStrengthMult) type = 'swarm';
+                if (runClockTime > 120 && Math.random() < 0.15 * linearStrengthMult) type = 'tank';
+                if (runClockTime > 180 && Math.random() < 0.1 * linearStrengthMult) type = 'elite';
+                if (runClockTime > 240 && Math.random() < 0.15 * linearStrengthMult) type = 'swarm';
             }
             const enemyData = enemyTypes[type]; const side = Math.floor(Math.random() * 4); let x, y;
             switch(side) {
@@ -10249,7 +10577,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleDomainRemainingSeconds(now)),
-                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ ${getDeathGambleActivationTargetCount()} targets in the white domain`,
+                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll • ${getDeathGambleActivationTargetCount()} targets in the white domain`,
                         state: 'active'
                     });
                 } else if (isDeathGambleJackpotActive(now)) {
@@ -10265,7 +10593,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleCooldownRemainingSeconds(now)),
-                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
+                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` • jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
                         state: 'cooldown'
                     });
                 } else {
@@ -10293,13 +10621,13 @@ function updateLasers() {
                 });
             }
             if (player.bloodMoon) {
-                const timeUntil = gameTime < 300 ? Math.max(0, 300 - gameTime) : 0;
+                const timeUntil = runClockTime < 300 ? Math.max(0, 300 - runClockTime) : 0;
                 addBuffCard(buffsList, {
                     icon: '[MOON]',
                     name: 'Blood Moon',
-                    timer: gameTime < 300 ? formatBuffCountdown(timeUntil) : (bloodMoonActive ? 'Active' : 'Ready'),
-                    detail: bloodMoonActive ? 'Empowered state active' : (gameTime < 300 ? 'Unlocks after 5 minutes' : 'Transformation primed'),
-                    state: bloodMoonActive ? 'active' : (gameTime < 300 ? 'cooldown' : 'ready')
+                    timer: runClockTime < 300 ? formatBuffCountdown(timeUntil) : (bloodMoonActive ? 'Active' : 'Ready'),
+                    detail: bloodMoonActive ? 'Empowered state active' : (runClockTime < 300 ? 'Unlocks after 5 minutes' : 'Transformation primed'),
+                    state: bloodMoonActive ? 'active' : (runClockTime < 300 ? 'cooldown' : 'ready')
                 });
             }
             if (player.invincible) {
@@ -13092,15 +13420,15 @@ function updateLasers() {
             const expPercent = (player.exp / player.expToNext) * 100;
             setStyleIfChanged(ui.expFill, 'width', `${expPercent}%`);
             setTextIfChanged(ui.expText, `${Math.floor(player.exp)}/${player.expToNext}`);
-            const minutes = Math.floor(gameTime / 60); const seconds = Math.floor(gameTime % 60);
+            const minutes = Math.floor(runClockTime / 60); const seconds = Math.floor(runClockTime % 60);
             setTextIfChanged(ui.timer, `${minutes}:${seconds.toString().padStart(2, '0')}`);
             setTextIfChanged(ui.kills, kills);
             setTextIfChanged(ui.wave, waveNumber);
             setTextIfChanged(ui.score, score.toLocaleString());
             setTextIfChanged(ui.enemyCountDisplay, enemies.length);
-            if (nextBossTime - gameTime > 0 && nextBossTime - gameTime < 30) {
+            if (nextBossTime - runClockTime > 0 && nextBossTime - runClockTime < 30) {
                 setStyleIfChanged(ui.bossTimer, 'display', 'block');
-                setTextIfChanged(ui.bossCountdown, Math.ceil(nextBossTime - gameTime));
+                setTextIfChanged(ui.bossCountdown, Math.ceil(nextBossTime - runClockTime));
             } else {
                 setStyleIfChanged(ui.bossTimer, 'display', 'none');
             }
@@ -13151,6 +13479,7 @@ function updateLasers() {
             if (!gamePaused) updateFinalArenaApproachDialogue();
             if (!gamePaused) {
                 const simulationDeltaTime = deltaTime;
+                runClockTime += deltaTime;
 
                 if (Date.now() - lastAutoSaveTime > 5000) {
                     saveUserStats();
@@ -13160,7 +13489,7 @@ function updateLasers() {
                 for (let step = 0; step < simulationSteps; step++) {
                     gameTime += simulationDeltaTime;
 
-                    const difficultyLevel = Math.floor(gameTime / 60);
+                    const difficultyLevel = Math.floor(runClockTime / 60);
                     if (difficultyLevel > currentDifficultyLevel) {
                         currentDifficultyLevel = difficultyLevel;
                         if (!finalArenaState.active) {
@@ -13171,7 +13500,7 @@ function updateLasers() {
                     }
                     if (blackHoleCooldown > 0) blackHoleCooldown -= simulationDeltaTime;
                     if (fugaCooldown > 0) fugaCooldown -= simulationDeltaTime;
-                    if (player.bloodMoon && gameTime >= 300 && !bloodMoonActive) { activateBloodMoon(); }
+                    if (player.bloodMoon && runClockTime >= 300 && !bloodMoonActive) { activateBloodMoon(); }
                     if (bloodMoonActive) { bloodMoonTimer -= simulationDeltaTime; if (bloodMoonTimer <= 0) { deactivateBloodMoon(); } }
                     updateSoulHarvest();
                     updateDeathGambleState();
@@ -13180,15 +13509,15 @@ function updateLasers() {
                     updateBlackHoles(); updateFugaProjectiles(); updateShield(); updateFizzStreams();
                     updatePlayerRegeneration(simulationDeltaTime);
                     if (!deathGambleState.active) {
-                        const spawnRate = Math.max(400, 2000 - gameTime * 5);
+                        const spawnRate = Math.max(400, 2000 - runClockTime * 5);
                         spawnClockMs += simulationDeltaTime * 1000;
                         if (spawnClockMs >= spawnRate) {
                             spawnEnemy();
                             spawnClockMs = 0;
-                            const extraSpawnChance = Math.min(0.5, gameTime / 600);
+                            const extraSpawnChance = Math.min(0.5, runClockTime / 600);
                             if (Math.random() < extraSpawnChance && enemies.length < MAX_ENEMIES - 5) { setTimeout(() => spawnEnemy(), 500); }
                         }
-                        if (!finalArenaState.active && gameTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
+                        if (!finalArenaState.active && runClockTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
                     }
                     updatePlayer(); updateEnemies(); updateBosses(); updateProjectiles(); updateLasers(); updateShurikens(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
 
@@ -13350,7 +13679,7 @@ function updateLasers() {
             const top = active[0];
             banner.hidden = false;
             bannerTitle.textContent = top.title;
-            bannerSubtitle.textContent = `${top.senderName} ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ ${top.body}`.trim();
+            bannerSubtitle.textContent = `${top.senderName} • ${top.body}`.trim();
 
             active.forEach((entry) => {
                 const item = document.createElement('div');
@@ -13470,6 +13799,7 @@ function updateLasers() {
     </script>
 </body>
 </html>
+
 
 
 
