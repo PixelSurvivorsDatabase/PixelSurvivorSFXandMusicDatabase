@@ -3324,10 +3324,10 @@
         <div id="achievementToastDesc" class="achievement-toast-desc"></div>
     </div>
     <button id="announcementBanner" class="announcement-banner" type="button" hidden>
-        <span class="announcement-badge">LIVE</span>
+<span class="announcement-badge">NEW</span>
         <span class="announcement-text">
-            <span id="announcementBannerTitle" class="announcement-title">Fresh News</span>
-            <span id="announcementBannerSubtitle" class="announcement-subtitle">Checking for fresh news...</span>
+<span id="announcementBannerTitle" class="announcement-title">From the Dev Corner</span>
+<span id="announcementBannerSubtitle" class="announcement-subtitle">Checking the board...</span>
         </span>
     </button>
     
@@ -3451,9 +3451,9 @@
                 <div class="start-screen-main">
                     <div id="playerCountLabel" class="player-count-label" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="playerPresenceModal" title="Open player count details">Players in Game: --</div>
                     <button id="stPatricksEventCard" class="event-side-card" type="button" hidden>
-                        <span class="event-side-kicker">LIMITED EVENT</span>
+<span class="event-side-kicker">SEASONAL EVENT</span>
                         <span class="event-side-title">ST. PATRICK'S LUCK</span>
-                        <span id="stPatricksEventBody" class="event-side-body">Triple shiny rates are live.</span>
+<span id="stPatricksEventBody" class="event-side-body">Shiny rates are turned way up for the event.</span>
                         <span id="stPatricksEventProgress" class="event-side-progress">Event Shinies: 0 / 60</span>
                         <span id="stPatricksEventSecret" class="event-side-secret">Legendary Unlock: Clover Burst</span>
                         <span id="stPatricksEventRequirements" class="event-side-requirements">Req: 150 total shinies • 50 total goldens</span>
@@ -3505,8 +3505,8 @@
         <div id="stPatricksEventModal" class="modal">
             <div class="event-modal-content">
                 <h2>ST. PATRICK'S LUCK</h2>
-                <p class="event-modal-kicker">Limited-Time Event</p>
-                <p id="stPatricksEventModalIntro" class="event-modal-copy">Shiny rates are tripled in the game right now, and the event now has a full reward ladder to chase.</p>
+<p class="event-modal-kicker">Seasonal Event</p>
+<p id="stPatricksEventModalIntro" class="event-modal-copy">The St. Patrick's event is up right now, shiny rates are tripled, and there are a few fun unlocks waiting if you feel like chasing them.</p>
                 <div id="stPatricksEventModalProgressWrap" class="event-modal-progress-wrap">
                     <div class="event-modal-progress-head">
                         <div class="event-modal-progress-label">Lucky Theme Progress</div>
@@ -3639,7 +3639,7 @@
         <div id="announcementModal" class="modal">
             <div class="announcement-modal-content">
                 <h2>LATEST NEWS</h2>
-                <div id="announcementStatus" class="announcement-status">Checking for fresh news...</div>
+<div id="announcementStatus" class="announcement-status">Checking the board...</div>
                 <div id="announcementList" class="announcement-list"></div>
                 <button id="closeAnnouncementBtn" class="btn-primary">CLOSE</button>
             </div>
@@ -4777,27 +4777,27 @@
             const goldenRatio = Math.max(0, Math.min(1, goldenKills / SECRET_MYTHIC_GOLDEN_REQ));
             card.hidden = false;
             bodyEl.textContent = !luckyUnlocked
-                ? `Triple shiny rates are live right now. ${remainingLucky} more ${remainingLucky === 1 ? 'event shiny' : 'event shinies'} for Lucky Theme.`
+                ? `Shiny rates are cranked up right now. ${remainingLucky} more ${remainingLucky === 1 ? 'event shiny' : 'event shinies'} and Lucky Theme is yours.`
                 : !cloverUnlocked
-                    ? `${remainingClover} more ${remainingClover === 1 ? 'event shiny' : 'event shinies'} until Clover Burst enters the legendary pool.`
-                    : 'Lucky Theme and Clover Burst are secured. The secret mythic still waits beyond the shiny rush.';
+                    ? `Lucky Theme is already yours. ${remainingClover} more ${remainingClover === 1 ? 'event shiny' : 'event shinies'} to unlock Clover Burst next.`
+                    : 'Lucky Theme and Clover Burst are both unlocked. The secret mythic is still waiting if you want to keep pushing.';
             progressEl.textContent = cloverUnlocked
                 ? `Event Shinies: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} • COMPLETE`
                 : `Event Shinies: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ}`;
             secretEl.textContent = cloverUnlocked
-                ? 'Legendary Unlock: Clover Burst ready. Draft it from a legendary level-up to unleash green-gold novas.'
-                : 'Legendary Unlock: Clover Burst. Green-gold novas erupt from your body, stun enemies, and vacuum nearby XP.';
+                ? 'Legendary Unlock: Clover Burst is ready to show up in legendary level-ups.'
+                : 'Legendary Unlock: Clover Burst. It fires green-gold novas that stun enemies and pull in nearby XP.';
             requirementsEl.textContent = mythicUnlocked
                 ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens • READY`
                 : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             rewardEl.textContent = cloverUnlocked
                 ? 'Rewards: Lucky Theme • Clover Burst • Death Gamble'
                 : luckyUnlocked
-                    ? 'Rewards: Lucky Theme secured • Clover Burst next'
+                    ? 'Rewards so far: Lucky Theme • Clover Burst next'
                     : 'Rewards: Lucky Theme • Clover Burst';
             modalIntro.textContent = cloverUnlocked
-                ? 'The event reward ladder is fully active now: the premium Lucky Theme is yours, Clover Burst is unlocked, and the secret mythic is still waiting above it.'
-                : 'The St. Patrick\'s event is live in the game right now. Shiny rates are tripled, and the reward ladder now climbs from Lucky Theme into Clover Burst before the hidden mythic.';
+                ? 'You have already picked up the first two event rewards, and the secret mythic is still sitting up there if you want one more big chase.'
+                : 'The St. Patrick\'s event is live right now. Shiny rates are tripled, and the reward path goes from Lucky Theme to Clover Burst before the hidden mythic at the top.';
             modalProgress.textContent = luckyUnlocked
                 ? `Lucky Theme: ${kills} / ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies • Reward unlocked`
                 : `Lucky Theme: ${kills} / ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies`;
@@ -4811,8 +4811,8 @@
             modalCloverWrap.classList.toggle('complete', cloverUnlocked);
             modalCloverFill.style.width = `${(cloverRatio * 100).toFixed(1)}%`;
             modalCloverCopy.textContent = cloverUnlocked
-                ? 'Clover Burst is now in your legendary level-up pool. Once drafted, it erupts from your body, stuns everything it catches, and hoovers up XP in a huge radius.'
-                : 'Reach 60 event shinies to unlock Clover Burst. After that, it can appear as a legendary upgrade and fire green-gold novas every few kills.';
+                ? 'Clover Burst is now in your legendary pool. Once you draft it, it pops off with green-gold novas, stuns what it hits, and scoops up XP in a big radius.'
+                : 'Reach 60 event shinies to unlock Clover Burst. After that, it can show up as a legendary upgrade and start popping green-gold novas every few kills.';
             modalMythic.textContent = mythicUnlocked
                 ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens • UNLOCKED`
                 : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
@@ -4823,8 +4823,8 @@
             modalMythicShinyFill.style.width = `${(shinyRatio * 100).toFixed(1)}%`;
             modalMythicGoldenFill.style.width = `${(goldenRatio * 100).toFixed(1)}%`;
             modalMythicCopy.textContent = mythicUnlocked
-                ? 'Death Gamble is ready. Press G to drag enemies into the white domain and chase a jackpot every 5 kills.'
-                : 'To awaken Death Gamble, defeat 150 shinies and 50 goldens across your runs. Press G to open the white domain and roll every 5 kills.';
+                ? 'Death Gamble is ready to go. Press G, pull enemies into the white domain, and start chasing jackpots every 5 kills.'
+                : 'To unlock Death Gamble, defeat 150 shinies and 50 goldens across your runs. Once it is yours, press G to open the white domain and roll every 5 kills.';
         }
 
         function openStPatricksEventModal() {
@@ -14909,7 +14909,7 @@ function updateLasers() {
         };
         let liveAnnouncementState = {
             active: [],
-            status: 'Checking for fresh news...',
+            status: 'Checking the board...',
             initialized: false,
             refreshTimer: null,
             lastSeenId: (() => {
@@ -14996,7 +14996,7 @@ function updateLasers() {
                 empty.className = 'announcement-entry';
                 const body = document.createElement('div');
                 body.className = 'announcement-entry-body';
-                body.textContent = liveAnnouncementState.status || 'Nothing new on the board right now.';
+                body.textContent = liveAnnouncementState.status || 'Nothing new to share right now.';
                 empty.appendChild(body);
                 listEl.appendChild(empty);
                 return;
@@ -15033,10 +15033,10 @@ function updateLasers() {
                 meta.className = 'announcement-entry-meta';
 
                 const senderMeta = document.createElement('span');
-                senderMeta.textContent = `Posted by ${entry.senderName}`;
+                senderMeta.textContent = `From ${entry.senderName}`;
 
                 const timeMeta = document.createElement('span');
-                timeMeta.textContent = entry.startsAt ? `Started ${entry.startsAt.replace('T', ' ').replace('Z', ' UTC')}` : 'Live now';
+                timeMeta.textContent = entry.startsAt ? `Posted ${entry.startsAt.replace('T', ' ').replace('Z', ' UTC')}` : 'Just posted';
 
                 meta.appendChild(senderMeta);
                 meta.appendChild(timeMeta);
@@ -15066,7 +15066,7 @@ function updateLasers() {
             const feedUrl = getLiveAnnouncementFeedUrl();
             if (!feedUrl) {
                 liveAnnouncementState.active = [];
-                liveAnnouncementState.status = 'Live news appears when you are connected online.';
+                liveAnnouncementState.status = 'This board wakes up when the game is online.';
                 renderLiveAnnouncements();
                 return;
             }
@@ -15088,12 +15088,12 @@ function updateLasers() {
                         return Date.parse(b.startsAt || 0) - Date.parse(a.startsAt || 0);
                     });
                 liveAnnouncementState.status = liveAnnouncementState.active.length > 0
-                    ? `${liveAnnouncementState.active.length} live announcement${liveAnnouncementState.active.length === 1 ? '' : 's'} available.`
-                    : 'Nothing new on the board right now.';
+                    ? `${liveAnnouncementState.active.length} update${liveAnnouncementState.active.length === 1 ? '' : 's'} on the board.`
+                    : 'Nothing new to share right now.';
                 renderLiveAnnouncements();
             } catch (error) {
                 liveAnnouncementState.active = [];
-                liveAnnouncementState.status = 'Couldn\'t reach the news board right now.';
+                liveAnnouncementState.status = 'Couldn\'t reach the board just now.';
                 renderLiveAnnouncements();
             }
         }

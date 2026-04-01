@@ -22,8 +22,8 @@
                           {
                               "id":  "live-announcements-online",
                               "senderId":  "system",
-                              "title":  "Live Announcements Are Online",
-                              "body":  "The live announcement framework is active on the hosted build. Future events, notices, and limited-time messages can be posted here.",
+                              "title":  "The Update Board Is Live",
+                              "body":  "I finally got the in-game update board working. This is where I can drop event notes, little heads-ups, and whatever else I want to share without patching the whole game.",
                               "priority":  "info",
                               "startsAt":  "2026-03-15T00:00:00Z",
                               "endsAt":  "2027-01-01T00:00:00Z",
@@ -32,8 +32,8 @@
                           {
                               "id":  "st-patricks-event-preview",
                               "senderId":  "laval",
-                              "title":  "St. Patrick\u0027s Event Preview",
-                              "body":  "The hosted build now has a live St. Patrick\u0027s event preview. Shiny rates are tripled, the Lucky Theme unlock is active at 35 shiny kills, and more event polish is still on the way.",
+                              "title":  "St. Patrick\u0027s Event Is Up",
+                              "body":  "The St. Patrick's event is live in the game now. Shiny rates are tripled, Lucky Theme is waiting at 35 shiny kills, and I still want to keep adding a little more polish to it.",
                               "priority":  "high",
                               "startsAt":  "2026-03-20T00:00:00Z",
                               "endsAt":  "2026-04-03T00:00:00Z",
