@@ -7094,6 +7094,15 @@
             return MODE_WAVE_LIMITS[currentGameMode] !== undefined ? MODE_WAVE_LIMITS[currentGameMode] : Infinity;
         }
 
+        function getWaveXpMultiplier(targetWave = waveNumber) {
+            const normalizedWave = Math.max(1, Math.floor(Number(targetWave) || 1));
+            return 1 + Math.max(0, normalizedWave - 1) * 0.1;
+        }
+
+        function scaleXpValueForWave(baseValue, targetWave = waveNumber) {
+            return Math.max(1, Math.round((Number(baseValue) || 0) * getWaveXpMultiplier(targetWave)));
+        }
+
         function getFinalArenaLayout() {
             const arena = { left: 52, right: canvas.width - 52, top: 86, bottom: 514 };
             const roadHalfHeight = 44;
@@ -8092,7 +8101,7 @@
                     maxHealth: soulHealth,
                     baseMaxHealth: soulHealth,
                     color: soulDef.color,
-                    expValue: soulDef.expValue,
+                    expValue: scaleXpValueForWave(soulDef.expValue),
                     damage: Math.round(soulDef.damage * linearStrengthMult),
                     type: 'soul',
                     touchPersists: true,
@@ -9856,6 +9865,7 @@
             const scaledHealth = Math.round(enemyData.health * linearStrengthMult);
             enemies.push(finalizeEnemySpawn({
                 x: x, y: y, ...enemyData, maxHealth: scaledHealth, health: scaledHealth, baseMaxHealth: scaledHealth, type: type,
+                expValue: scaleXpValueForWave(enemyData.expValue),
                 slowUntil: 0, poisonUntil: 0, poisonDamage: 0, damage: Math.round(enemyData.damage * linearStrengthMult),
                 speed: enemyData.speed * speedStrengthMult, isBurning: false, burnTickTime: 0,
                 dousedUntil: 0,
@@ -9903,7 +9913,7 @@
                 celestialSwordUntil: 0, celestialSwordHitTime: 0, celestialSwordAngle: 0, celestialSwordStartAngle: 0, celestialSwordEndAngle: 0, celestialSwordChargeUntil: 0, celestialSwordDirection: 1, angelSummonNext: 0,
                 celestialPillarSequence: false, celestialPillarCount: 0, celestialPillarNext: 0, celestialBeamShakeNext: 0,
                 celestialDashNext: 0, dashSlashAt: 0, dashSlashUntil: 0, dashSlashChargeUntil: 0, dashSlashStartAngle: 0, dashSlashEndAngle: 0, dashSlashDirection: 1, weepingSummonNext: 0, starfallNext: 0, celestialAsteroidNext: 0, consumedSoulCount: 0,
-                ...bossData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth,
+                ...bossData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth, expValue: scaleXpValueForWave(bossData.expValue),
                 damage: Math.round(bossData.damage * linearStrengthMult), speed: bossData.speed * speedStrengthMult, lastAbility: entranceEnabled ? spawnNow : 0, abilityCooldown: 3000, phase: 1,
                 lastPhaseChange: Date.now(), isBurning: false, burnTickTime: 0, dragonlingsSummoned: false,
                 dousedUntil: 0, dousedMultiplier: 1.5, entityId: nextBossEntityId++, pedestalActive: false,
@@ -10492,7 +10502,7 @@
                                             maxHealth: 85,
                                             baseMaxHealth: 85,
                                             color: '#33aa55',
-                                            expValue: 20,
+                                            expValue: scaleXpValueForWave(20),
                                             damage: 25,
                                             type: 'zombie',
                                             slowUntil: 0,
@@ -10542,7 +10552,7 @@
                                     maxHealth: dragonlingHealth,
                                     baseMaxHealth: dragonlingHealth,
                                     color: '#ff7a33',
-                                    expValue: currentGameMode === 'hardcore' ? 220 : 140,
+                                    expValue: scaleXpValueForWave(currentGameMode === 'hardcore' ? 220 : 140),
                                     damage: currentGameMode === 'hardcore' ? 24 : 18,
                                     type: 'dragonling',
                                     slowUntil: 0,
@@ -10643,7 +10653,7 @@
                                     maxHealth: goldenHealth,
                                     baseMaxHealth: goldenHealth,
                                     color: '#f0c34a',
-                                    expValue: 18,
+                                    expValue: scaleXpValueForWave(18),
                                     damage: Math.round(8 * linearStrengthMult),
                                     type: 'golden',
                                     slowUntil: 0,
@@ -10727,7 +10737,7 @@
                                     maxHealth: angelHealth,
                                     baseMaxHealth: angelHealth,
                                     color: hardcoreEnemyTypes.angel.color,
-                                    expValue: hardcoreEnemyTypes.angel.expValue,
+                                    expValue: scaleXpValueForWave(hardcoreEnemyTypes.angel.expValue),
                                     damage: Math.round(hardcoreEnemyTypes.angel.damage * linearStrengthMult),
                                     type: 'angel',
                                     resistance: hardcoreEnemyTypes.angel.resistance,
@@ -10794,7 +10804,7 @@
                                     maxHealth: weepHealth,
                                     baseMaxHealth: weepHealth,
                                     color: hardcoreEnemyTypes.weepingCelestial.color,
-                                    expValue: hardcoreEnemyTypes.weepingCelestial.expValue,
+                                    expValue: scaleXpValueForWave(hardcoreEnemyTypes.weepingCelestial.expValue),
                                     damage: Math.round(hardcoreEnemyTypes.weepingCelestial.damage * linearStrengthMult),
                                     type: 'weepingCelestial',
                                     resistance: hardcoreEnemyTypes.weepingCelestial.resistance,
