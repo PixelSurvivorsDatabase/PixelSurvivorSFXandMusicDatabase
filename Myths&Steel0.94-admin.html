@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1357,66 +1357,208 @@
         }
 
         #adminModal {
-            width: min(94vw, 980px);
-            min-width: min(94vw, 760px);
-            max-width: 980px;
-            max-height: min(88vh, 900px);
-            padding: 22px 22px 18px;
+            width: min(95vw, 1120px);
+            min-width: min(95vw, 820px);
+            max-width: 1120px;
+            max-height: min(90vh, 980px);
+            padding: 22px 22px 20px;
             overflow: hidden;
+            position: absolute;
+            background:
+                radial-gradient(circle at top left, rgba(245, 206, 92, 0.14), transparent 30%),
+                radial-gradient(circle at top right, rgba(255, 120, 70, 0.12), transparent 28%),
+                linear-gradient(180deg, rgba(31, 20, 45, 0.96), rgba(16, 10, 28, 0.98));
+            border: 1px solid rgba(214, 171, 76, 0.3);
+            box-shadow:
+                0 28px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        #adminModal::before {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            pointer-events: none;
+            opacity: 0.9;
         }
 
         .admin-shell {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
             min-height: 0;
-            height: min(76vh, 760px);
+            height: min(78vh, 820px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            padding: 6px 4px 0;
+        }
+
+        .admin-header-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #f7cf72;
+            margin-bottom: 10px;
+        }
+
+        .admin-header-kicker::before {
+            content: "";
+            width: 36px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(247, 207, 114, 0.9), transparent);
+        }
+
+        .admin-header h2 {
+            margin: 0;
+            font-size: clamp(34px, 4vw, 54px);
+            letter-spacing: 1px;
+            color: #fff6d1;
+            text-align: left;
+            text-shadow: 0 0 28px rgba(244, 207, 103, 0.2);
+        }
+
+        .admin-header-copy {
+            margin: 10px 0 0;
+            max-width: 620px;
+            font-size: 13px;
+            line-height: 1.65;
+            color: rgba(241, 231, 214, 0.82);
+            text-align: left;
+        }
+
+        .admin-header-status {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 10px;
+            max-width: 340px;
+        }
+
+        .admin-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 0 16px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #fff1c2;
+            background: linear-gradient(135deg, rgba(255, 190, 82, 0.18), rgba(255, 125, 80, 0.14));
+            border: 1px solid rgba(241, 190, 84, 0.34);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .admin-chip strong {
+            color: #ffffff;
+            margin-left: 6px;
+            font-weight: 700;
         }
 
         .admin-tabs {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 2px;
-            scrollbar-width: thin;
+            padding: 8px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(11, 8, 20, 0.62), rgba(24, 16, 36, 0.72));
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 18px 32px rgba(0, 0, 0, 0.18);
         }
 
         .admin-tab {
-            flex: 1 0 0;
-            min-width: 120px;
+            min-width: 0;
             font-family: 'Orbitron', sans-serif;
             font-size: 12px;
-            letter-spacing: 1px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 2px solid rgba(212, 175, 55, 0.35);
-            color: #f0f0f0;
-            background: rgba(0, 0, 0, 0.24);
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            color: rgba(244, 234, 216, 0.84);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.18));
             cursor: pointer;
-            transition: 0.15s ease;
+            transition: 0.18s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
 
         .admin-tab:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(212, 175, 55, 0.72);
+            transform: translateY(-1px);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.15));
+            border-color: rgba(247, 203, 100, 0.52);
+            color: #fff5d8;
         }
 
         .admin-tab.active {
-            border-color: #d4af37;
-            box-shadow: 0 0 18px rgba(212, 175, 55, 0.22);
+            color: #ffffff;
+            border-color: rgba(255, 214, 113, 0.8);
+            background:
+                radial-gradient(circle at top center, rgba(255, 216, 122, 0.16), transparent 58%),
+                linear-gradient(180deg, rgba(78, 47, 15, 0.72), rgba(33, 20, 13, 0.86));
+            box-shadow:
+                0 16px 28px rgba(255, 177, 72, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.09);
+        }
+
+        body.christmas-mode #adminModal {
+            background:
+                radial-gradient(circle at top left, rgba(102, 204, 255, 0.16), transparent 30%),
+                radial-gradient(circle at top right, rgba(170, 245, 255, 0.12), transparent 28%),
+                linear-gradient(180deg, rgba(17, 32, 52, 0.97), rgba(11, 18, 36, 0.98));
+            border-color: rgba(102, 204, 255, 0.26);
+        }
+
+        body.christmas-mode .admin-header-kicker {
+            color: #9ee7ff;
+        }
+
+        body.christmas-mode .admin-header-kicker::before {
+            background: linear-gradient(90deg, rgba(158, 231, 255, 0.9), transparent);
+        }
+
+        body.christmas-mode .admin-header h2 {
+            color: #eefbff;
+            text-shadow: 0 0 24px rgba(102, 204, 255, 0.2);
+        }
+
+        body.christmas-mode .admin-chip {
+            color: #dff6ff;
+            background: linear-gradient(135deg, rgba(102, 204, 255, 0.16), rgba(113, 255, 217, 0.12));
+            border-color: rgba(102, 204, 255, 0.3);
         }
 
         body.christmas-mode .admin-tab {
-            border-color: rgba(102, 204, 255, 0.35);
+            border-color: rgba(102, 204, 255, 0.22);
         }
 
         body.christmas-mode .admin-tab:hover {
-            border-color: rgba(102, 204, 255, 0.72);
+            border-color: rgba(102, 204, 255, 0.52);
         }
 
         body.christmas-mode .admin-tab.active {
-            border-color: #66ccff;
-            box-shadow: 0 0 18px rgba(102, 204, 255, 0.22);
+            border-color: rgba(160, 235, 255, 0.8);
+            background:
+                radial-gradient(circle at top center, rgba(160, 235, 255, 0.16), transparent 58%),
+                linear-gradient(180deg, rgba(17, 51, 79, 0.8), rgba(10, 30, 48, 0.9));
+            box-shadow:
+                0 16px 28px rgba(102, 204, 255, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .admin-content {
@@ -1424,12 +1566,18 @@
             min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
-            padding-right: 6px;
-            padding-bottom: 8px;
-            scrollbar-width: thin;
+            padding: 8px 8px 10px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(10, 8, 18, 0.4), rgba(19, 12, 28, 0.52));
+            border: 1px solid rgba(255, 255, 255, 0.04);
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
+            scrollbar-width: none;
+        }
+
+        .admin-content::-webkit-scrollbar {
+            display: none;
         }
 
         .admin-panel {
@@ -1445,25 +1593,48 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 16px;
             text-align: left;
-            text-align: left;
         }
 
         .admin-section {
-            background: rgba(0, 0, 0, 0.22);
-            border: 1px solid rgba(212, 175, 55, 0.22);
-            border-radius: 12px;
-            padding: 14px;
+            position: relative;
+            background:
+                radial-gradient(circle at top right, rgba(246, 198, 92, 0.08), transparent 36%),
+                linear-gradient(180deg, rgba(31, 22, 42, 0.9), rgba(19, 13, 29, 0.96));
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            border-radius: 20px;
+            padding: 18px 18px 16px;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.04),
+                0 18px 30px rgba(0, 0, 0, 0.18);
+            overflow: hidden;
+        }
+
+        .admin-section::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 214, 113, 0.8), rgba(255, 153, 92, 0.2), transparent 80%);
+            opacity: 0.95;
         }
 
         body.christmas-mode .admin-section {
-            border-color: rgba(102, 204, 255, 0.22);
+            background:
+                radial-gradient(circle at top right, rgba(142, 227, 255, 0.1), transparent 36%),
+                linear-gradient(180deg, rgba(19, 34, 53, 0.9), rgba(12, 20, 36, 0.96));
+            border-color: rgba(102, 204, 255, 0.18);
+        }
+
+        body.christmas-mode .admin-section::before {
+            background: linear-gradient(90deg, rgba(158, 231, 255, 0.85), rgba(105, 245, 215, 0.22), transparent 80%);
         }
 
         .admin-section h3 {
             margin: 0 0 10px 0;
-            color: #f3d272;
-            font-size: 14px;
-            letter-spacing: 1px;
+            color: #f9d67f;
+            font-size: 15px;
+            letter-spacing: 1.3px;
         }
 
         body.christmas-mode .admin-section h3 {
@@ -1473,27 +1644,53 @@
         .admin-field {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-bottom: 10px;
+            gap: 7px;
+            margin-bottom: 12px;
             font-size: 12px;
             color: #ddd;
         }
 
+        .admin-field span {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(245, 229, 201, 0.78);
+        }
+
         .admin-section p {
-            margin: 0 0 12px 0;
+            margin: 0 0 14px 0;
             font-size: 12px;
-            line-height: 1.45;
-            color: #b9bcc4;
+            line-height: 1.55;
+            color: rgba(218, 212, 222, 0.76);
         }
 
         .admin-field input,
         .admin-field select {
             font-family: 'Orbitron', sans-serif;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.24), rgba(255, 255, 255, 0.03));
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #f5f5f5;
-            padding: 9px 10px;
-            border-radius: 8px;
+            padding: 11px 12px;
+            border-radius: 12px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .admin-field input:focus,
+        .admin-field select:focus {
+            outline: none;
+            border-color: rgba(250, 212, 110, 0.55);
+            box-shadow:
+                0 0 0 2px rgba(250, 212, 110, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        body.christmas-mode .admin-field input:focus,
+        body.christmas-mode .admin-field select:focus {
+            border-color: rgba(148, 229, 255, 0.55);
+            box-shadow:
+                0 0 0 2px rgba(148, 229, 255, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
 
         .admin-field-grid {
@@ -1506,7 +1703,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
         .admin-actions button {
@@ -1517,8 +1714,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 14px;
-            margin-top: 4px;
+            gap: 16px;
+            margin-top: 2px;
+            padding: 14px 16px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .admin-footer-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .admin-footer .btn-primary {
@@ -1533,22 +1738,95 @@
 
         #adminStatus {
             min-height: 18px;
-            color: #f3d272;
+            color: #f7d57f;
             text-align: left;
+            font-weight: 700;
+            letter-spacing: 0.4px;
         }
 
         body.christmas-mode #adminStatus {
             color: #8fd8ff;
         }
 
-        @media (max-width: 980px) {
+        #adminCrashOverlay {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            width: min(520px, calc(100vw - 32px));
+            background: rgba(28, 6, 12, 0.94);
+            border: 1px solid rgba(255, 110, 140, 0.72);
+            border-radius: 14px;
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.42);
+            color: #ffe9ef;
+            padding: 14px 16px;
+            z-index: 10000;
+            display: none;
+            text-align: left;
+        }
+
+        #adminCrashOverlay.active {
+            display: block;
+        }
+
+        #adminCrashOverlayTitle {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffb8c8;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        #adminCrashOverlayBody {
+            font-size: 12px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #fff6f8;
+        }
+
+        @media (max-width: 1080px) {
             #adminModal {
-                width: min(96vw, 980px);
+                width: min(96vw, 1120px);
                 min-width: min(96vw, 760px);
+            }
+
+            .admin-header {
+                flex-direction: column;
+            }
+
+            .admin-header-status {
+                justify-content: flex-start;
+                max-width: none;
             }
 
             .admin-field-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 860px) {
+            #adminModal {
+                min-width: 0;
+                width: min(96vw, 1120px);
+                padding: 18px 16px 18px;
+            }
+
+            .admin-tabs {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .admin-footer .btn-primary {
+                width: 100%;
             }
         }
 
@@ -3600,8 +3878,8 @@
                         <span id="stPatricksEventBody" class="event-side-body">Triple shiny rates are live.</span>
                         <span id="stPatricksEventProgress" class="event-side-progress">Event Shinies: 0 / 60</span>
                         <span id="stPatricksEventSecret" class="event-side-secret">Legendary Unlock: Clover Burst</span>
-                        <span id="stPatricksEventRequirements" class="event-side-requirements">Req: 150 total shinies • 50 total goldens</span>
-                        <span id="stPatricksEventReward" class="event-side-reward">Rewards: Lucky Theme • Clover Burst</span>
+                        <span id="stPatricksEventRequirements" class="event-side-requirements">Req: 150 total shinies â€¢ 50 total goldens</span>
+                        <span id="stPatricksEventReward" class="event-side-reward">Rewards: Lucky Theme â€¢ Clover Burst</span>
                     </button>
 
                     <h1 id="gameTitle">&#x2694;&#xFE0F; Myths &amp; Steel &#x1F6E1;&#xFE0F;</h1>
@@ -3621,6 +3899,7 @@
                     <div class="menu-buttons-row">
                         <button id="startBtn" class="btn-primary" onclick="openModeSelectModal()">&#x25B6;&#xFE0F; START GAME</button>
                         <button id="persistentStatsBtn" class="btn-secondary">&#x1F3C6; RECORDS</button>
+                        <button id="adminBtn" class="btn-secondary" type="button">ADMIN</button>
                     </div>
                     
                     <br>
@@ -3631,17 +3910,46 @@
 
         <div id="releaseNotesModal" class="modal">
             <div class="release-notes-content">
-                <h2>WHAT'S NEW IN 0.94.5</h2>
-                <p class="release-notes-kicker">Release Notes</p>
-                <p class="release-notes-copy">0.94.5 makes the game feel sharper, stranger, and more alive with new progression hooks, stronger weapon identity, and a fuller event layer.</p>
-                <ul class="release-notes-list">
-                    <li>Added the Boss Codex / Encounter Log to Records.</li>
-                    <li>Added live announcements, the release notes popup, and a live player count in the main menu.</li>
-                    <li>Added the St. Patrick's event preview, Lucky Theme unlock, Clover Burst, and theme selector.</li>
-                    <li>Added weapon masteries at 5 stacks for Freeze Ray, Black Hole, Shuriken, Homing Missiles, and Accelerator.</li>
-                    <li>Reworked Freeze Ray, Black Hole, Laser Beam, Shuriken, Soul Reaver, and Hazmat-related combat polish.</li>
-                    <li>Expanded the admin panel and separated the admin build into its own save database.</li>
-                </ul>
+                <div class="release-notes-hero">
+                    <div class="release-notes-hero-copy">
+                        <p class="release-notes-kicker">Version 0.94.5</p>
+                        <h2>What's New</h2>
+                        <p class="release-notes-copy">This update pushes the game further into its current identity: more secrets to chase, better run tracking, stronger build fantasies, and a much richer event layer sitting on top of the chaos.</p>
+                    </div>
+                    <div class="release-notes-feature-grid">
+                        <div class="release-notes-feature-card">
+                            <span class="release-notes-feature-kicker">Records</span>
+                            <strong class="release-notes-feature-title">Boss Codex Expanded</strong>
+                            <p class="release-notes-feature-copy">The records screen now feels like a real archive, with an encounter log, stronger summaries, and more reasons to keep coming back.</p>
+                        </div>
+                        <div class="release-notes-feature-card">
+                            <span class="release-notes-feature-kicker">Event Ladder</span>
+                            <strong class="release-notes-feature-title">Lucky Theme to Mythic</strong>
+                            <p class="release-notes-feature-copy">The St. Patrick's event now has a fuller reward climb, from Lucky Theme into Clover Burst and up toward Death Gamble.</p>
+                        </div>
+                        <div class="release-notes-feature-card">
+                            <span class="release-notes-feature-kicker">Combat Feel</span>
+                            <strong class="release-notes-feature-title">Sharper Weapon Identity</strong>
+                            <p class="release-notes-feature-copy">Masteries, reworks, and hidden build interactions help runs feel less samey and much more distinct once they get rolling.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="release-notes-panel">
+                    <div class="release-notes-panel-label">Patch Highlights</div>
+                    <ul class="release-notes-list">
+                        <li>Added the Boss Codex / Encounter Log to Records.</li>
+                        <li>Added live announcements, the release notes popup, and a live player count in the main menu.</li>
+                        <li>Added the St. Patrick's event preview, Lucky Theme unlock, Clover Burst, and theme selector.</li>
+                        <li>Added weapon masteries at 5 stacks for Freeze Ray, Black Hole, Shuriken, Homing Missiles, and Accelerator.</li>
+                        <li>Reworked Freeze Ray, Black Hole, Laser Beam, Shuriken, Soul Reaver, and Hazmat-related combat polish.</li>
+                        <li>Expanded the admin panel and separated the admin build into its own save database.</li>
+                    </ul>
+                </div>
+                <div class="release-notes-footer">
+                    <span class="release-notes-footer-chip">Fresh Build</span>
+                    <span class="release-notes-footer-chip">More to Discover</span>
+                    <span class="release-notes-footer-copy">Thanks for sticking with the game while it keeps growing. There is still more weird stuff on the way.</span>
+                </div>
                 <button id="closeReleaseNotesBtn" class="btn-primary">JUMP IN</button>
             </div>
         </div>
@@ -3672,13 +3980,13 @@
                         <div id="stPatricksEventModalCloverFill" class="event-modal-progress-fill"></div>
                     </div>
                 </div>
-                <p id="stPatricksEventModalCloverCopy" class="event-modal-copy">Clover Burst joins your legendary level-up pool at 60 event shinies. Once you draft it, green-gold novas erupt from your body, stun enemies, and vacuum nearby XP.</p>
+                <p id="stPatricksEventModalCloverCopy" class="event-modal-copy">Clover Burst joins your legendary level-up pool at 60 event shinies. Once you draft it, layered green-gold novas erupt from your body, lock enemies down, pull in XP, and leave behind a lucky field that keeps chewing through the wave.</p>
                 <div id="stPatricksEventModalMythicWrap" class="event-modal-progress-wrap">
                     <div class="event-modal-progress-head">
                         <div class="event-modal-progress-label">Secret Mythic Progress</div>
                         <div id="stPatricksEventModalMythicState" class="event-modal-progress-state">Locked</div>
                     </div>
-                    <div id="stPatricksEventModalMythic" class="event-modal-progress">Death Gamble: 0 / 150 shinies • 0 / 50 goldens</div>
+                    <div id="stPatricksEventModalMythic" class="event-modal-progress">Death Gamble: 0 / 150 shinies â€¢ 0 / 50 goldens</div>
                     <div class="event-modal-meter-list">
                         <div class="event-modal-meter-row">
                             <div class="event-modal-meter-meta">
@@ -3708,7 +4016,7 @@
                     <li>Hidden mythic requirement: 150 total shinies and 50 total golden kills unlock Death Gamble.</li>
                     <li>Death Gamble lets you press G to open a white domain and roll a 1-in-7 jackpot every 5 kills.</li>
                     <li>This event is still being expanded, so more polish and extras may arrive before full rollout.</li>
-                    <li>Event window: March 20 through April 3.</li>
+                    <li>The event is temporarily back for now.</li>
                 </ul>
                 <button id="closeStPatricksEventBtn" class="btn-primary">CLOSE</button>
             </div>
@@ -3768,10 +4076,34 @@
                     HARDCORE HIGH SCORE
                     <span id="recordHardcoreScore" style="font-size: 20px; display:block;">0</span>
                 </div>
+                <div class="record-item" style="margin-top: 18px;">
+                    HIGHEST LEVEL REACHED
+                    <span id="recordHighestLevel" class="record-value">0</span>
+                </div>
+                <div class="record-item" style="margin-top:0; font-size: 16px; color: #aaa;">
+                    BEST COMBO
+                    <span id="recordBestCombo" style="font-size: 20px; display:block;">0</span>
+                </div>
+                <div class="record-item" style="margin-top: 18px;">
+                    MOST SHINIES IN ONE RUN
+                    <span id="recordMostShiniesRun" class="record-value">0</span>
+                </div>
+                <div class="record-item" style="margin-top:0; font-size: 16px; color: #aaa;">
+                    MOST BOSSES IN ONE RUN
+                    <span id="recordMostBossesRun" style="font-size: 20px; display:block;">0</span>
+                </div>
+                <div class="record-item" style="margin-top: 18px;">
+                    BEST JACKPOT STREAK
+                    <span id="recordBestJackpotStreak" class="record-value">0</span>
+                </div>
+                <div class="record-item" style="margin-top:0; font-size: 16px; color: #aaa;">
+                    WIDEST LOADOUT
+                    <span id="recordMaxWeaponLoadout" style="font-size: 20px; display:block;">0</span>
+                </div>
             </div>
 
             <div id="recordsPanelAchievements" class="records-panel">
-<div id="achievementsSummary" style="text-align:center; font-size: 13px; color: #aaa; margin-bottom: 10px;">Unlocked 0/15</div>
+<div id="achievementsSummary" style="text-align:center; font-size: 13px; color: #aaa; margin-bottom: 10px;">Unlocked 0/20</div>
                 <div id="achievementsList" class="achievements-list"></div>
             </div>
 
@@ -3904,11 +4236,214 @@
                     </label>
                 </div>
 
-                <p id="performanceStatusNote" class="performance-note performance-status-note">Runtime status: Full Fidelity • 60 FPS</p>
+                <p id="performanceStatusNote" class="performance-note performance-status-note">Runtime status: Full Fidelity â€¢ 60 FPS</p>
                 <p class="performance-note">Auto Optimize only trims visuals and HUD refresh frequency when the game gets stressed. It never changes damage, movement, spawn rates, timers, or any other gameplay behavior.</p>
             </div>
 
             <button id="closeOptionsBtn" class="btn-primary" style="font-size: 14px; padding: 10px 20px;">CLOSE</button>
+        </div>
+
+        <div id="adminModal" class="modal">
+            <div class="admin-shell">
+                <div class="admin-header">
+                    <div>
+                        <div class="admin-header-kicker">Live Tuning Deck</div>
+                        <h2>Control Room</h2>
+                        <p class="admin-header-copy">This is the fast lane for testing encounters, builds, and player states without replaying whole runs. Everything here hits the current run immediately, so you can set up chaos or surgical test cases in a few clicks.</p>
+                    </div>
+                    <div class="admin-header-status">
+                        <span class="admin-chip">Mode <strong>Admin</strong></span>
+                        <span class="admin-chip">Hotkey <strong>F1</strong></span>
+                        <span class="admin-chip">Scope <strong>Live Run</strong></span>
+                    </div>
+                </div>
+                <div class="admin-tabs" role="tablist" aria-label="Admin Tabs">
+                    <button class="admin-tab active" data-admin-tab="adminPanelEncounter" type="button">ENCOUNTER</button>
+                    <button class="admin-tab" data-admin-tab="adminPanelBuild" type="button">STACKS</button>
+                    <button class="admin-tab" data-admin-tab="adminPanelPlayer" type="button">PLAYER</button>
+                </div>
+
+                <div class="admin-content">
+                    <div id="adminPanelEncounter" class="admin-panel active">
+                        <div class="admin-grid">
+                            <div class="admin-section">
+                                <h3>SPAWN CONTROL</h3>
+                                <p>Drop in specific enemies or bosses fast, then clear the field when you want a clean test state.</p>
+                                <label class="admin-field">
+                                    <span>Unit Type</span>
+                                    <select id="adminSpawnType"></select>
+                                </label>
+                                <div class="admin-field-grid">
+                                    <label class="admin-field">
+                                        <span>Amount</span>
+                                        <input id="adminSpawnCount" type="number" min="1" max="25" step="1" value="1">
+                                    </label>
+                                </div>
+                                <div class="admin-actions">
+                                    <button id="adminSpawnBtn" class="btn-primary" type="button">SPAWN</button>
+                                    <button id="adminSpawnSelectedBossBtn" class="btn-secondary" type="button">SPAWN SELECTED BOSS</button>
+                                    <button id="adminClearEnemiesBtn" class="btn-secondary" type="button">CLEAR ENEMIES</button>
+                                    <button id="adminClearBossesBtn" class="btn-secondary" type="button">CLEAR BOSSES</button>
+                                </div>
+                            </div>
+
+                            <div class="admin-section">
+                                <h3>WAVE CONTROL</h3>
+                                <p>Jump the run forward, force a boss now, or skip straight to the final room for boss and cutscene checks.</p>
+                                <label class="admin-field">
+                                    <span>Target Wave</span>
+                                    <input id="adminWaveInput" type="number" min="1" step="1" value="1">
+                                </label>
+                                <label class="admin-field">
+                                    <span>Game Time (Seconds)</span>
+                                    <input id="adminGameTimeInput" type="number" min="0" step="1" value="0">
+                                </label>
+                                <div class="admin-actions">
+                                    <button id="adminSetWaveBtn" class="btn-primary" type="button">SET WAVE</button>
+                                    <button id="adminSetGameTimeBtn" class="btn-secondary" type="button">SET GAME TIME</button>
+                                    <button id="adminSpawnBossBtn" class="btn-secondary" type="button">SPAWN BOSS NOW</button>
+                                    <button id="adminTeleportRoadStartBtn" class="btn-secondary" type="button">TELEPORT TO ROAD START</button>
+                                    <button id="adminTeleportBossRoomBtn" class="btn-secondary" type="button">TELEPORT TO BOSS ROOM</button>
+                                </div>
+                            </div>
+
+                            <div class="admin-section">
+                                <h3>BOSS TOOLS</h3>
+                                <p>Jump straight into phases, cutscenes, and cleanup states without replaying whole runs.</p>
+                                <label class="admin-field">
+                                    <span>Cutscene Trigger</span>
+                                    <select id="adminCutsceneSelect">
+                                        <option value="realityShift">Reality Shift</option>
+                                        <option value="celestialIntro">Celestial Intro</option>
+                                        <option value="celestialPhaseTwo">Celestial Phase 2</option>
+                                        <option value="celestialCard">Celestial Card Clash</option>
+                                        <option value="celestialDeath">Celestial Death</option>
+                                    </select>
+                                </label>
+                                <div class="admin-actions">
+                                    <button id="adminKillBossBtn" class="btn-primary" type="button">KILL BOSS</button>
+                                    <button id="adminForcePhaseTwoBtn" class="btn-secondary" type="button">FORCE PHASE 2</button>
+                                    <button id="adminReplayEntranceBtn" class="btn-secondary" type="button">REPLAY ENTRANCE</button>
+                                    <button id="adminTriggerCutsceneBtn" class="btn-secondary" type="button">TRIGGER CUTSCENE</button>
+                                    <button id="adminFreezeEnemiesBtn" class="btn-secondary" type="button">PAUSE HOSTILES: OFF</button>
+                                    <button id="adminClearParticlesBtn" class="btn-secondary" type="button">CLEAR PARTICLES</button>
+                                    <button id="adminClearProjectilesBtn" class="btn-secondary" type="button">CLEAR PROJECTILES</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="adminPanelBuild" class="admin-panel">
+                        <div class="admin-grid">
+                            <div class="admin-section">
+                                <h3>STACK EDITOR</h3>
+                                <p>Adjust weapon copies and progression-style stack values without digging through the whole player stat list.</p>
+                                <label class="admin-field">
+                                    <span>Target</span>
+                                    <select id="adminStackTarget"></select>
+                                </label>
+                                <label class="admin-field">
+                                    <span>Stacks</span>
+                                    <input id="adminStackValue" type="number" min="0" step="1" value="1">
+                                </label>
+                                <div class="admin-actions">
+                                    <button id="adminApplyStackBtn" class="btn-primary" type="button">APPLY STACKS</button>
+                                </div>
+                            </div>
+                            <div class="admin-section">
+                                <h3>BUILD TOOLS</h3>
+                                <p>Instantly assemble overloaded test kits and progression states.</p>
+                                <div class="admin-actions">
+                                    <button id="adminGiveAllWeaponsBtn" class="btn-primary" type="button">GIVE ALL WEAPONS</button>
+                                    <button id="adminMaxAllStacksBtn" class="btn-secondary" type="button">MAX ALL STACKS</button>
+                                    <button id="adminUnlockAllAchievementsBtn" class="btn-secondary" type="button">UNLOCK ALL ACHIEVEMENTS</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="adminPanelPlayer" class="admin-panel">
+                        <div class="admin-grid">
+                            <div class="admin-section">
+                                <h3>PLAYER STATS</h3>
+                                <p>Edit core run stats directly. These values apply immediately, so this is the fastest place to set up a custom test state.</p>
+                                <div class="admin-field-grid">
+                                    <label class="admin-field">
+                                        <span>Health</span>
+                                        <input id="adminHealthInput" type="number" step="1" min="0">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Max Health</span>
+                                        <input id="adminMaxHealthInput" type="number" step="1" min="1">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Level</span>
+                                        <input id="adminLevelInput" type="number" step="1" min="1">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>EXP</span>
+                                        <input id="adminExpInput" type="number" step="1" min="0">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>EXP To Next</span>
+                                        <input id="adminExpToNextInput" type="number" step="1" min="1">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Base Damage</span>
+                                        <input id="adminBaseDamageInput" type="number" step="1" min="0">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Base Speed</span>
+                                        <input id="adminBaseSpeedInput" type="number" step="0.1" min="0.1">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Base Crit %</span>
+                                        <input id="adminBaseCritInput" type="number" step="1" min="0" max="75">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>EXP Gain %</span>
+                                        <input id="adminExpGainInput" type="number" step="1" min="0">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Heal Rate</span>
+                                        <input id="adminHealRateInput" type="number" step="0.1" min="0">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Lifesteal %</span>
+                                        <input id="adminVampirismInput" type="number" step="0.1" min="0">
+                                    </label>
+                                    <label class="admin-field">
+                                        <span>Shield Stacks</span>
+                                        <input id="adminShieldInput" type="number" step="1" min="0">
+                                    </label>
+                                </div>
+                                <div class="admin-actions">
+                                    <button id="adminApplyStatsBtn" class="btn-primary" type="button">APPLY STATS</button>
+                                </div>
+                            </div>
+                            <div class="admin-section">
+                                <h3>PLAYER TOOLS</h3>
+                                <p>Quick toggles for healing, survival, screenshots, and repeated attack-pattern testing.</p>
+                                <div class="admin-actions">
+                                    <button id="adminFullHealBtn" class="btn-primary" type="button">FULL HEAL</button>
+                                    <button id="adminToggleInvincibilityBtn" class="btn-secondary" type="button">INVINCIBILITY: OFF</button>
+                                    <button id="adminTogglePlayerFireBtn" class="btn-secondary" type="button">PLAYER FIRE: ON</button>
+                                    <button id="adminResetCooldownsBtn" class="btn-secondary" type="button">RESET COOLDOWNS</button>
+                                    <button id="adminToggleHudBtn" class="btn-secondary" type="button">HUD: ON</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-footer">
+                    <div class="admin-footer-copy">
+                        <div id="adminStatus">Admin controls ready.</div>
+                        <p class="admin-note">This file is admin-only. Changes apply immediately to the current run state.</p>
+                    </div>
+                    <button id="closeAdminBtn" class="btn-primary" style="font-size: 14px; padding: 10px 20px;">CLOSE</button>
+                </div>
+            </div>
         </div>
 <div id="levelUpModal" class="modal">
             <h2>LEVEL UP!</h2>
@@ -3917,35 +4452,51 @@
         </div>
 
         <div id="statsModal" class="modal">
-            <h2>GAME STATS</h2>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-title">DAMAGE</div>
-                    <div class="stat-value" id="statDamage">10</div>
+            <div class="stats-modal-shell">
+                <div class="stats-modal-hero">
+                    <div>
+                        <div class="stats-modal-kicker">Live Combat Readout</div>
+                        <h2>Game Stats</h2>
+                        <p class="stats-modal-copy">A cleaner breakdown of your run's current combat profile. Use this to read how hard the build is hitting, how fast it is cycling, and how much sustain it has at a glance.</p>
+                    </div>
+                    <div class="stats-modal-chip-row">
+                        <span class="stats-modal-chip">Live</span>
+                        <span class="stats-modal-chip">Combat</span>
+                        <span class="stats-modal-chip">Build</span>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-title">FIRE RATE</div>
-                    <div class="stat-value" id="statFireRate">100%</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-title">Damage</div>
+                        <div class="stat-value" id="statDamage">10</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-title">Fire Rate</div>
+                        <div class="stat-value" id="statFireRate">100%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-title">Crit Chance</div>
+                        <div class="stat-value" id="statCritChance">10%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-title">EXP Gain</div>
+                        <div class="stat-value" id="statExpGain">100%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-title">XP Range</div>
+                        <div class="stat-value" id="statXpRange">100px</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-title">Heal Rate</div>
+                        <div class="stat-value" id="statHealRate">0%</div>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-title">CRIT CHANCE</div>
-                    <div class="stat-value" id="statCritChance">10%</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-title">EXP GAIN</div>
-                    <div class="stat-value" id="statExpGain">100%</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-title">XP RANGE</div>
-                    <div class="stat-value" id="statXpRange">100px</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-title">HEAL RATE</div>
-                    <div class="stat-value" id="statHealRate">0%</div>
-                </div>
+                <div class="stats-modal-note">These values update off your current run state, so if a temporary effect or mythic buff kicks in, you should see that reflected here while the fight is still happening.</div>
+                <button id="closeStatsBtn" class="btn-primary stats-modal-close">CLOSE</button>
             </div>
-            <button id="closeStatsBtn" class="btn-primary" style="margin-top: 20px;">CLOSE</button>
         </div>
+
+
 
         <div id="pauseMenuModal" class="modal">
             <div class="pause-menu-shell">
@@ -4168,6 +4719,10 @@
                 <button id="restartBtn" class="btn-primary">PLAY AGAIN</button>
             </div>
         </div>
+        <div id="adminCrashOverlay" role="alert" aria-live="assertive">
+            <div id="adminCrashOverlayTitle">Admin Runtime Error</div>
+            <div id="adminCrashOverlayBody"></div>
+        </div>
         </div>
     </div>
 
@@ -4184,6 +4739,24 @@
         function debugLog(...args) {
             if (DEBUG_RELEASE_LOGS) window.console.log(...args);
         }
+
+        function showAdminRuntimeError(source, error) {
+            const overlay = document.getElementById('adminCrashOverlay');
+            const body = document.getElementById('adminCrashOverlayBody');
+            if (!overlay || !body) return;
+            const message = error && error.message ? error.message : String(error || 'Unknown error');
+            const stack = error && error.stack ? String(error.stack).split('\n').slice(0, 6).join('\n') : '';
+            body.textContent = `${source}\n${message}${stack ? `\n\n${stack}` : ''}`;
+            overlay.classList.add('active');
+        }
+
+        window.addEventListener('error', (event) => {
+            showAdminRuntimeError('window.onerror', event.error || event.message || 'Unknown error');
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            showAdminRuntimeError('unhandledrejection', event.reason || 'Unknown promise rejection');
+        });
 
         // Initialize IndexedDB
         async function initDB() {
@@ -4356,18 +4929,27 @@
         const DEATH_GAMBLE_JACKPOT_COOLDOWN_STEP_MS = 15 * 1000;
         const DEATH_GAMBLE_JACKPOT_COOLDOWN_MIN_MS = 10 * 1000;
         const ST_PATRICK_EVENT_START_MS = Date.parse('2026-03-20T00:00:00Z');
-        const ST_PATRICK_EVENT_END_MS = Date.parse('2026-04-03T00:00:00Z');
+        const ST_PATRICK_EVENT_END_MS = Date.parse('2026-06-01T00:00:00Z');
         const ST_PATRICK_SHINY_MULTIPLIER = 3;
         const LUCKY_THEME_EVENT_SHINY_REQ = 35;
         const CLOVER_BURST_EVENT_SHINY_REQ = 60;
         const CLOVER_BURST_BASE_KILL_INTERVAL = 40;
         const CLOVER_BURST_STACK_INTERVAL_REDUCTION = 2;
         const CLOVER_BURST_MIN_KILL_INTERVAL = 20;
-        const CLOVER_BURST_BASE_DAMAGE = 45;
-        const CLOVER_BURST_DAMAGE_PER_STACK = 5;
-        const CLOVER_BURST_BASE_RADIUS = 244;
-        const CLOVER_BURST_STUN_MS = 1400;
-        const CLOVER_BURST_VFX_DURATION_MS = 820;
+        const CLOVER_BURST_BASE_DAMAGE = 50;
+        const CLOVER_BURST_DAMAGE_PER_STACK = 6;
+        const CLOVER_BURST_BASE_RADIUS = 258;
+        const CLOVER_BURST_STUN_MS = 1500;
+        const CLOVER_BURST_VFX_DURATION_MS = 900;
+        const CLOVER_BURST_FOLLOWUP_DELAY_MS = 180;
+        const CLOVER_BURST_FOLLOWUP_DAMAGE_MULT = 0.7;
+        const CLOVER_BURST_LINGER_DURATION_MS = 1900;
+        const CLOVER_BURST_LINGER_TICK_MS = 180;
+        const CLOVER_BURST_LINGER_DAMAGE_MULT = 0.2;
+        const CLOVER_BURST_SURGE_DURATION_MS = 4500;
+        const CLOVER_BURST_SURGE_SPEED_BONUS = 0.18;
+        const CLOVER_BURST_SURGE_CRIT_BONUS = 0.08;
+        const CLOVER_BURST_SURGE_XP_RANGE_BONUS = 36;
 
                 async function loadTheme() {
             const result = await loadData('settings', 'theme');
@@ -4664,30 +5246,30 @@
                     ? `${remainingClover} more ${remainingClover === 1 ? 'event shiny' : 'event shinies'} until Clover Burst enters the legendary pool.`
                     : 'Lucky Theme and Clover Burst are secured. The secret mythic still waits beyond the shiny rush.';
             progressEl.textContent = cloverUnlocked
-                ? `Event Shinies: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} • COMPLETE`
+                ? `Event Shinies: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} â€¢ COMPLETE`
                 : `Event Shinies: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ}`;
             secretEl.textContent = cloverUnlocked
                 ? 'Legendary Unlock: Clover Burst ready. Draft it from a legendary level-up to unleash green-gold novas.'
                 : 'Legendary Unlock: Clover Burst. Green-gold novas erupt from your body, stun enemies, and vacuum nearby XP.';
             requirementsEl.textContent = mythicUnlocked
-                ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens • READY`
-                : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
+                ? `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens â€¢ READY`
+                : `Req: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             rewardEl.textContent = cloverUnlocked
-                ? 'Rewards: Lucky Theme • Clover Burst • Death Gamble'
+                ? 'Rewards: Lucky Theme â€¢ Clover Burst â€¢ Death Gamble'
                 : luckyUnlocked
-                    ? 'Rewards: Lucky Theme secured • Clover Burst next'
-                    : 'Rewards: Lucky Theme • Clover Burst';
+                    ? 'Rewards: Lucky Theme secured â€¢ Clover Burst next'
+                    : 'Rewards: Lucky Theme â€¢ Clover Burst';
             modalIntro.textContent = cloverUnlocked
                 ? 'The event reward ladder is fully active now: the premium Lucky Theme is yours, Clover Burst is unlocked, and the secret mythic is still waiting above it.'
                 : 'The St. Patrick\'s event is live in the game right now. Shiny rates are tripled, and the reward ladder now climbs from Lucky Theme into Clover Burst before the hidden mythic.';
             modalProgress.textContent = luckyUnlocked
-                ? `Lucky Theme: ${kills} / ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies • Reward unlocked`
+                ? `Lucky Theme: ${kills} / ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies â€¢ Reward unlocked`
                 : `Lucky Theme: ${kills} / ${LUCKY_THEME_EVENT_SHINY_REQ} event shinies`;
             modalProgressState.textContent = luckyUnlocked ? 'Complete' : 'Live';
             modalProgressWrap.classList.toggle('complete', luckyUnlocked);
             modalProgressFill.style.width = `${(luckyRatio * 100).toFixed(1)}%`;
             modalClover.textContent = cloverUnlocked
-                ? `Clover Burst: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} event shinies • Unlocked`
+                ? `Clover Burst: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} event shinies â€¢ Unlocked`
                 : `Clover Burst: ${kills} / ${CLOVER_BURST_EVENT_SHINY_REQ} event shinies`;
             modalCloverState.textContent = cloverUnlocked ? 'Unlocked' : 'Locked';
             modalCloverWrap.classList.toggle('complete', cloverUnlocked);
@@ -4696,8 +5278,8 @@
                 ? 'Clover Burst is now in your legendary level-up pool. Once drafted, it erupts from your body, stuns everything it catches, and hoovers up XP in a huge radius.'
                 : 'Reach 60 event shinies to unlock Clover Burst. After that, it can appear as a legendary upgrade and fire green-gold novas every few kills.';
             modalMythic.textContent = mythicUnlocked
-                ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens • UNLOCKED`
-                : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies • ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
+                ? `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens â€¢ UNLOCKED`
+                : `Death Gamble: ${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ} shinies â€¢ ${goldenKills} / ${SECRET_MYTHIC_GOLDEN_REQ} goldens`;
             modalMythicState.textContent = mythicUnlocked ? 'Unlocked' : 'Locked';
             modalMythicWrap.classList.toggle('complete', mythicUnlocked);
             modalMythicShinyValue.textContent = `${shinyKills} / ${SECRET_MYTHIC_SHINY_REQ}`;
@@ -5081,8 +5663,8 @@
 
         function getPerformanceStatusText() {
             const fps = Math.max(1, Math.round(performanceRuntime.fps || 60));
-            if (!performanceSettings.autoOptimize) return `Runtime status: Manual Visuals • ${fps} FPS`;
-            return `Runtime status: ${getPerformanceProfile().label} • ${fps} FPS`;
+            if (!performanceSettings.autoOptimize) return `Runtime status: Manual Visuals â€¢ ${fps} FPS`;
+            return `Runtime status: ${getPerformanceProfile().label} â€¢ ${fps} FPS`;
         }
 
         function markPerformanceUiDirty() {
@@ -5367,6 +5949,13 @@
             shinyEncounters: 0,
             shinyKills: 0,
             eventShinyKills: 0,
+            totalBossKills: 0,
+            highestLevelReached: 1,
+            bestCombo: 0,
+            mostShiniesInRun: 0,
+            mostBossKillsInRun: 0,
+            bestJackpotStreak: 0,
+            maxWeaponLoadout: 1,
             luckyThemeUnlocked: false,
             cloverBurstUnlocked: false,
             secretMythicUnlocked: false,
@@ -5388,7 +5977,12 @@
             { id: 'into_the_endless', name: 'Into the Endless', desc: 'Enter Endless Mode.', icon: 'END' },
             { id: 'soul_survivor', name: 'Soul Survivor', desc: 'Defeat Soul Reaver.', icon: 'SOUL' },
             { id: 'hardcore_heart', name: 'Hardcore Heart', desc: 'Reach Wave 10 in Hardcore.', icon: 'HARD' },
-            { id: 'untouchable', name: 'Untouchable', desc: 'Defeat a boss without taking damage during the fight.', icon: 'NOHT' }
+            { id: 'untouchable', name: 'Untouchable', desc: 'Defeat a boss without taking damage during the fight.', icon: 'NOHT' },
+            { id: 'combo_constellation', name: 'Combo Constellation', desc: 'Reach a combo of 50 in one run.', icon: 'CMB' },
+            { id: 'the_arsenal_opens', name: 'The Arsenal Opens', desc: 'Hold 8 different weapons in one run.', icon: 'ARSN' },
+            { id: 'stage_breaker', name: 'Stage Breaker', desc: 'Defeat 4 bosses in one run.', icon: 'BOSS' },
+            { id: 'luck_begets_luck', name: 'Luck Begets Luck', desc: 'Chain 2 Death Gamble jackpots in a row.', icon: '777' },
+            { id: 'glitterstorm', name: 'Glitterstorm', desc: 'Defeat 12 shiny enemies in one run.', icon: 'GLTR' }
         ];
 
         const bossCodexDefs = [
@@ -5500,6 +6094,13 @@
             if (typeof userStats.shinyEncounters !== 'number') userStats.shinyEncounters = 0;
             if (typeof userStats.shinyKills !== 'number') userStats.shinyKills = 0;
             if (typeof userStats.eventShinyKills !== 'number') userStats.eventShinyKills = 0;
+            if (typeof userStats.totalBossKills !== 'number') userStats.totalBossKills = 0;
+            if (typeof userStats.highestLevelReached !== 'number') userStats.highestLevelReached = 1;
+            if (typeof userStats.bestCombo !== 'number') userStats.bestCombo = 0;
+            if (typeof userStats.mostShiniesInRun !== 'number') userStats.mostShiniesInRun = 0;
+            if (typeof userStats.mostBossKillsInRun !== 'number') userStats.mostBossKillsInRun = 0;
+            if (typeof userStats.bestJackpotStreak !== 'number') userStats.bestJackpotStreak = 0;
+            if (typeof userStats.maxWeaponLoadout !== 'number') userStats.maxWeaponLoadout = 1;
             if (typeof userStats.luckyThemeUnlocked !== 'boolean') userStats.luckyThemeUnlocked = false;
             if (typeof userStats.cloverBurstUnlocked !== 'boolean') userStats.cloverBurstUnlocked = false;
             if (typeof userStats.secretMythicUnlocked !== 'boolean') userStats.secretMythicUnlocked = false;
@@ -5593,27 +6194,8 @@
             }
             if (s >= 5) unlockAchievement('light_the_sky');
         }
+        function syncMilestoneAchievements() { let unlockedAny = false; if ((userStats.goldTitanBossKills || 0) >= 3 && (userStats.goldenKills || 0) >= 65) { unlockAchievement('gold_rush'); unlockedAny = true; } if ((userStats.shinyEncounters || 0) >= 1) { unlockAchievement('thats_shiny'); unlockedAny = true; } if ((userStats.shinyKills || 0) >= 50) { unlockAchievement('shiny_hunter'); unlockedAny = true; } if ((userStats.hardcoreHighestWave || 0) >= 10) { unlockAchievement('hardcore_heart'); unlockedAny = true; } if ((userStats.bestCombo || 0) >= 50) { unlockAchievement('combo_constellation'); unlockedAny = true; } if ((userStats.maxWeaponLoadout || 0) >= 8) { unlockAchievement('the_arsenal_opens'); unlockedAny = true; } if ((userStats.mostBossKillsInRun || 0) >= 4) { unlockAchievement('stage_breaker'); unlockedAny = true; } if ((userStats.bestJackpotStreak || 0) >= 2) { unlockAchievement('luck_begets_luck'); unlockedAny = true; } if ((userStats.mostShiniesInRun || 0) >= 12) { unlockAchievement('glitterstorm'); unlockedAny = true; } return unlockedAny; } 
 
-        function syncMilestoneAchievements() {
-            let unlockedAny = false;
-            if ((userStats.goldTitanBossKills || 0) >= 3 && (userStats.goldenKills || 0) >= 65) {
-                unlockAchievement('gold_rush');
-                unlockedAny = true;
-            }
-            if ((userStats.shinyEncounters || 0) >= 1) {
-                unlockAchievement('thats_shiny');
-                unlockedAny = true;
-            }
-            if ((userStats.shinyKills || 0) >= 50) {
-                unlockAchievement('shiny_hunter');
-                unlockedAny = true;
-            }
-            if ((userStats.hardcoreHighestWave || 0) >= 10) {
-                unlockAchievement('hardcore_heart');
-                unlockedAny = true;
-            }
-            return unlockedAny;
-        }
 
         function updateBossFightAchievementTracker() {
             const bossFightActive = bosses.length > 0 && !bossCutscene.active && !finalVictorySequence.active;
@@ -5634,52 +6216,8 @@
             }
             bossFightTrackedHealth = player.health;
         }
+        function onBossKilled(boss, cause) { normalizeUserStats(); if (!boss || typeof boss !== 'object') return; let updatedStats = false; const remainingBosses = bosses.filter((entry) => entry && entry !== boss); if (boss.bossType) { if (!userStats.bossCodex[boss.bossType]) userStats.bossCodex[boss.bossType] = { seen: false, kills: 0 }; userStats.bossCodex[boss.bossType].seen = true; userStats.bossCodex[boss.bossType].kills = (userStats.bossCodex[boss.bossType].kills || 0) + 1; userStats.totalBossKills = (userStats.totalBossKills || 0) + 1; updatedStats = true; } runStats.bossesDefeated = (runStats.bossesDefeated || 0) + 1; updateRunReplayMilestones(); if (boss.bossType === 'dragon') { userStats.dragonBossKills = (userStats.dragonBossKills || 0) + 1; if (userStats.dragonBossKills >= 5) { unlockAchievement('dragon_slayer'); } else { persistUserStatsNow(); renderAchievements(); } } if (boss.bossType === 'goldTitan') { userStats.goldTitanBossKills = (userStats.goldTitanBossKills || 0) + 1; updatedStats = true; } if (boss.bossType === 'soulReaver') { unlockAchievement('soul_survivor'); } if (!remainingBosses.length && bossFightNoHitActive && bossFightNoHitEligible) { unlockAchievement('untouchable'); } if (cause === 'blackHole') { unlockAchievement('master_void'); } if (updatedStats) { const milestoneUnlocked = syncMilestoneAchievements(); const secretUnlocked = syncSecretMythicUnlock(); if (!milestoneUnlocked && !secretUnlocked) { persistUserStatsNow(); renderAchievements(); } } } 
 
-        function onBossKilled(boss, cause) {
-            normalizeUserStats();
-            if (!boss || typeof boss !== 'object') return;
-            let updatedStats = false;
-            const remainingBosses = bosses.filter((entry) => entry && entry !== boss);
-
-            if (boss.bossType) {
-                if (!userStats.bossCodex[boss.bossType]) userStats.bossCodex[boss.bossType] = { seen: false, kills: 0 };
-                userStats.bossCodex[boss.bossType].seen = true;
-                userStats.bossCodex[boss.bossType].kills = (userStats.bossCodex[boss.bossType].kills || 0) + 1;
-                updatedStats = true;
-            }
-
-            if (boss.bossType === 'dragon') {
-                userStats.dragonBossKills = (userStats.dragonBossKills || 0) + 1;
-                if (userStats.dragonBossKills >= 5) {
-                    unlockAchievement('dragon_slayer');
-                } else {
-                    persistUserStatsNow();
-                    renderAchievements();
-                }
-            }
-            if (boss.bossType === 'goldTitan') {
-                userStats.goldTitanBossKills = (userStats.goldTitanBossKills || 0) + 1;
-                updatedStats = true;
-            }
-            if (boss.bossType === 'soulReaver') {
-                unlockAchievement('soul_survivor');
-            }
-            if (!remainingBosses.length && bossFightNoHitActive && bossFightNoHitEligible) {
-                unlockAchievement('untouchable');
-            }
-
-            if (cause === 'blackHole') {
-                unlockAchievement('master_void');
-            }
-            if (updatedStats) {
-                const milestoneUnlocked = syncMilestoneAchievements();
-                const secretUnlocked = syncSecretMythicUnlock();
-                if (!milestoneUnlocked && !secretUnlocked) {
-                    persistUserStatsNow();
-                    renderAchievements();
-                }
-            }
-        }
 
         function renderAchievements() {
             const listEl = document.getElementById('achievementsList');
@@ -5933,7 +6471,6 @@
                 mobilePauseBtn.textContent = active ? 'PLAY' : 'PAUSE';
             }
         }
-
         function getPauseMenuFieldStatus() {
             const boss = bosses[0];
             const healthPct = player.maxHealth > 0 ? Math.round((player.health / player.maxHealth) * 100) : 0;
@@ -5950,32 +6487,17 @@
                 : `The arena is between spikes right now. ${enemies.length} enemies remain and the next boss trigger is ready.`;
         }
 
+
         function getPauseMenuWeaponSummary() {
             const ownedWeapons = Object.entries(player.weapons || {}).filter(([, count]) => Number(count) > 0);
             if (!ownedWeapons.length) return 'Starter loadout only.';
             return ownedWeapons
                 .sort((a, b) => Number(b[1]) - Number(a[1]))
                 .map(([name, count]) => `${name} x${count}`)
-                .join(' • ');
+                .join(' â€¢ ');
         }
+        function getPauseMenuAbilitySummary() { const states = []; if (player.blackHole) states.push(`Black Hole x${player.blackHole}`); if (player.fuga) states.push(`Fuga x${player.fuga}`); if (player.cloverBurst) states.push(`Clover Burst x${player.cloverBurst} - ${cloverBurstState.killsSinceNova || 0}/${getCloverBurstKillInterval() || CLOVER_BURST_BASE_KILL_INTERVAL} kills`); if (player.cloverBurst && Date.now() < (cloverBurstState.surgeUntil || 0)) states.push(`Clover Surge ${formatBuffCountdown(Math.max(0, (cloverBurstState.surgeUntil - Date.now()) / 1000))}`); if (player.deathGamble) { if (isDeathGambleJackpotActive()) states.push('Death Gamble: Jackpot Live'); else if (deathGambleState.active) states.push('Death Gamble: Domain Open'); else if (isDeathGambleOnCooldown()) states.push(`Death Gamble: Cooldown ${formatBuffCountdown(Math.max(0, (deathGambleState.cooldownUntil - Date.now()) / 1000))}`); else states.push('Death Gamble: Ready'); } if (bloodMoonActive) states.push('Blood Moon Active'); else if (player.bloodMoon) states.push('Blood Moon Primed'); if (soulHarvestActive) states.push('Soul Harvest Active'); else if (player.soulHarvest) states.push(`Soul Harvest x${player.soulHarvest}`); return states.length ? states.join(' - ') : 'No special abilities are active right now.'; } 
 
-        function getPauseMenuAbilitySummary() {
-            const states = [];
-            if (player.blackHole) states.push(`Black Hole x${player.blackHole}`);
-            if (player.fuga) states.push(`Fuga x${player.fuga}`);
-            if (player.cloverBurst) states.push(`Clover Burst x${player.cloverBurst} • ${cloverBurstState.killsSinceNova || 0}/${getCloverBurstKillInterval() || CLOVER_BURST_BASE_KILL_INTERVAL} kills`);
-            if (player.deathGamble) {
-                if (isDeathGambleJackpotActive()) states.push('Death Gamble: Jackpot Live');
-                else if (deathGambleState.active) states.push('Death Gamble: Domain Open');
-                else if (isDeathGambleOnCooldown()) states.push(`Death Gamble: Cooldown ${formatBuffCountdown(Math.max(0, (deathGambleState.cooldownUntil - Date.now()) / 1000))}`);
-                else states.push('Death Gamble: Ready');
-            }
-            if (bloodMoonActive) states.push('Blood Moon Active');
-            else if (player.bloodMoon) states.push('Blood Moon Primed');
-            if (soulHarvestActive) states.push('Soul Harvest Active');
-            else if (player.soulHarvest) states.push(`Soul Harvest x${player.soulHarvest}`);
-            return states.length ? states.join(' • ') : 'No special abilities are active right now.';
-        }
 
         function updatePauseMenuUI() {
             const snapshotCopy = document.getElementById('pauseMenuSnapshotCopy');
@@ -6141,6 +6663,12 @@
                 if (currentGameMode === 'hardcore' && currentScore > userStats.hardcoreHighestScore) {
                     userStats.hardcoreHighestScore = currentScore;
                 }
+                userStats.highestLevelReached = Math.max(userStats.highestLevelReached || 1, player.level || 1);
+                userStats.bestCombo = Math.max(userStats.bestCombo || 0, runStats.maxCombo || 0);
+                userStats.mostShiniesInRun = Math.max(userStats.mostShiniesInRun || 0, runStats.shinyKills || 0);
+                userStats.mostBossKillsInRun = Math.max(userStats.mostBossKillsInRun || 0, runStats.bossesDefeated || 0);
+                userStats.bestJackpotStreak = Math.max(userStats.bestJackpotStreak || 0, runStats.jackpotStreakBest || 0);
+                userStats.maxWeaponLoadout = Math.max(userStats.maxWeaponLoadout || 1, runStats.maxWeaponsHeld || 1);
                 syncMilestoneAchievements();
 
                 debugLog(`[SAVE STATS] Attempting to save: Wave ${currentWave}, Score ${currentScore}`);
@@ -6160,10 +6688,22 @@
             const classicScoreEl = document.getElementById('recordClassicScore');
             const hardcoreWaveEl = document.getElementById('recordHardcoreWave');
             const hardcoreScoreEl = document.getElementById('recordHardcoreScore');
+            const highestLevelEl = document.getElementById('recordHighestLevel');
+            const bestComboEl = document.getElementById('recordBestCombo');
+            const mostShiniesRunEl = document.getElementById('recordMostShiniesRun');
+            const mostBossesRunEl = document.getElementById('recordMostBossesRun');
+            const bestJackpotStreakEl = document.getElementById('recordBestJackpotStreak');
+            const maxWeaponLoadoutEl = document.getElementById('recordMaxWeaponLoadout');
             if (classicWaveEl) classicWaveEl.textContent = userStats.classicHighestWave;
             if (classicScoreEl) classicScoreEl.textContent = userStats.classicHighestScore.toLocaleString();
             if (hardcoreWaveEl) hardcoreWaveEl.textContent = userStats.hardcoreHighestWave;
             if (hardcoreScoreEl) hardcoreScoreEl.textContent = userStats.hardcoreHighestScore.toLocaleString();
+            if (highestLevelEl) highestLevelEl.textContent = userStats.highestLevelReached;
+            if (bestComboEl) bestComboEl.textContent = userStats.bestCombo.toLocaleString();
+            if (mostShiniesRunEl) mostShiniesRunEl.textContent = userStats.mostShiniesInRun;
+            if (mostBossesRunEl) mostBossesRunEl.textContent = userStats.mostBossKillsInRun;
+            if (bestJackpotStreakEl) bestJackpotStreakEl.textContent = userStats.bestJackpotStreak;
+            if (maxWeaponLoadoutEl) maxWeaponLoadoutEl.textContent = userStats.maxWeaponLoadout;
         }
 
         // --- GAME LOGIC START ---
@@ -6294,8 +6834,17 @@
 
         let cloverBurstState = {
             killsSinceNova: 0,
-            bursts: []
+            bursts: [],
+            surgeUntil: 0
         };
+        let runStats = {
+            bossesDefeated: 0,
+            shinyKills: 0,
+            maxCombo: 0,
+            maxWeaponsHeld: 1,
+            jackpotStreakBest: 0
+        };
+        let waveTwistState = null;
 
         // Input handling
         const keys = {};
@@ -6577,7 +7126,9 @@
             blackHoleCooldown = 0; fugaCooldown = 0; bloodMoonActive = false; bloodMoonTimer = 0;
             invincibleUntil = 0; soulHarvestKills = 0; blackHoles = []; soulHarvestActive = false; lastHealTime = 0;
             deathGambleState.active = false; deathGambleState.activeUntil = 0; deathGambleState.jackpotUntil = 0; deathGambleState.cooldownUntil = 0; deathGambleState.expansionStartedAt = 0; deathGambleState.expansionUntil = 0; deathGambleState.expansionWaveId = 0; deathGambleState.barrierScale = 0; deathGambleState.shatterStartedAt = 0; deathGambleState.shatterUntil = 0; deathGambleState.shatterBarrierScale = 0; deathGambleState.arenaCenterX = 0; deathGambleState.arenaCenterY = 0; deathGambleState.domainKills = 0; deathGambleState.killsSinceRoll = 0; deathGambleState.rollRevealUntil = 0; deathGambleState.rollNumbers = [0, 0, 0]; deathGambleState.rollWasJackpot = false; deathGambleState.consecutiveJackpots = 0; deathGambleState.noticeUntil = 0; deathGambleState.noticeText = ''; deathGambleState.noticeTone = 'ready';
-            cloverBurstState.killsSinceNova = 0; cloverBurstState.bursts = [];
+            cloverBurstState.killsSinceNova = 0; cloverBurstState.bursts = []; cloverBurstState.surgeUntil = 0;
+            runStats = { bossesDefeated: 0, shinyKills: 0, maxCombo: 0, maxWeaponsHeld: 1, jackpotStreakBest: 0 };
+            clearWaveTwist();
             bossCutscene.active = false; bossCutscene.bossId = null; bossCutscene.lines = []; bossCutscene.lineIndex = 0; bossCutscene.nextLineAt = 0; bossCutscene.onComplete = null;
             celestialPhaseEffects.pulseActive = false; celestialPhaseEffects.pulseStart = 0; celestialPhaseEffects.collapseStart = 0;
             celestialCardCutscene.active = false; celestialCardCutscene.triggered = false; celestialCardCutscene.startTime = 0; celestialCardCutscene.bossId = null; celestialCardCutscene.midShakeTriggered = false; celestialCardCutscene.flashTriggered = false;
@@ -6585,6 +7136,7 @@
             finalVictorySequence.active = false; finalVictorySequence.endsAt = 0; finalVictorySequence.bossId = null; finalVictorySequence.startedAt = 0; finalVictorySequence.shockwaveAt = 0; finalVictorySequence.shockwaveRadius = 0; finalVictorySequence.centerX = 0; finalVictorySequence.centerY = 0; finalVictorySequence.nextShakeAt = 0; finalVictorySequence.cause = ''; finalVictorySequence.dialogueVisible = false;
             classicEndlessActive = false; classicEndlessChoicePending = false;
             bossFightNoHitActive = false; bossFightNoHitEligible = true; bossFightTrackedHealth = player.health;
+            adminGodMode = false; adminEnemiesFrozen = false; adminPlayerFireBlocked = false; adminHudHidden = false;
             currentWorldCameraX = 0;
             stopDeathGambleJackpotMusic({ resumeTheme: false });
             stopThemeSongFade(); themeSongFadeMultiplier = 1; currentMusicCue = null;
@@ -6598,6 +7150,7 @@
             gameTime = 0; runClockTime = 0; kills = 0; waveNumber = 1; bossSpawnTimer = getBossSpawnInterval(); nextBossTime = getBossSpawnInterval(); score = 0; combo = 0;
             lastKillTime = 0; currentDifficultyLevel = 0; lastAutoSaveTime = 0;
 
+            updateRunReplayMilestones();
             gameRunning = false;
             gamePaused = false;
             pauseMenuState.active = false;
@@ -6609,6 +7162,8 @@
             if (pauseMenuModal) pauseMenuModal.style.display = 'none';
             const classicEndlessModal = document.getElementById('classicEndlessModal');
             if (classicEndlessModal) classicEndlessModal.style.display = 'none';
+            const adminModal = document.getElementById('adminModal');
+            if (adminModal) adminModal.style.display = 'none';
             const gameOverTitle = document.querySelector('#gameOver h2');
             if (gameOverTitle) gameOverTitle.textContent = 'GAME OVER';
             document.getElementById('healthFill').style.width = '100%';
@@ -6617,6 +7172,7 @@
             applyCinematicHUDState();
             syncMobileHudState();
             syncPauseButtonState();
+            refreshAdminControlStates();
             updateWeaponDisplay(); updateBuffsDisplay(); updateStatsDisplay(); draw();
         }
 
@@ -6940,28 +7496,31 @@
             if (parts.length >= 4) return `rgba(${r}, ${g}, ${b}, ${parts[3]})`;
             return `rgb(${r}, ${g}, ${b})`;
         }
-
         function finalizeEnemySpawn(enemy) {
-            if (!enemy || enemy.noShiny || enemy.isShiny) return enemy;
-            const shinyChance = SHINY_ENEMY_CHANCE * (isStPatricksEventActive() ? ST_PATRICK_SHINY_MULTIPLIER : 1);
-            if (Math.random() >= shinyChance) return enemy;
-            enemy.isShiny = true;
-            enemy.baseColor = enemy.color;
-            enemy.color = invertColorString(enemy.color || '#ffffff');
-            enemy.maxHealth = Math.max(1, Math.round(enemy.maxHealth * 2));
-            enemy.health = enemy.maxHealth;
-            enemy.baseMaxHealth = enemy.maxHealth;
-            enemy.damage = Math.max(1, Math.round((enemy.damage || 0) * 2));
-            enemy.expValue = Math.max(1, Math.round((enemy.expValue || 0) * 5));
-            enemy.shinySparkleOffset = Math.random() * Math.PI * 2;
-            normalizeUserStats();
-            userStats.shinyEncounters = (userStats.shinyEncounters || 0) + 1;
-            if (!syncMilestoneAchievements()) {
-                persistUserStatsNow();
-                renderAchievements();
+            if (!enemy) return enemy;
+            if (!enemy.noShiny && !enemy.isShiny) {
+                const shinyChance = SHINY_ENEMY_CHANCE * (isStPatricksEventActive() ? ST_PATRICK_SHINY_MULTIPLIER : 1);
+                if (Math.random() < shinyChance) {
+                    enemy.isShiny = true;
+                    enemy.baseColor = enemy.color;
+                    enemy.color = invertColorString(enemy.color || '#ffffff');
+                    enemy.maxHealth = Math.max(1, Math.round(enemy.maxHealth * 2));
+                    enemy.health = enemy.maxHealth;
+                    enemy.baseMaxHealth = enemy.maxHealth;
+                    enemy.damage = Math.max(1, Math.round((enemy.damage || 0) * 2));
+                    enemy.expValue = Math.max(1, Math.round((enemy.expValue || 0) * 5));
+                    enemy.shinySparkleOffset = Math.random() * Math.PI * 2;
+                    normalizeUserStats();
+                    userStats.shinyEncounters = (userStats.shinyEncounters || 0) + 1;
+                    if (!syncMilestoneAchievements()) {
+                        persistUserStatsNow();
+                        renderAchievements();
+                    }
+                }
             }
             return enemy;
         }
+
 
         function getCurrentEnemyTypes() {
             return currentGameMode === 'hardcore' ? hardcoreEnemyTypes : classicEnemyTypes;
@@ -6977,6 +7536,87 @@
 
         function getWaveLimit() {
             return MODE_WAVE_LIMITS[currentGameMode] !== undefined ? MODE_WAVE_LIMITS[currentGameMode] : Infinity;
+        }
+
+        function getWaveXpMultiplier(targetWave = waveNumber) {
+            const normalizedWave = Math.max(1, Math.floor(Number(targetWave) || 1));
+            return 1 + Math.max(0, normalizedWave - 1) * 0.1;
+        }
+
+        function scaleXpValueForWave(baseValue, targetWave = waveNumber) {
+            return Math.max(1, Math.round((Number(baseValue) || 0) * getWaveXpMultiplier(targetWave)));
+        }
+
+        function getOwnedWeaponCount() {
+            return Object.values(player.weapons || {}).filter((count) => Number(count) > 0).length;
+        }
+
+        function updateRunReplayMilestones() {
+            runStats.maxCombo = Math.max(runStats.maxCombo || 0, combo || 0);
+            runStats.maxWeaponsHeld = Math.max(runStats.maxWeaponsHeld || 0, getOwnedWeaponCount());
+            runStats.jackpotStreakBest = Math.max(runStats.jackpotStreakBest || 0, deathGambleState.consecutiveJackpots || 0);
+        }
+
+        const waveTwistDefs = [];
+
+        const bossVariantDefs = [
+            { id: 'berserk', label: 'Berserk', healthMult: 0.88, speedMult: 1.18, damageMult: 1.18, cooldownMult: 0.86, expMult: 1.18, resistanceBonus: 0, accent: '#ff8e6d' },
+            { id: 'bulwark', label: 'Bulwark', healthMult: 1.3, speedMult: 0.9, damageMult: 1.08, cooldownMult: 1.05, expMult: 1.24, resistanceBonus: 0.08, accent: '#ffe08a' },
+            { id: 'riftborn', label: 'Riftborn', healthMult: 1.05, speedMult: 1.08, damageMult: 1.1, cooldownMult: 0.8, expMult: 1.2, resistanceBonus: 0, accent: '#c5a8ff' }
+        ];
+
+        function clearWaveTwist() {
+            waveTwistState = null;
+        }
+
+        function rollWaveTwist() {
+            clearWaveTwist();
+        }
+
+        function getActiveWaveTwist() {
+            return null;
+        }
+
+        function getWaveTwistShinyMultiplier() {
+            return 1;
+        }
+
+        function applyWaveTwistToEnemy(enemy) {
+            return enemy;
+        }
+
+        function pickBossVariant(bossType) {
+            if (bossType === 'soulReaver' || bossType === 'celestialGuardian') return null;
+            if (Math.random() > 0.55) return null;
+            return bossVariantDefs[Math.floor(Math.random() * bossVariantDefs.length)];
+        }
+
+        function hasStormglassSynergy() {
+            return getWeaponStackCount('Freeze Ray') > 0 && getWeaponStackCount('Lightning Chain') > 0;
+        }
+
+        function hasToxicBloomSynergy() {
+            return getWeaponStackCount('Poison Darts') > 0 && getWeaponStackCount('Plague Cloud') > 0;
+        }
+
+        function hasSteamFestivalSynergy() {
+            return getWeaponStackCount('Firework Blaster') > 0 && getWeaponStackCount('The Gilded Magnum') > 0;
+        }
+
+        function spawnMiniPlagueBurst(x, y, scale = 1) {
+            poisonClouds.push({
+                x,
+                y,
+                aoeRadius: 64 * scale,
+                damage: 1.6 * scale,
+                color: 'rgba(177, 255, 135, 0.38)',
+                duration: 40,
+                poisonDamage: 3,
+                poisonDuration: 2800,
+                stackCount: 1
+            });
+            particles.push({ x, y, radius: 18, maxRadius: 78 * scale, expandSpeed: 6, color: '#b7ff87', life: 18, maxLife: 18, lineWidth: 3, type: 'wave' });
+            createParticles(x, y, '#b7ff87', 14);
         }
 
         function getFinalArenaLayout() {
@@ -7282,6 +7922,7 @@
             if (kind === 'enemy') {
                 enemies.push(finalizeEnemySpawn({
                     x: spawnPoint.x, y: spawnPoint.y, ...unitData, maxHealth: scaledHealth, health: scaledHealth, baseMaxHealth: scaledHealth, type: typeKey,
+                    expValue: scaleXpValueForWave(unitData.expValue),
                     slowUntil: 0, poisonUntil: 0, poisonDamage: 0, damage: Math.round(unitData.damage * linearStrengthMult),
                     speed: unitData.speed * speedStrengthMult, isBurning: false, burnTickTime: 0, dousedUntil: 0, dousedMultiplier: 1.5
                 }));
@@ -7295,7 +7936,7 @@
                     celestialSwordUntil: 0, celestialSwordHitTime: 0, celestialSwordAngle: 0, angelSummonNext: 0,
                     celestialPillarSequence: false, celestialPillarCount: 0, celestialPillarNext: 0, celestialBeamShakeNext: 0,
                     celestialDashNext: 0, dashSlashAt: 0, weepingSummonNext: 0, starfallNext: 0, celestialAsteroidNext: 0,
-                    ...unitData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth,
+                    ...unitData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth, expValue: scaleXpValueForWave(unitData.expValue),
                     damage: Math.round(unitData.damage * linearStrengthMult), speed: unitData.speed * speedStrengthMult, lastAbility: entranceEnabled ? spawnNow : 0, abilityCooldown: 3000, phase: 1,
                     lastPhaseChange: Date.now(), isBurning: false, burnTickTime: 0, dragonlingsSummoned: false,
                     dousedUntil: 0, dousedMultiplier: 1.5, entityId: nextBossEntityId++, pedestalActive: false,
@@ -7767,7 +8408,7 @@
             { name: 'Soul Harvest', rarity: 'mythical', description: 'Gain temporary invincibility for 8 seconds after every 25 kills. Each stack increases duration by 1s and boosts damage/speed by 1%.', effect: () => { player.soulHarvest = (player.soulHarvest || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Black Hole', rarity: 'mythical', description: 'Create a black hole that pulls in and destroys all enemies on screen. Press 2 to activate. At 5 stacks, it ends with an implosion.', effect: () => { player.blackHole = (player.blackHole || 0) + 1; }, stats: 'Mythical Ability' },
             { name: 'Fuga', rarity: 'mythical', description: 'Launch a devastating fire arrow that deals 125 damage, creates a massive explosion, and ignites enemies!', effect: () => { player.fuga = (player.fuga || 0) + 1; }, stats: 'Mythical Ability' },
-            { name: 'Clover Burst', rarity: 'legendary', description: 'Event legendary. After every 40 kills, reduced by 2 per extra stack to a minimum of 20, unleash a green-gold nova from your body. The nova deals 45 damage plus 5 per extra stack, stuns for 1.4s, and vacuums XP in a huge radius.', effect: () => { player.cloverBurst = (player.cloverBurst || 0) + 1; }, stats: 'Legendary Ability' },
+            { name: 'Clover Burst', rarity: 'legendary', description: 'Event legendary. After every 40 kills, reduced by 2 per extra stack to a minimum of 20, unleash layered green-gold novas from your body. Clover Burst now hits twice, stuns harder, vacuums XP in a huge radius, leaves a lucky damage field, and kicks you into a short Clover Surge.', effect: () => { player.cloverBurst = (player.cloverBurst || 0) + 1; }, stats: 'Legendary Ability' },
             { name: 'Death Gamble', rarity: 'mythical', description: 'Hidden mythic. Press G to open a 35-second white domain. Every 5 kills rolls 3 cards for a 1-in-7 jackpot. Misses put it on a 1:30 cooldown. Jackpot grants +50 HP/s, x3 damage, 50% damage reduction, and x2.5 move speed for 4:11, with cooldowns chaining down to 10 seconds on consecutive wins.', effect: () => { player.deathGamble = true; }, stats: 'Secret Mythical Ability' },
             { name: 'Add Firework Blaster', rarity: 'epic', description: 'Blasts 5 colorful explosives that deal 8 damage in a spread. Large AOE explosion ignites enemies!', effect: () => { player.weapons['Firework Blaster'] = (player.weapons['Firework Blaster'] || 0) + 1; if (!player.lastShot['Firework Blaster']) player.lastShot['Firework Blaster'] = 0; recordFireworkStacks(player.weapons['Firework Blaster'] || 0); }, stats: 'Firework Weapon' },
             { name: 'XP Collection Range Increase', rarity: 'rare', description: 'Increase the distance at which you collect XP Gems by 10%.', effect: () => { player.xpCollectionRangeStacks++; player.xpCollectionRange = Math.round(player.xpCollectionRange * 1.1); }, stats: '+10% XP Range' },
@@ -7776,6 +8417,13 @@
 
         document.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
+            if (e.key === 'F1') {
+                e.preventDefault();
+                const adminModalOpen = document.getElementById('adminModal')?.style.display === 'block';
+                if (adminModalOpen) closeAdminModal();
+                else openAdminModal();
+                return;
+            }
             if (key === 'escape' && isModalVisible('gameSpeedModal')) {
                 e.preventDefault();
                 closeGameSpeedModal();
@@ -8108,6 +8756,25 @@
         if (gameSpeedModalBtnEl) {
             gameSpeedModalBtnEl.addEventListener('click', () => openGameSpeedModal('options'));
         }
+        function initAdminTabs() {
+            const tabs = document.querySelectorAll('#adminModal .admin-tab');
+            const panels = document.querySelectorAll('#adminModal .admin-panel');
+            if (!tabs.length || !panels.length) return;
+
+            tabs.forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.getAttribute('data-admin-tab');
+                    tabs.forEach((entry) => entry.classList.remove('active'));
+                    panels.forEach((panel) => panel.classList.remove('active'));
+                    tab.classList.add('active');
+                    const panel = document.getElementById(targetId);
+                    if (panel) panel.classList.add('active');
+                    const content = document.querySelector('#adminModal .admin-content');
+                    if (content) content.scrollTop = 0;
+                });
+            });
+        }
+
         function initOptionsTabs() {
             const tabs = document.querySelectorAll('#optionsModal .options-tab');
             const panels = document.querySelectorAll('#optionsModal .options-panel');
@@ -8260,6 +8927,7 @@
             });
         }
 
+        initAdminTabs();
         initOptionsTabs();
         initAudioOptionsUI();
         initPerformanceOptionsUI();
@@ -8649,6 +9317,8 @@
             deathGambleState.arenaCenterY = 0;
             deathGambleState.noticeUntil = 0;
             deathGambleState.noticeText = '';
+            cloverBurstState.surgeUntil = 0;
+            updateRunReplayMilestones();
             const gameOverModal = document.getElementById('gameOver');
             const gameOverTitle = document.querySelector('#gameOver h2');
             if (gameOverTitle) {
@@ -8664,7 +9334,6 @@
             syncMobileHudState();
             saveUserStats();
         }
-
         function advanceWaveAfterBossKill() {
             if (currentGameMode === 'hardcore' && waveNumber >= getWaveLimit()) {
                 startFinalArenaSequence();
@@ -8676,6 +9345,7 @@
             }
             waveNumber++;
         }
+
 
         function getBossByEntityId(entityId) {
             return bosses.find((boss) => boss.entityId === entityId) || null;
@@ -8707,7 +9377,7 @@
                     maxHealth: soulHealth,
                     baseMaxHealth: soulHealth,
                     color: soulDef.color,
-                    expValue: soulDef.expValue,
+                    expValue: scaleXpValueForWave(soulDef.expValue),
                     damage: Math.round(soulDef.damage * linearStrengthMult),
                     type: 'soul',
                     touchPersists: true,
@@ -8743,12 +9413,17 @@
                 updatedStats = true;
             }
             if (enemy.isShiny) {
+                runStats.shinyKills = (runStats.shinyKills || 0) + 1;
                 userStats.shinyKills = (userStats.shinyKills || 0) + 1;
                 if (isStPatricksEventActive()) userStats.eventShinyKills = (userStats.eventShinyKills || 0) + 1;
                 updatedStats = true;
                 maybeUnlockLuckyTheme();
                 maybeUnlockCloverBurst();
             }
+            if (hasToxicBloomSynergy() && Date.now() < (enemy.poisonUntil || 0)) {
+                spawnMiniPlagueBurst(enemy.x, enemy.y, enemy.isShiny ? 1.25 : 1);
+            }
+            updateRunReplayMilestones();
             if (updatedStats) {
                 const milestoneUnlocked = syncMilestoneAchievements();
                 const secretUnlocked = syncSecretMythicUnlock();
@@ -8892,7 +9567,7 @@
                 celestialSwordUntil: 0, celestialSwordHitTime: 0, celestialSwordAngle: 0, celestialSwordStartAngle: 0, celestialSwordEndAngle: 0, celestialSwordChargeUntil: 0, celestialSwordDirection: 1, angelSummonNext: 0,
                 celestialPillarSequence: false, celestialPillarCount: 0, celestialPillarNext: 0, celestialBeamShakeNext: 0,
                 celestialDashNext: 0, dashSlashAt: 0, dashSlashUntil: 0, dashSlashChargeUntil: 0, dashSlashStartAngle: 0, dashSlashEndAngle: 0, dashSlashDirection: 1, weepingSummonNext: 0, starfallNext: 0, celestialAsteroidNext: 0,
-                ...bossData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth,
+                ...bossData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth, expValue: scaleXpValueForWave(bossData.expValue),
                 phaseTwoMaxHealth: phaseTwoScaledHealth, regenTickAt: 0,
                 damage: Math.round(bossData.damage * linearStrengthMult), speed: bossData.speed * speedStrengthMult, lastAbility: 0, abilityCooldown: 3000, phase: 1,
                 lastPhaseChange: Date.now(), isBurning: false, burnTickTime: 0, dragonlingsSummoned: false,
@@ -9001,22 +9676,41 @@
             }
             gamePaused = false;
         }
-
         function updateSynergies() {
             if (player.weapons['Homing Missiles']) player.weapons['Homing Missiles'] = Math.min(player.weapons['Homing Missiles'], MAX_HOMING_STACKS);
-            let newCritChance = player.baseCritChance; let newFireRate = 1; let newDamage = player.baseDamage; let homingSpeedMult = 0;
+            let newCritChance = player.baseCritChance;
+            let newFireRate = 1;
+            let newDamage = player.baseDamage;
+            let homingSpeedMult = 0;
+            const surgeActive = Date.now() < (cloverBurstState.surgeUntil || 0);
             Object.keys(player.weapons).forEach(weaponName => {
                 const count = weaponName === 'Homing Missiles' ? Math.min(player.weapons[weaponName], MAX_HOMING_STACKS) : player.weapons[weaponName];
-                switch(weaponName) {
-                    case 'Pistol': newCritChance += count * 0.01; break;
-                    case 'Machine Gun': newFireRate += count * 0.05; break;
-                    case 'Sniper': newDamage *= (1 + count * 0.02); break;
-                    case 'Homing Missiles': homingSpeedMult += count * 0.1; break;
+                switch (weaponName) {
+                    case 'Pistol':
+                        newCritChance += count * 0.01;
+                        break;
+                    case 'Machine Gun':
+                        newFireRate += count * 0.05;
+                        break;
+                    case 'Sniper':
+                        newDamage *= (1 + count * 0.02);
+                        break;
+                    case 'Homing Missiles':
+                        homingSpeedMult += count * 0.1;
+                        break;
                 }
             });
+            if (surgeActive) {
+                newCritChance += CLOVER_BURST_SURGE_CRIT_BONUS;
+                newFireRate += 0.12;
+            }
             player.homingSpeedMult = homingSpeedMult;
-            player.critChance = Math.min(newCritChance, 0.75); player.fireRate = Math.max(newFireRate, 0.2); player.damage = newDamage;
+            player.critChance = Math.min(newCritChance, 0.75);
+            player.fireRate = Math.max(newFireRate, 0.2);
+            player.damage = newDamage;
+            updateRunReplayMilestones();
         }
+
 
         function applyLifesteal(amount) {
             if (player.vampirism) player.health = Math.min(player.health + amount * player.vampirism, player.maxHealth);
@@ -9098,7 +9792,21 @@
         }
 
         function getPlayerMovementSpeedMultiplier() {
-            return isDeathGambleJackpotActive() ? DEATH_GAMBLE_JACKPOT_SPEED_MULTIPLIER : 1;
+            let speedMult = 1;
+            if (Date.now() < (cloverBurstState.surgeUntil || 0)) {
+                speedMult += CLOVER_BURST_SURGE_SPEED_BONUS;
+            }
+            if (isDeathGambleJackpotActive()) {
+                speedMult *= DEATH_GAMBLE_JACKPOT_SPEED_MULTIPLIER;
+            }
+            return speedMult;
+        }
+
+        function scalePlayerDamage(amount) {
+            const rawAmount = Number(amount) || 0;
+            const baseDamage = Math.max(1, Number(player.baseDamage) || 1);
+            const currentDamage = Math.max(0, Number(player.damage) || 0);
+            return rawAmount * (currentDamage / baseDamage);
         }
 
         function applyPlayerAttackDamageModifiers(target, damage) {
@@ -9197,11 +9905,42 @@
                 ? Math.round(player.xpCollectionRange * 1.5)
                 : CLOVER_BURST_BASE_RADIUS;
         }
-
         function updateCloverBurstEffects(now = Date.now()) {
             if (!cloverBurstState.bursts.length) return;
-            cloverBurstState.bursts = cloverBurstState.bursts.filter((burst) => now < burst.startedAt + burst.duration);
+            cloverBurstState.bursts = cloverBurstState.bursts.filter((burst) => {
+                if (now < (burst.lingerUntil || 0) && now >= (burst.nextLingerTick || 0)) {
+                    const pulseDamage = Math.max(4, Math.round((burst.baseDamage || 0) * CLOVER_BURST_LINGER_DAMAGE_MULT));
+                    [...enemies, ...bosses].forEach((target) => {
+                        if (!target) return;
+                        const dist = Math.hypot(target.x - burst.x, target.y - burst.y);
+                        if (dist > burst.radius * 0.72 + (target.radius || 0)) return;
+                        target.health -= applyPlayerAttackDamageModifiers(target, pulseDamage);
+                        if (!isStatusImmuneTarget(target)) {
+                            target.slowUntil = Math.max(target.slowUntil || 0, now + 520);
+                            target.slowEffect = Math.min(target.slowEffect || 1, 0.74);
+                        }
+                        createParticles(target.x, target.y, '#b7ff87', 3);
+                        if (isBossDefeatThresholdReached(target)) {
+                            const enemyIndex = enemies.indexOf(target);
+                            if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
+                            const bossIndex = bosses.indexOf(target);
+                            if (bossIndex > -1) defeatBoss(target, 'cloverField');
+                        }
+                    });
+                    for (let index = xpGems.length - 1; index >= 0; index--) {
+                        const gem = xpGems[index];
+                        if (!gem) continue;
+                        const dist = Math.hypot(burst.x - gem.x, burst.y - gem.y);
+                        if (dist <= burst.radius * 0.78 + (gem.radius || 0)) {
+                            collectXpGemAt(index, gem, '#d8ff93');
+                        }
+                    }
+                    burst.nextLingerTick = now + CLOVER_BURST_LINGER_TICK_MS;
+                }
+                return now < (burst.lingerUntil || (burst.startedAt + burst.duration));
+            });
         }
+
 
         function collectXpGemAt(index, gem, particleColor = '#66ccff') {
             if (!gem) return false;
@@ -9212,59 +9951,8 @@
             if (player.exp >= player.expToNext) levelUp();
             return true;
         }
+        function triggerCloverBurst() { const stacks = getCloverBurstStacks(); if (stacks <= 0) return false; const now = Date.now(); const radius = getCloverBurstRadius(); const burstDamage = getCloverBurstBaseDamage(stacks); const burstX = player.x; const burstY = player.y; cloverBurstState.surgeUntil = Math.max(cloverBurstState.surgeUntil || 0, now + CLOVER_BURST_SURGE_DURATION_MS); cloverBurstState.bursts.push({ x: burstX, y: burstY, startedAt: now, duration: CLOVER_BURST_VFX_DURATION_MS, radius, baseDamage: burstDamage, sparkAngles: Array.from({ length: 10 }, (_, index) => (Math.PI * 2 / 10) * index + Math.random() * 0.18), bloomSeed: Math.random() * Math.PI * 2, lingerUntil: now + CLOVER_BURST_LINGER_DURATION_MS, nextLingerTick: now + CLOVER_BURST_FOLLOWUP_DELAY_MS }); const applyBurstPulse = (pulseRadius, damageMultiplier, stunBonus = 0, knockback = 12) => { [...enemies, ...bosses].forEach((target) => { if (!target) return; const dist = Math.hypot(target.x - burstX, target.y - burstY); if (dist > pulseRadius + (target.radius || 0)) return; const damage = applyPlayerAttackDamageModifiers(target, burstDamage * damageMultiplier); if (damage <= 0) return; target.health -= damage; showDamageNumber(target.x, target.y, damage); createParticles(target.x, target.y, target.bossType ? '#fff2a8' : '#93ff9b', 10); if (!isStatusImmuneTarget(target)) { target.stunnedUntil = Math.max(target.stunnedUntil || 0, now + CLOVER_BURST_STUN_MS + stunBonus); } const angle = Math.atan2(target.y - burstY, target.x - burstX); target.x += Math.cos(angle) * knockback; target.y += Math.sin(angle) * knockback; if (isBossDefeatThresholdReached(target)) { const enemyIndex = enemies.indexOf(target); if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex); const bossIndex = bosses.indexOf(target); if (bossIndex > -1) defeatBoss(target, 'cloverBurst'); } }); }; particles.push({ x: burstX, y: burstY, radius: 28, maxRadius: radius, expandSpeed: 15, color: '#9dff75', life: 20, maxLife: 20, lineWidth: 7, type: 'wave' }); particles.push({ x: burstX, y: burstY, radius: 20, maxRadius: Math.max(96, radius * 0.72), expandSpeed: 11, color: '#ffe88f', life: 18, maxLife: 18, lineWidth: 5, type: 'wave' }); particles.push({ x: burstX, y: burstY, radius: 16, maxRadius: Math.max(86, radius * 1.08), expandSpeed: 9, color: '#f6ffd0', life: 24, maxLife: 24, lineWidth: 4, type: 'wave' }); createParticles(burstX, burstY, '#9dff75', 28); createParticles(burstX, burstY, '#ffe88f', 22); screenShake(10, 180); applyBurstPulse(radius * 0.9, 1, 0, 12); setTimeout(() => { if (!gameRunning) return; particles.push({ x: burstX, y: burstY, radius: 18, maxRadius: radius * 1.14, expandSpeed: 12, color: '#dfff8e', life: 16, maxLife: 16, lineWidth: 4, type: 'wave' }); createParticles(burstX, burstY, '#dfff8e', 20); applyBurstPulse(radius * 1.08, CLOVER_BURST_FOLLOWUP_DAMAGE_MULT, 200, 18); }, CLOVER_BURST_FOLLOWUP_DELAY_MS); for (let index = xpGems.length - 1; index >= 0; index--) { const gem = xpGems[index]; if (!gem) continue; const dist = Math.hypot(burstX - gem.x, burstY - gem.y); if (dist <= radius * 1.15 + (gem.radius || 0)) { collectXpGemAt(index, gem, '#baff90'); } } return true; } 
 
-        function triggerCloverBurst() {
-            const stacks = getCloverBurstStacks();
-            if (stacks <= 0) return false;
-            const now = Date.now();
-            const radius = getCloverBurstRadius();
-            const burstDamage = getCloverBurstBaseDamage(stacks);
-            cloverBurstState.bursts.push({
-                x: player.x,
-                y: player.y,
-                startedAt: now,
-                duration: CLOVER_BURST_VFX_DURATION_MS,
-                radius,
-                sparkAngles: Array.from({ length: 10 }, (_, index) => (Math.PI * 2 / 10) * index + Math.random() * 0.18),
-                bloomSeed: Math.random() * Math.PI * 2
-            });
-
-            particles.push({ x: player.x, y: player.y, radius: 28, maxRadius: radius, expandSpeed: 15, color: '#9dff75', life: 20, maxLife: 20, lineWidth: 7, type: 'wave' });
-            particles.push({ x: player.x, y: player.y, radius: 20, maxRadius: Math.max(96, radius * 0.72), expandSpeed: 11, color: '#ffe88f', life: 18, maxLife: 18, lineWidth: 5, type: 'wave' });
-            createParticles(player.x, player.y, '#9dff75', 28);
-            createParticles(player.x, player.y, '#ffe88f', 22);
-            screenShake(10, 180);
-
-            [...enemies, ...bosses].forEach((target) => {
-                if (!target) return;
-                const dist = Math.hypot(target.x - player.x, target.y - player.y);
-                if (dist > radius + (target.radius || 0)) return;
-                const damage = applyPlayerAttackDamageModifiers(target, burstDamage);
-                if (damage <= 0) return;
-                target.health -= damage;
-                showDamageNumber(target.x, target.y, damage);
-                createParticles(target.x, target.y, target.bossType ? '#fff2a8' : '#93ff9b', 10);
-                if (!isStatusImmuneTarget(target)) {
-                    target.stunnedUntil = Math.max(target.stunnedUntil || 0, now + CLOVER_BURST_STUN_MS);
-                }
-                if (isBossDefeatThresholdReached(target)) {
-                    const enemyIndex = enemies.indexOf(target);
-                    if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
-                    const bossIndex = bosses.indexOf(target);
-                    if (bossIndex > -1) defeatBoss(target, 'cloverBurst');
-                }
-            });
-
-            for (let index = xpGems.length - 1; index >= 0; index--) {
-                const gem = xpGems[index];
-                if (!gem) continue;
-                const dist = Math.hypot(player.x - gem.x, player.y - gem.y);
-                if (dist <= radius + (gem.radius || 0)) {
-                    collectXpGemAt(index, gem, '#baff90');
-                }
-            }
-            return true;
-        }
 
         function registerCloverBurstKill() {
             const stacks = getCloverBurstStacks();
@@ -9362,7 +10050,7 @@
                     type: 'homing',
                     explosionRadius: Math.max(40, Math.round((proj.explosionRadius || weaponTypes.homing.explosionRadius) * 0.6)),
                     speed: 5.6,
-                    turnRate: 0.24,
+                    turnRate: 0.1,
                     splitGeneration: (proj.splitGeneration || 0) + 1
                 });
             }
@@ -9406,18 +10094,8 @@
                 .sort((a, b) => Math.hypot(a.x - player.x, a.y - player.y) - Math.hypot(b.x - player.x, b.y - player.y))
                 .slice(0, maxTargets);
         }
+        function triggerSteamReaction(target) { const now = Date.now(); if (!target || isFireImmuneTarget(target) || isStatusImmuneTarget(target)) return false; if (now >= (target.dousedUntil || 0)) return false; if (now < (target.steamReactionCooldown || 0)) return false; createSteamExplosion(target.x, target.y); createParticles(target.x, target.y, '#ffffff', 12); target.dousedUntil = 0; target.steamReactionCooldown = now + 250; if (hasSteamFestivalSynergy()) { const steamRadius = 74; [...enemies, ...bosses].forEach((nearby) => { if (!nearby || nearby === target) return; const dist = Math.hypot(nearby.x - target.x, nearby.y - target.y); if (dist > steamRadius + (nearby.radius || 0)) return; const steamDamage = applyPlayerAttackDamageModifiers(nearby, 18); nearby.health -= steamDamage; if (!isStatusImmuneTarget(nearby)) { nearby.slowUntil = Math.max(nearby.slowUntil || 0, now + 900); nearby.slowEffect = Math.min(nearby.slowEffect || 1, 0.7); } createParticles(nearby.x, nearby.y, '#fff6b8', 6); if (isBossDefeatThresholdReached(nearby)) { const enemyIndex = enemies.indexOf(nearby); if (enemyIndex > -1) handleEnemyDefeat(nearby, enemyIndex); const bossIndex = bosses.indexOf(nearby); if (bossIndex > -1) defeatBoss(nearby, 'steamFestival'); } }); } return true; } 
 
-        function triggerSteamReaction(target) {
-            const now = Date.now();
-            if (!target || isFireImmuneTarget(target) || isStatusImmuneTarget(target)) return false;
-            if (now >= (target.dousedUntil || 0)) return false;
-            if (now < (target.steamReactionCooldown || 0)) return false;
-            createSteamExplosion(target.x, target.y);
-            createParticles(target.x, target.y, '#ffffff', 12);
-            target.dousedUntil = 0;
-            target.steamReactionCooldown = now + 250;
-            return true;
-        }
 
         function igniteTarget(target) {
             if (!target || isFireImmuneTarget(target) || isStatusImmuneTarget(target)) return false;
@@ -9715,7 +10393,7 @@
                         target: null,
                         explosionRadius: weapon.explosionRadius,
                         speed: projectileSpeed,
-                        turnRate: 0.18
+                        turnRate: 0.075
                     });
                     break;
                 case 'projectile':
@@ -9820,35 +10498,8 @@
                     break;
             }
         }
+        function createLightningChain(x, y, target, chainsLeft, range, damage, chainDamageRetained = 0.5, stunDuration = 450, visitedTargets = new Set()) { if (chainsLeft <= 0 || !target) return; visitedTargets.add(target); particles.push({ x: x, y: y, endX: target.x, endY: target.y, color: '#ffffcc', type: 'lightning', life: 10 }); const stormglassActive = hasStormglassSynergy() && Date.now() < (target.brittleUntil || 0); let actualDamage = applyPlayerAttackDamageModifiers(target, stormglassActive ? damage * 1.35 : damage); if (!isStatusImmuneTarget(target)) { target.stunnedUntil = Math.max(target.stunnedUntil || 0, Date.now() + stunDuration + (stormglassActive ? 180 : 0)); } target.health -= actualDamage; applyLifesteal(actualDamage); createParticles(target.x, target.y, '#ffffcc',5); if (isBossDefeatThresholdReached(target)) { const enemyIndex = enemies.indexOf(target); if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex); const bossIndex = bosses.indexOf(target); if (bossIndex > -1) { defeatBoss(target, 'lightning'); } } const remainingChains = stormglassActive ? chainsLeft : chainsLeft - 1; if (remainingChains > 0) { const allTargets = [...enemies, ...bosses].filter(e => e !== target && !visitedTargets.has(e)); let nextTarget = null; let minDist = range; allTargets.forEach(enemy => { const dist = Math.hypot(enemy.x - target.x, enemy.y - target.y); if (dist < minDist) { minDist = dist; nextTarget = enemy; } }); if (nextTarget) { setTimeout(() => { if (stormglassActive) applyBrittleStatus(nextTarget, 900, 1.35); createLightningChain(target.x, target.y, nextTarget, remainingChains, stormglassActive ? range + 30 : range, damage * chainDamageRetained, chainDamageRetained, stunDuration, visitedTargets); }, 50); } } } 
 
-        function createLightningChain(x, y, target, chainsLeft, range, damage, chainDamageRetained = 0.5, stunDuration = 450, visitedTargets = new Set()) {
-            if (chainsLeft <= 0 || !target) return;
-            visitedTargets.add(target);
-            particles.push({ x: x, y: y, endX: target.x, endY: target.y, color: '#ffffcc', type: 'lightning', life: 10 });
-            let actualDamage = applyPlayerAttackDamageModifiers(target, damage);
-            if (!isStatusImmuneTarget(target)) {
-                target.stunnedUntil = Math.max(target.stunnedUntil || 0, Date.now() + stunDuration);
-            }
-            target.health -= actualDamage;
-            applyLifesteal(actualDamage);
-            createParticles(target.x, target.y, '#ffffcc',5);
-            if (isBossDefeatThresholdReached(target)) {
-                const enemyIndex = enemies.indexOf(target);
-                if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
-                const bossIndex = bosses.indexOf(target);
-                if (bossIndex > -1) { defeatBoss(target, 'lightning'); }
-            }
-            if (chainsLeft > 1) {
-                const allTargets = [...enemies, ...bosses].filter(e => e !== target && !visitedTargets.has(e));
-                let nextTarget = null; let minDist = range;
-                allTargets.forEach(enemy => { const dist = Math.hypot(enemy.x - target.x, enemy.y - target.y); if (dist < minDist) { minDist = dist; nextTarget = enemy; } });
-                if (nextTarget) {
-                    setTimeout(() => {
-                        createLightningChain(target.x, target.y, nextTarget, chainsLeft - 1, range, damage * chainDamageRetained, chainDamageRetained, stunDuration, visitedTargets);
-                    }, 50);
-                }
-            }
-        }
 
         function buildDeathGambleRollNumbers(isJackpot) {
             const pick = () => Math.floor(Math.random() * DEATH_GAMBLE_JACKPOT_CHANCE) + 1;
@@ -10471,92 +11122,15 @@
             const scaledHealth = Math.round(enemyData.health * linearStrengthMult);
             enemies.push(finalizeEnemySpawn({
                 x: x, y: y, ...enemyData, maxHealth: scaledHealth, health: scaledHealth, baseMaxHealth: scaledHealth, type: type,
+                expValue: scaleXpValueForWave(enemyData.expValue),
                 slowUntil: 0, poisonUntil: 0, poisonDamage: 0, damage: Math.round(enemyData.damage * linearStrengthMult),
                 speed: enemyData.speed * speedStrengthMult, isBurning: false, burnTickTime: 0,
                 dousedUntil: 0,
                 dousedMultiplier: 1.5
             }));
         }
+        function spawnBoss() { if (deathGambleState.active) return; if (currentGameMode === 'hardcore' && waveNumber > getWaveLimit()) return; const bossTypes = getCurrentBossTypes(); const classicWaveTwentyBoss = currentGameMode === 'classic' && waveNumber === 20; const bossTypeKeys = Object.keys(bossTypes).filter((key) => key !== 'celestialGuardian' && !bossTypes[key].endlessOnly); let bossType = classicWaveTwentyBoss ? 'soulReaver' : bossTypeKeys[0]; if (!classicWaveTwentyBoss) { const totalWeight = bossTypeKeys.reduce((sum, k) => sum + (bossTypes[k].spawnWeight || 1), 0); let roll = Math.random() * totalWeight; for (const k of bossTypeKeys) { roll -= (bossTypes[k].spawnWeight || 1); if (roll <= 0) { bossType = k; break; } } } const bossData = bossTypes[bossType]; const linearStrengthMult = getDifficultyMultiplier(); const speedStrengthMult = getDifficultySpeedMultiplier(); const bossVariant = pickBossVariant(bossType); const warning = document.getElementById('bossWarning'); warning.textContent = classicWaveTwentyBoss ? 'WARNING: SOUL REAVER EMERGES' : getBossArrivalWarningText(bossType, bossData); warning.style.display = 'block'; setTimeout(() => { warning.style.display = 'none'; warning.textContent = 'WARNING: BOSS INCOMING'; }, 3400); const side = Math.floor(Math.random() * 4); let x, y; switch(side) { case 0: x = canvas.width / 2; y = bossData.radius + 18; break; case 1: x = canvas.width - bossData.radius - 18; y = canvas.height / 2; break; case 2: x = canvas.width / 2; y = canvas.height - bossData.radius - 18; break; case 3: x = bossData.radius + 18; y = canvas.height / 2; break; } const variantHealthMult = bossVariant ? bossVariant.healthMult || 1 : 1; const variantSpeedMult = bossVariant ? bossVariant.speedMult || 1 : 1; const variantDamageMult = bossVariant ? bossVariant.damageMult || 1 : 1; const variantExpMult = bossVariant ? bossVariant.expMult || 1 : 1; const variantCooldownMult = bossVariant ? bossVariant.cooldownMult || 1 : 1; const scaledHealth = Math.round(bossData.health * linearStrengthMult * variantHealthMult); const spawnNow = Date.now(); const entranceEnabled = bossType !== 'celestialGuardian'; const entranceAccent = getBossEntranceAccentColor(bossType, bossData); const introSignatureAbility = getBossIntroSignatureAbility(bossType); const boss = { x: x, y: y, bossType: bossType, fireBeamUntil: 0, fireBeamNext: 0, fireBeamAngle: 0, fireBeamTickNext: 0, dashUntil: 0, dashVx: 0, dashVy: 0, dashAngle: 0, rocketDashNext: 0, nextHitTime: 0, hitCooldownMs: 1200, goldenSummonNext: 0, goldTrapNext: 0, goldTrapUntil: 0, goldTrapStrikeTime: 0, goldTrapAngle: 0, goldTrapStartAngle: 0, goldTrapEndAngle: 0, goldTrapChargeUntil: 0, goldTrapDirection: 1, amethystDrainUntil: 0, amethystDrainNext: 0, amethystDrainTickNext: 0, scytheSlashUntil: 0, scytheSlashNext: 0, scytheSlashHitTime: 0, scytheSlashAngle: 0, scytheSlashRange: 0, scytheSlashStartAngle: 0, scytheSlashEndAngle: 0, scytheSlashChargeUntil: 0, scytheSlashDirection: 1, stunnedUntil: 0, celestialSwordUntil: 0, celestialSwordHitTime: 0, celestialSwordAngle: 0, celestialSwordStartAngle: 0, celestialSwordEndAngle: 0, celestialSwordChargeUntil: 0, celestialSwordDirection: 1, angelSummonNext: 0, celestialPillarSequence: false, celestialPillarCount: 0, celestialPillarNext: 0, celestialBeamShakeNext: 0, celestialDashNext: 0, dashSlashAt: 0, dashSlashUntil: 0, dashSlashChargeUntil: 0, dashSlashStartAngle: 0, dashSlashEndAngle: 0, dashSlashDirection: 1, weepingSummonNext: 0, starfallNext: 0, celestialAsteroidNext: 0, consumedSoulCount: 0, ...bossData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth, expValue: Math.max(1, Math.round(scaleXpValueForWave(bossData.expValue) * variantExpMult)), damage: Math.round(bossData.damage * linearStrengthMult * variantDamageMult), speed: bossData.speed * speedStrengthMult * variantSpeedMult, lastAbility: entranceEnabled ? spawnNow : 0, abilityCooldown: 3000 * variantCooldownMult, phase: 1, lastPhaseChange: Date.now(), isBurning: false, burnTickTime: 0, dragonlingsSummoned: false, dousedUntil: 0, dousedMultiplier: 1.5, entityId: nextBossEntityId++, pedestalActive: false, introPlayed: false, introFacing: Math.PI * 1.5, phaseTransitioning: false, entranceUntil: entranceEnabled ? spawnNow + 1350 : 0, entranceStartedAt: spawnNow, entranceAccent: entranceAccent, nextEntrancePulseAt: spawnNow, introSignatureAbility: introSignatureAbility, introSignatureReadyAt: introSignatureAbility ? spawnNow + 1450 : 0, introSignatureUsed: false, variantId: bossVariant ? bossVariant.id : '', variantLabel: bossVariant ? bossVariant.label : '', displayName: bossVariant ? `${bossVariant.label} ${bossData.name || getBossDisplayName({ bossType, ...bossData })}` : (bossData.displayName || bossData.name), resistance: Math.min(0.85, Math.max(0, (bossData.resistance || 0) + (bossVariant ? bossVariant.resistanceBonus || 0 : 0))) }; bosses.push(boss); if (entranceEnabled) { screenShake(); createParticles(boss.x, boss.y, entranceAccent, 24); particles.push({ x: boss.x, y: boss.y, radius: boss.radius + 20, maxRadius: boss.radius + 108, expandSpeed: 8, color: entranceAccent, life: 30, maxLife: 30, lineWidth: 5, type: 'wave' }); if (bossType === 'soulReaver') { playMusicCue('soulReaver', { restart: true, fadeInMs: 450 }); particles.push({ x: boss.x, y: boss.y, radius: boss.radius + 34, maxRadius: boss.radius + 144, expandSpeed: 6, color: '#efe6ff', life: 34, maxLife: 34, lineWidth: 4, type: 'wave' }); for (let i = 0; i < 16; i++) { const angle = (Math.PI * 2 / 16) * i; const dist = boss.radius + 20 + Math.random() * 22; particles.push({ x: boss.x + Math.cos(angle) * dist, y: boss.y + Math.sin(angle) * dist * 0.72, vx: Math.cos(angle) * 0.45, vy: Math.sin(angle) * 0.18 - (0.8 + Math.random() * 0.6), radius: Math.random() * 4 + 2, color: i % 2 === 0 ? '#efe6ff' : '#a796d9', life: 0.9, type: 'normal' }); } } } nextBossTime = runClockTime + getBossSpawnInterval(); } 
 
-        function spawnBoss() {
-            if (deathGambleState.active) return;
-            if (currentGameMode === 'hardcore' && waveNumber > getWaveLimit()) return;
-            const bossTypes = getCurrentBossTypes();
-            const classicWaveTwentyBoss = currentGameMode === 'classic' && waveNumber === 20;
-            const bossTypeKeys = Object.keys(bossTypes).filter((key) => key !== 'celestialGuardian' && !bossTypes[key].endlessOnly);
-            let bossType = classicWaveTwentyBoss ? 'soulReaver' : bossTypeKeys[0];
-            if (!classicWaveTwentyBoss) {
-                const totalWeight = bossTypeKeys.reduce((sum, k) => sum + (bossTypes[k].spawnWeight || 1), 0);
-                let roll = Math.random() * totalWeight;
-                for (const k of bossTypeKeys) {
-                    roll -= (bossTypes[k].spawnWeight || 1);
-                    if (roll <= 0) { bossType = k; break; }
-                }
-            }
-            const bossData = bossTypes[bossType]; const linearStrengthMult = getDifficultyMultiplier(); const speedStrengthMult = getDifficultySpeedMultiplier();
-            const warning = document.getElementById('bossWarning');
-            warning.textContent = classicWaveTwentyBoss ? 'WARNING: SOUL REAVER EMERGES' : getBossArrivalWarningText(bossType, bossData);
-            warning.style.display = 'block'; setTimeout(() => { warning.style.display = 'none'; warning.textContent = 'WARNING: BOSS INCOMING'; }, 3400);
-            const side = Math.floor(Math.random() * 4); let x, y;
-            switch(side) {
-                case 0: x = canvas.width / 2; y = bossData.radius + 18; break;
-                case 1: x = canvas.width - bossData.radius - 18; y = canvas.height / 2; break;
-                case 2: x = canvas.width / 2; y = canvas.height - bossData.radius - 18; break;
-                case 3: x = bossData.radius + 18; y = canvas.height / 2; break;
-            }
-            const scaledHealth = Math.round(bossData.health * linearStrengthMult);
-            const spawnNow = Date.now();
-            const entranceEnabled = bossType !== 'celestialGuardian';
-            const entranceAccent = getBossEntranceAccentColor(bossType, bossData);
-            const introSignatureAbility = getBossIntroSignatureAbility(bossType);
-            const boss = {
-                x: x, y: y, bossType: bossType, fireBeamUntil: 0, fireBeamNext: 0, fireBeamAngle: 0, fireBeamTickNext: 0,
-                dashUntil: 0, dashVx: 0, dashVy: 0, dashAngle: 0, rocketDashNext: 0, nextHitTime: 0, hitCooldownMs: 1200,
-                goldenSummonNext: 0, goldTrapNext: 0, goldTrapUntil: 0, goldTrapStrikeTime: 0, goldTrapAngle: 0, goldTrapStartAngle: 0, goldTrapEndAngle: 0, goldTrapChargeUntil: 0, goldTrapDirection: 1,
-                amethystDrainUntil: 0, amethystDrainNext: 0, amethystDrainTickNext: 0, scytheSlashUntil: 0, scytheSlashNext: 0,
-                scytheSlashHitTime: 0, scytheSlashAngle: 0, scytheSlashRange: 0, scytheSlashStartAngle: 0, scytheSlashEndAngle: 0, scytheSlashChargeUntil: 0, scytheSlashDirection: 1, stunnedUntil: 0,
-                celestialSwordUntil: 0, celestialSwordHitTime: 0, celestialSwordAngle: 0, celestialSwordStartAngle: 0, celestialSwordEndAngle: 0, celestialSwordChargeUntil: 0, celestialSwordDirection: 1, angelSummonNext: 0,
-                celestialPillarSequence: false, celestialPillarCount: 0, celestialPillarNext: 0, celestialBeamShakeNext: 0,
-                celestialDashNext: 0, dashSlashAt: 0, dashSlashUntil: 0, dashSlashChargeUntil: 0, dashSlashStartAngle: 0, dashSlashEndAngle: 0, dashSlashDirection: 1, weepingSummonNext: 0, starfallNext: 0, celestialAsteroidNext: 0, consumedSoulCount: 0,
-                ...bossData, health: scaledHealth, maxHealth: scaledHealth, baseMaxHealth: scaledHealth,
-                damage: Math.round(bossData.damage * linearStrengthMult), speed: bossData.speed * speedStrengthMult, lastAbility: entranceEnabled ? spawnNow : 0, abilityCooldown: 3000, phase: 1,
-                lastPhaseChange: Date.now(), isBurning: false, burnTickTime: 0, dragonlingsSummoned: false,
-                dousedUntil: 0, dousedMultiplier: 1.5, entityId: nextBossEntityId++, pedestalActive: false,
-                introPlayed: false, introFacing: Math.PI * 1.5, phaseTransitioning: false,
-                entranceUntil: entranceEnabled ? spawnNow + 1350 : 0,
-                entranceStartedAt: spawnNow,
-                entranceAccent: entranceAccent,
-                nextEntrancePulseAt: spawnNow,
-                introSignatureAbility: introSignatureAbility,
-                introSignatureReadyAt: introSignatureAbility ? spawnNow + 1450 : 0,
-                introSignatureUsed: false
-            };
-            bosses.push(boss);
-            if (entranceEnabled) {
-                screenShake();
-                createParticles(boss.x, boss.y, entranceAccent, 24);
-                particles.push({ x: boss.x, y: boss.y, radius: boss.radius + 20, maxRadius: boss.radius + 108, expandSpeed: 8, color: entranceAccent, life: 30, maxLife: 30, lineWidth: 5, type: 'wave' });
-                if (bossType === 'soulReaver') {
-                    playMusicCue('soulReaver', { restart: true, fadeInMs: 450 });
-                    particles.push({ x: boss.x, y: boss.y, radius: boss.radius + 34, maxRadius: boss.radius + 144, expandSpeed: 6, color: '#efe6ff', life: 34, maxLife: 34, lineWidth: 4, type: 'wave' });
-                    for (let i = 0; i < 16; i++) {
-                        const angle = (Math.PI * 2 / 16) * i;
-                        const dist = boss.radius + 20 + Math.random() * 22;
-                        particles.push({
-                            x: boss.x + Math.cos(angle) * dist,
-                            y: boss.y + Math.sin(angle) * dist * 0.72,
-                            vx: Math.cos(angle) * 0.45,
-                            vy: Math.sin(angle) * 0.18 - (0.8 + Math.random() * 0.6),
-                            radius: Math.random() * 4 + 2,
-                            color: i % 2 === 0 ? '#efe6ff' : '#a796d9',
-                            life: 0.9,
-                            type: 'normal'
-                        });
-                    }
-                }
-            }
-            nextBossTime = gameTime + getBossSpawnInterval();
-        }
 
         function updateEnemies() {
             enemies.forEach((enemy, index) => {
@@ -11107,7 +11681,7 @@
                                             maxHealth: 85,
                                             baseMaxHealth: 85,
                                             color: '#33aa55',
-                                            expValue: 20,
+                        expValue: scaleXpValueForWave(20),
                                             damage: 25,
                                             type: 'zombie',
                                             slowUntil: 0,
@@ -11157,7 +11731,7 @@
                                     maxHealth: dragonlingHealth,
                                     baseMaxHealth: dragonlingHealth,
                                     color: '#ff7a33',
-                                    expValue: currentGameMode === 'hardcore' ? 220 : 140,
+                            expValue: scaleXpValueForWave(currentGameMode === 'hardcore' ? 220 : 140),
                                     damage: currentGameMode === 'hardcore' ? 24 : 18,
                                     type: 'dragonling',
                                     slowUntil: 0,
@@ -11258,7 +11832,7 @@
                                     maxHealth: goldenHealth,
                                     baseMaxHealth: goldenHealth,
                                     color: '#f0c34a',
-                                    expValue: 18,
+                        expValue: scaleXpValueForWave(18),
                                     damage: Math.round(8 * linearStrengthMult),
                                     type: 'golden',
                                     slowUntil: 0,
@@ -11342,7 +11916,7 @@
                                     maxHealth: angelHealth,
                                     baseMaxHealth: angelHealth,
                                     color: hardcoreEnemyTypes.angel.color,
-                                    expValue: hardcoreEnemyTypes.angel.expValue,
+                        expValue: scaleXpValueForWave(hardcoreEnemyTypes.angel.expValue),
                                     damage: Math.round(hardcoreEnemyTypes.angel.damage * linearStrengthMult),
                                     type: 'angel',
                                     resistance: hardcoreEnemyTypes.angel.resistance,
@@ -11409,7 +11983,7 @@
                                     maxHealth: weepHealth,
                                     baseMaxHealth: weepHealth,
                                     color: hardcoreEnemyTypes.weepingCelestial.color,
-                                    expValue: hardcoreEnemyTypes.weepingCelestial.expValue,
+                        expValue: scaleXpValueForWave(hardcoreEnemyTypes.weepingCelestial.expValue),
                                     damage: Math.round(hardcoreEnemyTypes.weepingCelestial.damage * linearStrengthMult),
                                     type: 'weepingCelestial',
                                     resistance: hardcoreEnemyTypes.weepingCelestial.resistance,
@@ -11620,13 +12194,16 @@
                             proj.target = nearest;
                         }
                         if (proj.target) {
-                            const angle = Math.atan2(proj.target.y - proj.y, proj.target.x - proj.x);
+                            const targetAngle = Math.atan2(proj.target.y - proj.y, proj.target.x - proj.x);
                             const speed = proj.speed || Math.hypot(proj.vx, proj.vy) || weaponTypes.homing.projectileSpeed;
-                            const turnRate = proj.turnRate || 0.18;
-                            const targetVx = Math.cos(angle) * speed;
-                            const targetVy = Math.sin(angle) * speed;
-                            proj.vx += (targetVx - proj.vx) * turnRate;
-                            proj.vy += (targetVy - proj.vy) * turnRate;
+                            const turnRate = Math.max(0.01, proj.turnRate || 0.18);
+                            const currentAngle = Math.atan2(proj.vy || 0, (proj.vx === 0 ? 0.001 : proj.vx));
+                            let angleDelta = targetAngle - currentAngle;
+                            while (angleDelta > Math.PI) angleDelta -= Math.PI * 2;
+                            while (angleDelta < -Math.PI) angleDelta += Math.PI * 2;
+                            const nextAngle = currentAngle + Math.max(-turnRate, Math.min(turnRate, angleDelta));
+                            proj.vx = Math.cos(nextAngle) * speed;
+                            proj.vy = Math.sin(nextAngle) * speed;
                         }
                     }
                 }
@@ -11871,34 +12448,8 @@ function updateLasers() {
                 });
             }
         }
+        function updatePoisonClouds() { poisonClouds.forEach((cloud, index) => { cloud.duration--; [...enemies, ...bosses].forEach(target => { const dist = Math.hypot(target.x - cloud.x, target.y - cloud.y); if (dist < cloud.aoeRadius) { target.health -= applyPlayerAttackDamageModifiers(target, cloud.damage); if (!isStatusImmuneTarget(target)) { target.poisonUntil = Date.now() + cloud.poisonDuration; target.poisonDamage = cloud.poisonDamage; if (hasToxicBloomSynergy()) { target.slowUntil = Math.max(target.slowUntil || 0, Date.now() + 650); target.slowEffect = Math.min(target.slowEffect || 1, 0.82); } } createParticles(target.x, target.y, '#cc99ff', 2); if (isBossDefeatThresholdReached(target)) { const enemyIndex = enemies.indexOf(target); if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex); const bossIndex = bosses.indexOf(target); if (bossIndex > -1) { defeatBoss(target, 'poisonCloud'); } } } }); const particleCount = 3 + cloud.stackCount; for (let i = 0; i < particleCount; i++) { const angle = (Math.PI * 2 / particleCount) * i; const dist = cloud.aoeRadius * (0.3 + Math.random() * 0.7); particles.push({ x: cloud.x + Math.cos(angle) * dist, y: cloud.y + Math.sin(angle) * dist, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, radius: Math.random() * 5 + 3 + cloud.stackCount, color: cloud.color, life: 1, type: 'normal' }); } if (cloud.duration <= 0) poisonClouds.splice(index, 1); }); } 
 
-        function updatePoisonClouds() {
-            poisonClouds.forEach((cloud, index) => {
-                cloud.duration--;
-                [...enemies, ...bosses].forEach(target => {
-                    const dist = Math.hypot(target.x - cloud.x, target.y - cloud.y);
-                    if (dist < cloud.aoeRadius) {
-                        target.health -= applyPlayerAttackDamageModifiers(target, cloud.damage);
-                        if (!isStatusImmuneTarget(target)) {
-                            target.poisonUntil = Date.now() + cloud.poisonDuration; target.poisonDamage = cloud.poisonDamage;
-                        }
-                        createParticles(target.x, target.y, '#cc99ff', 2);
-                        if (isBossDefeatThresholdReached(target)) {
-                            const enemyIndex = enemies.indexOf(target);
-                            if (enemyIndex > -1) handleEnemyDefeat(target, enemyIndex);
-                            const bossIndex = bosses.indexOf(target);
-                            if (bossIndex > -1) { defeatBoss(target, 'poisonCloud'); }
-                        }
-                    }
-                });
-                const particleCount = 3 + cloud.stackCount;
-                for (let i = 0; i < particleCount; i++) {
-                    const angle = (Math.PI * 2 / particleCount) * i; const dist = cloud.aoeRadius * (0.3 + Math.random() * 0.7);
-                    particles.push({ x: cloud.x + Math.cos(angle) * dist, y: cloud.y + Math.sin(angle) * dist, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, radius: Math.random() * 5 + 3 + cloud.stackCount, color: cloud.color, life: 1, type: 'normal' });
-                }
-                if (cloud.duration <= 0) poisonClouds.splice(index, 1);
-            });
-        }
 
         function updateSnowflakes() {
             if (!isThemeEffectsEnabled()) return;
@@ -11982,11 +12533,8 @@ function updateLasers() {
                 }
             }
         }
+        function levelUp() { player.level++; player.exp -= player.expToNext; player.expToNext = getNextLevelExpRequirement(); player.maxHealth += currentGameMode === 'hardcore' ? 12 : 25; player.health = player.maxHealth; score += 100 * player.level; updateRunReplayMilestones(); gamePaused = true; showUpgradeOptions(); } 
 
-        function levelUp() {
-            player.level++; player.exp -= player.expToNext; player.expToNext = getNextLevelExpRequirement(); player.maxHealth += currentGameMode === 'hardcore' ? 12 : 25; player.health = player.maxHealth; score += 100 * player.level;
-            gamePaused = true; showUpgradeOptions();
-        }
         function skipUpgradeSelection() {
             document.getElementById('levelUpModal').style.display = 'none';
             gamePaused = false;
@@ -12353,7 +12901,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleDomainRemainingSeconds(now)),
-                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll • ${getDeathGambleActivationTargetCount()} targets in the white domain`,
+                        detail: `${deathGambleState.killsSinceRoll}/${DEATH_GAMBLE_ROLL_KILLS} to next roll â€¢ ${getDeathGambleActivationTargetCount()} targets in the white domain`,
                         state: 'active'
                     });
                 } else if (isDeathGambleJackpotActive(now)) {
@@ -12369,7 +12917,7 @@ function updateLasers() {
                         icon: '[DG]',
                         name: 'Death Gamble [G]',
                         timer: formatBuffCountdown(getDeathGambleCooldownRemainingSeconds(now)),
-                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` • jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
+                        detail: `Cooldown in progress${deathGambleState.consecutiveJackpots > 0 ? ` â€¢ jackpot chain ${deathGambleState.consecutiveJackpots}` : ''}`,
                         state: 'cooldown'
                     });
                 } else {
@@ -12387,8 +12935,17 @@ function updateLasers() {
                     icon: '[CLV]',
                     name: 'Clover Burst',
                     timer: `${cloverBurstState.killsSinceNova || 0}/${interval || CLOVER_BURST_BASE_KILL_INTERVAL} kills`,
-                    detail: `${getCloverBurstBaseDamage()} base • ${getCloverBurstRadius()}px nova • ${Math.round(CLOVER_BURST_STUN_MS / 100) / 10}s stun`,
+                    detail: `${getCloverBurstBaseDamage()} base â€¢ ${getCloverBurstRadius()}px nova â€¢ ${Math.round(CLOVER_BURST_STUN_MS / 100) / 10}s stun`,
                     state: 'passive'
+                });
+            }
+            if (player.cloverBurst && now < (cloverBurstState.surgeUntil || 0)) {
+                addBuffCard(buffsList, {
+                    icon: '[SURGE]',
+                    name: 'Clover Surge',
+                    timer: formatBuffCountdown(Math.max(0, (cloverBurstState.surgeUntil - now) / 1000)),
+                    detail: `Crit +${Math.round(CLOVER_BURST_SURGE_CRIT_BONUS * 100)}%, move speed +${Math.round(CLOVER_BURST_SURGE_SPEED_BONUS * 100)}%, faster weapon tempo`,
+                    state: 'active'
                 });
             }
             if (player.soulHarvest) {
@@ -12520,14 +13077,8 @@ function updateLasers() {
                 if (text.life <= 0) criticalTexts.splice(index, 1);
             }
         }
+        function updateCombo(x, y) { const now = Date.now(); if (now - lastKillTime < 2000) { combo++; score += 10 * combo; showCombo(x, y); screenShake(); } else { combo = 1; score += 10; } lastKillTime = now; updateRunReplayMilestones(); } 
 
-        function updateCombo(x, y) {
-            const now = Date.now();
-            if (now - lastKillTime < 2000) {
-                combo++; score += 10 * combo; showCombo(x, y); screenShake();
-            } else { combo = 1; score += 10; }
-            lastKillTime = now;
-        }
 
         function showCombo(x, y) {
             const comboDiv = document.getElementById('comboDisplay'); const comboCount = document.getElementById('comboCount');
@@ -13245,70 +13796,8 @@ function updateLasers() {
             }
             ctx.restore();
         }
+        function drawCloverBurstEffects(now) { if (!cloverBurstState.bursts.length) return; ctx.save(); ctx.globalCompositeOperation = 'screen'; cloverBurstState.bursts.forEach((burst) => { const rawProgress = Math.max(0, Math.min(1, (now - burst.startedAt) / burst.duration)); const bloom = 1 - Math.pow(1 - rawProgress, 3); const fade = 1 - rawProgress; const radius = burst.radius * bloom; const core = ctx.createRadialGradient(burst.x, burst.y, 0, burst.x, burst.y, radius); core.addColorStop(0, `rgba(255, 252, 220, ${0.38 + fade * 0.24})`); core.addColorStop(0.28, `rgba(196, 255, 128, ${0.18 + fade * 0.16})`); core.addColorStop(0.62, `rgba(90, 255, 165, ${0.12 + fade * 0.08})`); core.addColorStop(1, 'rgba(90, 255, 165, 0)'); ctx.fillStyle = core; ctx.beginPath(); ctx.arc(burst.x, burst.y, radius, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = `rgba(240, 255, 176, ${0.42 * fade})`; ctx.lineWidth = 8 - rawProgress * 5; ctx.beginPath(); ctx.arc(burst.x, burst.y, radius * 0.92, 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = `rgba(112, 255, 146, ${0.34 * fade})`; ctx.lineWidth = 4 - rawProgress * 2.2; ctx.beginPath(); ctx.arc(burst.x, burst.y, radius * 0.66, 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = `rgba(255, 248, 188, ${0.24 * fade})`; ctx.lineWidth = 2.6 - rawProgress * 1.2; ctx.beginPath(); ctx.arc(burst.x, burst.y, radius * 0.44, 0, Math.PI * 2); ctx.stroke(); for (let leaf = 0; leaf < 4; leaf++) { const angle = leaf * (Math.PI * 2 / 4) + burst.bloomSeed * 0.12; ctx.fillStyle = `rgba(${leaf === 1 ? '255, 238, 146' : '134, 255, 148'}, ${0.16 * fade})`; ctx.beginPath(); ctx.ellipse( burst.x + Math.cos(angle) * radius * 0.18, burst.y + Math.sin(angle) * radius * 0.18, radius * 0.28, radius * 0.21, angle, 0, Math.PI * 2 ); ctx.fill(); } ctx.fillStyle = `rgba(255, 247, 173, ${0.3 * fade})`; ctx.beginPath(); ctx.arc(burst.x, burst.y, radius * 0.09, 0, Math.PI * 2); ctx.fill(); burst.sparkAngles.forEach((angle, index) => { const start = radius * (0.16 + (index % 3) * 0.03); const end = radius * (0.72 + (index % 4) * 0.08); ctx.strokeStyle = index % 2 === 0 ? `rgba(255, 238, 146, ${0.46 * fade})` : `rgba(120, 255, 164, ${0.42 * fade})`; ctx.lineWidth = Math.max(1.4, 3.8 - rawProgress * 2.2); ctx.beginPath(); ctx.moveTo(burst.x + Math.cos(angle) * start, burst.y + Math.sin(angle) * start); ctx.lineTo(burst.x + Math.cos(angle) * end, burst.y + Math.sin(angle) * end); ctx.stroke(); }); }); ctx.restore(); } 
 
-        function drawCloverBurstEffects(now) {
-            if (!cloverBurstState.bursts.length) return;
-            ctx.save();
-            ctx.globalCompositeOperation = 'screen';
-            cloverBurstState.bursts.forEach((burst) => {
-                const rawProgress = Math.max(0, Math.min(1, (now - burst.startedAt) / burst.duration));
-                const bloom = 1 - Math.pow(1 - rawProgress, 3);
-                const fade = 1 - rawProgress;
-                const radius = burst.radius * bloom;
-
-                const core = ctx.createRadialGradient(burst.x, burst.y, 0, burst.x, burst.y, radius);
-                core.addColorStop(0, `rgba(255, 252, 220, ${0.38 + fade * 0.24})`);
-                core.addColorStop(0.28, `rgba(196, 255, 128, ${0.18 + fade * 0.16})`);
-                core.addColorStop(0.62, `rgba(90, 255, 165, ${0.12 + fade * 0.08})`);
-                core.addColorStop(1, 'rgba(90, 255, 165, 0)');
-                ctx.fillStyle = core;
-                ctx.beginPath();
-                ctx.arc(burst.x, burst.y, radius, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.strokeStyle = `rgba(240, 255, 176, ${0.42 * fade})`;
-                ctx.lineWidth = 8 - rawProgress * 5;
-                ctx.beginPath();
-                ctx.arc(burst.x, burst.y, radius * 0.92, 0, Math.PI * 2);
-                ctx.stroke();
-
-                ctx.strokeStyle = `rgba(112, 255, 146, ${0.34 * fade})`;
-                ctx.lineWidth = 4 - rawProgress * 2.2;
-                ctx.beginPath();
-                ctx.arc(burst.x, burst.y, radius * 0.66, 0, Math.PI * 2);
-                ctx.stroke();
-
-                for (let leaf = 0; leaf < 3; leaf++) {
-                    const angle = leaf * (Math.PI * 2 / 3) + burst.bloomSeed * 0.12;
-                    ctx.fillStyle = `rgba(${leaf === 1 ? '255, 238, 146' : '134, 255, 148'}, ${0.16 * fade})`;
-                    ctx.beginPath();
-                    ctx.ellipse(
-                        burst.x + Math.cos(angle) * radius * 0.22,
-                        burst.y + Math.sin(angle) * radius * 0.16,
-                        radius * 0.34,
-                        radius * 0.25,
-                        angle,
-                        0,
-                        Math.PI * 2
-                    );
-                    ctx.fill();
-                }
-
-                burst.sparkAngles.forEach((angle, index) => {
-                    const start = radius * (0.16 + (index % 3) * 0.03);
-                    const end = radius * (0.72 + (index % 4) * 0.08);
-                    ctx.strokeStyle = index % 2 === 0
-                        ? `rgba(255, 238, 146, ${0.46 * fade})`
-                        : `rgba(120, 255, 164, ${0.42 * fade})`;
-                    ctx.lineWidth = Math.max(1.4, 3.8 - rawProgress * 2.2);
-                    ctx.beginPath();
-                    ctx.moveTo(burst.x + Math.cos(angle) * start, burst.y + Math.sin(angle) * start);
-                    ctx.lineTo(burst.x + Math.cos(angle) * end, burst.y + Math.sin(angle) * end);
-                    ctx.stroke();
-                });
-            });
-            ctx.restore();
-        }
 
 
         function drawDeathGambleJackpotAura(now) {
@@ -15393,71 +15882,76 @@ function updateLasers() {
 
         function gameLoop(timestamp) {
             if (!gameRunning) return;
-            const rawFrameMs = lastTime > 0 ? Math.max(0, timestamp - lastTime) : 16.67;
-            lastTime = timestamp;
-            updateAdaptivePerformance(rawFrameMs);
-            updateScreenShake(timestamp);
-            const deltaTime = Math.min(MAX_FRAME_DELTA_SECONDS, Math.max(0, rawFrameMs / 1000));
-            const simulationSteps = getGameSimulationStepCount();
-            updateWorldCamera(deltaTime * simulationSteps);
-            syncMouseWorldPosition();
-            updateBossCutscene();
-            maybeTriggerCelestialCardCutscene();
-            updateCelestialCardCutscene();
-            updateFinalVictorySequence();
-            if (!gamePaused) updateFinalArenaApproachDialogue();
-            if (!gamePaused) {
-                const simulationDeltaTime = deltaTime;
-                runClockTime += deltaTime;
+            try {
+                const rawFrameMs = lastTime > 0 ? Math.max(0, timestamp - lastTime) : 16.67;
+                lastTime = timestamp;
+                updateAdaptivePerformance(rawFrameMs);
+                updateScreenShake(timestamp);
+                const deltaTime = Math.min(MAX_FRAME_DELTA_SECONDS, Math.max(0, rawFrameMs / 1000));
+                const simulationSteps = getGameSimulationStepCount();
+                updateWorldCamera(deltaTime * simulationSteps);
+                syncMouseWorldPosition();
+                updateBossCutscene();
+                maybeTriggerCelestialCardCutscene();
+                updateCelestialCardCutscene();
+                updateFinalVictorySequence();
+                if (!gamePaused) updateFinalArenaApproachDialogue();
+                if (!gamePaused) {
+                    const simulationDeltaTime = deltaTime;
+                    runClockTime += deltaTime;
 
-                if (Date.now() - lastAutoSaveTime > 5000) {
-                    saveUserStats();
-                    lastAutoSaveTime = Date.now();
-                }
-
-                for (let step = 0; step < simulationSteps; step++) {
-                    gameTime += simulationDeltaTime;
-
-                    const difficultyLevel = Math.floor(runClockTime / 60);
-                    if (difficultyLevel > currentDifficultyLevel) {
-                        currentDifficultyLevel = difficultyLevel;
-                        if (!finalArenaState.active) {
-                            const warning = document.getElementById('enemyStrengthWarning');
-                            warning.style.display = 'block';
-                            setTimeout(() => { warning.style.display = 'none'; }, 3000);
-                        }
+                    if (Date.now() - lastAutoSaveTime > 5000) {
+                        saveUserStats();
+                        lastAutoSaveTime = Date.now();
                     }
-                    if (blackHoleCooldown > 0) blackHoleCooldown -= simulationDeltaTime;
-                    if (fugaCooldown > 0) fugaCooldown -= simulationDeltaTime;
-                    if (player.bloodMoon && runClockTime >= 300 && !bloodMoonActive) { activateBloodMoon(); }
-                    if (bloodMoonActive) { bloodMoonTimer -= simulationDeltaTime; if (bloodMoonTimer <= 0) { deactivateBloodMoon(); } }
-                    updateSoulHarvest();
-                    updateDeathGambleState();
-                    updateBossFightAchievementTracker();
-                    if (player.soulHarvest && kills - soulHarvestKills >= 25) { activateSoulHarvest(); soulHarvestKills = kills; }
-                    updateBlackHoles(); updateFugaProjectiles(); updateShield(); updateFizzStreams();
-                    updatePlayerRegeneration(simulationDeltaTime);
-                    if (!deathGambleState.active) {
-                        const spawnRate = Math.max(400, 2000 - runClockTime * 5);
-                        spawnClockMs += simulationDeltaTime * 1000;
-                        if (spawnClockMs >= spawnRate) {
-                            spawnEnemy();
-                            spawnClockMs = 0;
-                            const extraSpawnChance = Math.min(0.5, runClockTime / 600);
-                            if (Math.random() < extraSpawnChance && enemies.length < MAX_ENEMIES - 5) { setTimeout(() => spawnEnemy(), 500); }
+
+                    for (let step = 0; step < simulationSteps; step++) {
+                        gameTime += simulationDeltaTime;
+
+                        const difficultyLevel = Math.floor(runClockTime / 60);
+                        if (difficultyLevel > currentDifficultyLevel) {
+                            currentDifficultyLevel = difficultyLevel;
+                            if (!finalArenaState.active) {
+                                const warning = document.getElementById('enemyStrengthWarning');
+                                warning.style.display = 'block';
+                                setTimeout(() => { warning.style.display = 'none'; }, 3000);
+                            }
                         }
-                        if (!finalArenaState.active && runClockTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
+                        if (blackHoleCooldown > 0) blackHoleCooldown -= simulationDeltaTime;
+                        if (fugaCooldown > 0) fugaCooldown -= simulationDeltaTime;
+                        if (player.bloodMoon && runClockTime >= 300 && !bloodMoonActive) { activateBloodMoon(); }
+                        if (bloodMoonActive) { bloodMoonTimer -= simulationDeltaTime; if (bloodMoonTimer <= 0) { deactivateBloodMoon(); } }
+                        updateSoulHarvest();
+                        updateDeathGambleState();
+                        updateBossFightAchievementTracker();
+                        if (player.soulHarvest && kills - soulHarvestKills >= 25) { activateSoulHarvest(); soulHarvestKills = kills; }
+                        updateBlackHoles(); updateFugaProjectiles(); updateShield(); updateFizzStreams();
+                        updatePlayerRegeneration(simulationDeltaTime);
+                        if (!deathGambleState.active) {
+                            const spawnRate = Math.max(400, 2000 - runClockTime * 5);
+                            spawnClockMs += simulationDeltaTime * 1000;
+                            if (spawnClockMs >= spawnRate) {
+                                spawnEnemy();
+                                spawnClockMs = 0;
+                                const extraSpawnChance = Math.min(0.5, runClockTime / 600);
+                                if (Math.random() < extraSpawnChance && enemies.length < MAX_ENEMIES - 5) { setTimeout(() => spawnEnemy(), 500); }
+                            }
+                            if (!finalArenaState.active && runClockTime >= nextBossTime && waveNumber <= getWaveLimit()) { spawnBoss(); }
+                        }
+                        updatePlayer(); updateEnemies(); updateBosses(); updateProjectiles(); updateLasers(); updateShurikens(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
+
+                        if (selectedThemeMode === 'christmas') updateSnowflakes();
+
+                        updateXPGems(); updateParticles(); updateCloverBurstEffects(); updateDamageNumbers(); updateCriticalTexts(); checkGameOver();
+                        if (!gameRunning) break;
                     }
-                    updatePlayer(); updateEnemies(); updateBosses(); updateProjectiles(); updateLasers(); updateShurikens(); updateExplosions(); updatePoisonClouds(); updatePlayerBurning();
-
-                    if (selectedThemeMode === 'christmas') updateSnowflakes();
-
-                    updateXPGems(); updateParticles(); updateCloverBurstEffects(); updateDamageNumbers(); updateCriticalTexts(); checkGameOver();
-                    if (!gameRunning) break;
+                    if (shouldRefreshPerformanceUi(timestamp)) updateUI();
                 }
-                if (shouldRefreshPerformanceUi(timestamp)) updateUI();
+                draw(); drawUI(); requestAnimationFrame(gameLoop);
+            } catch (error) {
+                gameRunning = false;
+                showAdminRuntimeError('gameLoop', error);
             }
-            draw(); drawUI(); requestAnimationFrame(gameLoop);
         }
 
         const RELEASE_VERSION = '0.94.5';
@@ -15608,7 +16102,7 @@ function updateLasers() {
             const top = active[0];
             banner.hidden = false;
             bannerTitle.textContent = top.title;
-            bannerSubtitle.textContent = `${top.senderName} • ${top.body}`.trim();
+            bannerSubtitle.textContent = `${top.senderName} â€¢ ${top.body}`.trim();
 
             active.forEach((entry) => {
                 const item = document.createElement('div');
