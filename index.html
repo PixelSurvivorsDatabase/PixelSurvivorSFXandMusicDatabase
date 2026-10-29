@@ -7931,11 +7931,11 @@
 
         // Final arena geometry is immutable until the canvas dimensions change.
         let finalArenaLayoutCache = null;
-        let finalArenaLayoutSize = '';
+        let finalArenaLayoutWidth = 0, finalArenaLayoutHeight = 0;
         function getFinalArenaLayout() {
-            const size = canvas.width + 'x' + canvas.height;
-            if (finalArenaLayoutCache && finalArenaLayoutSize === size) return finalArenaLayoutCache;
-            finalArenaLayoutSize = size;
+            if (finalArenaLayoutCache && finalArenaLayoutWidth === canvas.width && finalArenaLayoutHeight === canvas.height) return finalArenaLayoutCache;
+            finalArenaLayoutWidth = canvas.width;
+            finalArenaLayoutHeight = canvas.height;
             const arena = { left: 52, right: canvas.width - 52, top: 86, bottom: 514 };
             const roadHalfHeight = 44;
             const roadCenterY = (arena.top + arena.bottom) / 2;
@@ -15438,7 +15438,7 @@ function updateLasers() {
             perfDebug.element.textContent = 'FPS: ' + Math.round(performanceRuntime.fps) +
                 '  Worst frame: ' + Math.round(perfDebug.worstMs) + 'ms' +
                 '  Hitches (>34ms)/s: ' + perfDebug.hitches +
-                '\\nEnemies: ' + enemies.length + '  Bosses: ' + bosses.length +
+                '\nEnemies: ' + enemies.length + '  Bosses: ' + bosses.length +
                 '  Projectiles: ' + projectiles.length + '  XP: ' + xpGems.length +
                 '  Particles: ' + particles.length;
             perfDebug.worstMs = 0;
