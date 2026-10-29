@@ -7929,7 +7929,13 @@
             createParticles(x, y, '#b7ff87', 14);
         }
 
+        // Final arena geometry is immutable until the canvas dimensions change.
+        let finalArenaLayoutCache = null;
+        let finalArenaLayoutSize = '';
         function getFinalArenaLayout() {
+            const size = canvas.width + 'x' + canvas.height;
+            if (finalArenaLayoutCache && finalArenaLayoutSize === size) return finalArenaLayoutCache;
+            finalArenaLayoutSize = size;
             const arena = { left: 52, right: canvas.width - 52, top: 86, bottom: 514 };
             const roadHalfHeight = 44;
             const roadCenterY = (arena.top + arena.bottom) / 2;
@@ -7946,7 +7952,7 @@
                 top: 20,
                 bottom: canvas.height - 20
             };
-            return {
+            return (finalArenaLayoutCache = {
                 leftArena: arena,
                 road,
                 bossArena,
@@ -7957,7 +7963,7 @@
                 openingBottom: road.bottom,
                 worldLeft: bossArena.left - 120,
                 worldRight: arena.right + 120
-            };
+            });
         }
 
         function getDesiredWorldCameraX() {
@@ -11710,6 +11716,9 @@
             }
         }
         function updateProjectiles() {
+            // Per-tick shared bounds: no temporary object allocated per projectile.
+            const normalBounds = getWorldProjectileBounds(50, 50);
+            const fallingBounds = getWorldProjectileBounds(50, 420);
             projectiles.forEach((proj, index) => {
                 if (proj.type === 'firework') {
                     proj.x += proj.vx;
@@ -11731,7 +11740,7 @@
                         }
                     });
 
-                    const fireworkBounds = getWorldProjectileBounds();
+                    const fireworkBounds = normalBounds;
                     if (proj.x < fireworkBounds.left || proj.x > fireworkBounds.right || proj.y < fireworkBounds.top || proj.y > fireworkBounds.bottom) { projectiles.splice(index, 1); return; }
                 }
 
@@ -11789,7 +11798,7 @@
                 }
 
                 proj.x += proj.vx; proj.y += proj.vy;
-                const projectileBounds = getWorldProjectileBounds(50, (proj.type === 'meteor' || proj.type === 'celestialAsteroid') && proj.fromEnemy ? 420 : 50);
+                const projectileBounds = (proj.type === 'meteor' || proj.type === 'celestialAsteroid') && proj.fromEnemy ? fallingBounds : normalBounds;
                 if (proj.x < projectileBounds.left || proj.x > projectileBounds.right || proj.y < projectileBounds.top || proj.y > projectileBounds.bottom) { projectiles.splice(index, 1); return; }
 
                 if (proj.type === 'celestialPillar' && proj.fromEnemy) {
@@ -15409,11 +15418,39 @@ function updateLasers() {
 
         let lastSpawn = 0; let lastTime = 0; let spawnClockMs = 0;
 
+        // Opt-in diagnostic: add ?perf=1 to the game URL to see hitch counts.
+        // Disabled by default; does not change simulation or game balance.
+        const perfDebug = new URLSearchParams(location.search).has('perf') ? (() => {
+            const element = document.createElement('div');
+            element.style.cssText = 'position:fixed;bottom:8px;left:8px;z-index:2147483646;background:rgba(0,0,0,.83);color:#c6ffde;padding:7px 10px;font:12px/1.4 monospace;white-space:pre;pointer-events:none;border:1px solid #46765d;border-radius:6px;';
+            element.textContent = 'Perf metrics starting...';
+            document.body.appendChild(element);
+            return { element, worstMs: 0, hitches: 0, lastUpdate: 0 };
+        })() : null;
+        function updatePerfDebug(rawFrameMs, timestamp) {
+            if (!perfDebug) return;
+            if (rawFrameMs > 0 && rawFrameMs < 400) {
+                perfDebug.worstMs = Math.max(perfDebug.worstMs, rawFrameMs);
+                if (rawFrameMs > 34) perfDebug.hitches++;
+            }
+            if (timestamp - perfDebug.lastUpdate < 1000) return;
+            perfDebug.lastUpdate = timestamp;
+            perfDebug.element.textContent = 'FPS: ' + Math.round(performanceRuntime.fps) +
+                '  Worst frame: ' + Math.round(perfDebug.worstMs) + 'ms' +
+                '  Hitches (>34ms)/s: ' + perfDebug.hitches +
+                '\\nEnemies: ' + enemies.length + '  Bosses: ' + bosses.length +
+                '  Projectiles: ' + projectiles.length + '  XP: ' + xpGems.length +
+                '  Particles: ' + particles.length;
+            perfDebug.worstMs = 0;
+            perfDebug.hitches = 0;
+        }
+
         function gameLoop(timestamp) {
             if (!gameRunning) return;
             const rawFrameMs = lastTime > 0 ? Math.max(0, timestamp - lastTime) : 16.67;
             lastTime = timestamp;
             updateAdaptivePerformance(rawFrameMs);
+            updatePerfDebug(rawFrameMs, timestamp);
             updateScreenShake(timestamp);
             const deltaTime = Math.min(MAX_FRAME_DELTA_SECONDS, Math.max(0, rawFrameMs / 1000));
             const simulationSteps = getGameSimulationStepCount();
