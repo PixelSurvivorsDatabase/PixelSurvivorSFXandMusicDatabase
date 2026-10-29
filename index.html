@@ -8960,6 +8960,7 @@
             createParticles(enemy.x, enemy.y, enemy.color, 15);
             xpGems.push({ x: enemy.x, y: enemy.y, value: enemy.expValue, radius: 8 });
             if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+            combatTargetsCache = null;
             registerDeathGambleKill();
             registerCloverBurstKill();
             kills++;
@@ -9008,6 +9009,7 @@
             onBossKilled(boss, cause);
             const bossIndex = bosses.indexOf(boss);
             if (bossIndex > -1) bosses.splice(bossIndex, 1);
+            combatTargetsCache = null;
             registerDeathGambleKill();
             kills += 10;
             updateCombo(boss.x, boss.y);
